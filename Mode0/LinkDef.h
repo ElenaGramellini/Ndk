@@ -10,5 +10,10 @@
 #pragma link off all functions;
 
 
+#pragma link C++ class ertool::ERAnaModeZero+;
+#pragma link C++ class ertool::ERAlgoSingleE_NdkModeZero+;
 //ADD_NEW_CLASS ... do not change this line
 #endif
+
+
+
