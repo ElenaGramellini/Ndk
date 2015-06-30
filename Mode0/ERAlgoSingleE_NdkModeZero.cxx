@@ -19,7 +19,7 @@ namespace ertool {
 		_e_mass     = ParticleMass(11);
 		_p_mass		= ParticleMass(2212); // SHOULD WE INCLUDE THE BINDING ENERGY?
 		_Ethreshold = 0;
-		_verbose = true;
+		_verbose = false;
 		_useRadLength = false;
 		_hassister = false;
 		_rejectLongTracks = true;
@@ -89,7 +89,9 @@ namespace ertool {
 
     // loop through primary showers
     // Loop through showers
-		for (auto const& p : graph.GetParticleNodes(RecoType_t::kShower)){
+		for (auto const& p : graph.GetPrimaryNodes(RecoType_t::kShower)){
+			// skip any showers already tagged by the pi0 algorithm
+			if (graph.GetParticle(p).PdgCode()==22) { continue; }
 
 			auto const& thisShower = datacpy.Shower(graph.GetParticle(p).RecoID());
       // keep track of whether it is single
@@ -105,6 +107,7 @@ namespace ertool {
       // 1) loop over all showers in event
 			for (auto const& p2 : graph.GetParticleNodes(RecoType_t::kShower)){
 
+
 				auto const& thatShower = datacpy.Shower(graph.GetParticle(p2).RecoID());
 				geoalgo::Point_t vtx(3);
 	// make sure we don't use "thisShower" in the loop
@@ -113,8 +116,9 @@ namespace ertool {
 				if (_verbose) { std::cout << "Comparing with shower (" << p2 << ")" << std::endl; }
 	// is "thatshower" gamma or e-like?
 	// if gamma-like maybe a nearby pi0 -> ok if close
-				if (isGammaLike(thatShower._dedx,-1))
+				if (isGammaLike(thatShower._dedx,-1)){
 					continue;
+				}
 	// "thatShower" is e-like. If the two are correlated and siblings
 	// then we have two e-like showers at the vertex -> do not count
 	// "thisShower" as a SingleE
@@ -241,17 +245,21 @@ namespace ertool {
       	if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
       	electron.SetParticleInfo(11,_e_mass,thisShower.Start(),thisShower.Dir()*mom);
 	// create a new particle for the proton!
-      	if (_verbose) { std::cout << "number of particles before: " << graph.GetNumParticles() << std::endl; }
-      	if (_verbose) { std::cout << "Making proton..." << std::endl; }
-      	Particle& proton = graph.CreateParticle();
-	protonMom += mom;//thisShower.Dir()*mom;
+ //      	std::cout<<graph.Diagram()<<std::endl;
+ //      	if (_verbose) { std::cout << "number of particles before: " << graph.GetNumParticles() << std::endl; }
+ //      	if (_verbose) { std::cout << "Making proton..." << std::endl; }
+ //      	Particle& proton = graph.CreateParticle();
+	// protonMom += mom;//thisShower.Dir()*mom;
+	// proton.SetParticleInfo(2212, _p_mass);
 
-	if (_verbose) { std::cout << "made proton with ID " << proton.ID() << " and PDG: " << proton.PdgCode() << std::endl; }
-	if (_verbose) { std::cout << "number of partciles after: " << graph.GetNumParticles() << std::endl; }
-	_protons += 1;
-	// set relationship
-	// THIS DOESN'T WORK NEEDS FIXING!!!!
+	// if (_verbose) { std::cout << "made proton with ID " << proton.ID() << " and PDG: " << proton.PdgCode() << std::endl; }
+	// if (_verbose) { std::cout << "number of partciles after: " << graph.GetNumParticles() << std::endl; }
+	// _protons += 1;
+	// // set relationship
+	// // THIS DOESN'T WORK NEEDS FIXING!!!!
+	// std::cout<<graph.Diagram()<<std::endl;
 	// graph.SetParentage(proton.ID(),p);
+	// std::cout<<graph.Diagram()<<std::endl;
 
 
 // // NOT SURE IF THIS IS THE TIME TO DO THIS YET!!!
@@ -305,7 +313,7 @@ namespace ertool {
 
 void ERAlgoSingleE_NdkModeZero::ProcessEnd(TFile* fout){
 
-	std::cout << "Num. of protons found: " << _protons << std::endl;
+	// std::cout << "Num. of protons found: " << _protons << std::endl;
 
 	if(fout){
 		fout->cd();

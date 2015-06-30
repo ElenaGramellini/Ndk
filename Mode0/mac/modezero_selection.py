@@ -20,7 +20,7 @@ my_proc = fmwk.ana_processor()
 primary_algo = ertool.AlgoPrimaryFinder()
 
 # Pi0 Algo
-pi0_algo = ertool.AlgoPi0()
+pi0_algo = ertool.ERAlgoPi0_NdkModeZero()
 pi0_algo.setVerbose(False)
 pi0_algo.setMinShrEnergy(0)
 pi0_algo.setMaxShrEnergy(1000)
@@ -53,9 +53,9 @@ my_ana.SetECut(Ecut)
 
 # Add analyzer to the unit
 my_anaunit = fmwk.ExampleERSelection()
-# my_anaunit._mgr.AddAlgo(primary_algo)
-my_anaunit._mgr.AddAlgo(pi0_algo)
+my_anaunit._mgr.AddAlgo(primary_algo)
 my_anaunit._mgr.AddAlgo(singlee_algo)
+my_anaunit._mgr.AddAlgo(pi0_algo)
 my_anaunit._mgr.AddAna(my_ana)
 
 my_anaunit._mgr._mc_for_ana = True
