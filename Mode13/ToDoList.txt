@@ -1,0 +1,20 @@
+What:						File Created		CodeWritten
+
+Algo single mu				[  ]	 			[  ]
+Algo single gamma  			[needs to be found]	[  ]
+Algo Mode13 (mu-gamma vtx)  	[  ]	 			[  ]
+
+Ana single mu			   		[  ]	 			[  ]
+Ana single gamma  				[  ]	 			[  ]
+Ana Mode13 (mu-gamma vtx)  	[  ]	 			[  ]
+
+.py Mode13  	      		   		[ x ]	 			[  ]
+
+Unit Test single mu				[  ]	 			[  ]
+Unit Test single gamma			[  ]	 			[  ]
+Unit Test vtx	 			   	[  ]	 			[  ]
+
+.py Unit Test single mu			[ x ]	 			[  ]
+.py Unit Test single gamma		[ x ]	 			[  ]
+.py Unit Test vtx    			   	[ x ]	 			[  ]
+
