@@ -11,44 +11,21 @@ namespace ertool {
   , fTPC(0.,-115.5,0.,254.8,117.5,1036.92)
 
   {
-
-    if (_result_tree) { delete _result_tree; }
     _result_tree = new TTree("_result_tree","Result Tree");
-    //_result_tree->Branch("_numEvts",&_numEvts,"numEvts/I");
-    // _result_tree->Branch("_n_triplets", &_n_triplets, "n_triplets/I");
-    // _result_tree->Branch("_triplet_vtx_radius", "vector<double>", &_triplet_vtx_radius);
-    // _result_tree->Branch("_triplet_energy", "vector<double>", &_triplet_energy);
-    // _result_tree->Branch("_triplet_px", "vector<double>", &_triplet_px);
-    // _result_tree->Branch("_triplet_py", "vector<double>", &_triplet_py);
-    // _result_tree->Branch("_triplet_pz", "vector<double>", &_triplet_pz);
-    // _result_tree->Branch("_shower1_e", "vector<double>", &_shower1_e);
-    // _result_tree->Branch("_shower1_px", "vector<double>", &_shower1_px);
-    // _result_tree->Branch("_shower1_py", "vector<double>", &_shower1_py);
-    // _result_tree->Branch("_shower1_pz", "vector<double>", &_shower1_pz);
-    // _result_tree->Branch("_shower1_m", "vector<double>", &_shower1_m);
-    // _result_tree->Branch("_shower1_x", "vector<double>", &_shower1_x);
-    // _result_tree->Branch("_shower1_y", "vector<double>", &_shower1_y);
-    // _result_tree->Branch("_shower1_z", "vector<double>", &_shower1_z);
-    // _result_tree->Branch("_shower1_pdg", "vector<double>", &_shower1_pdg);
-    // _result_tree->Branch("_shower2_e", "vector<double>", &_shower2_e);
-    // _result_tree->Branch("_shower2_px", "vector<double>", &_shower2_px);
-    // _result_tree->Branch("_shower2_py", "vector<double>", &_shower2_py);
-    // _result_tree->Branch("_shower2_pz", "vector<double>", &_shower2_pz);
-    // _result_tree->Branch("_shower2_m", "vector<double>", &_shower2_m);
-    // _result_tree->Branch("_shower2_x", "vector<double>", &_shower2_x);
-    // _result_tree->Branch("_shower2_y", "vector<double>", &_shower2_y);
-    // _result_tree->Branch("_shower2_z", "vector<double>", &_shower2_z);
-    // _result_tree->Branch("_shower2_pdg", "vector<double>", &_shower2_pdg);
-    // _result_tree->Branch("_shower3_e", "vector<double>", &_shower3_e);
-    // _result_tree->Branch("_shower3_px", "vector<double>", &_shower3_px);
-    // _result_tree->Branch("_shower3_py", "vector<double>", &_shower3_py);
-    // _result_tree->Branch("_shower3_pz", "vector<double>", &_shower3_pz);
-    // _result_tree->Branch("_shower3_m", "vector<double>", &_shower3_m);
-    // _result_tree->Branch("_shower3_x", "vector<double>", &_shower3_x);
-    // _result_tree->Branch("_shower3_y", "vector<double>", &_shower3_y);
-    // _result_tree->Branch("_shower3_z", "vector<double>", &_shower3_z);
-    // _result_tree->Branch("_shower3_pdg", "vector<double>", &_shower3_pdg);
 
+    _h_e_pion = new TH1D("_h_e_pion", "#pi^{0} Energy; Energy (MeV); Count", 60, 0, 600);
+    _h_p_pion = new TH1D("_h_p_pion", "#pi^{0} Momentum; Momentum (MeV); Count", 60, 0, 600);
+    _h_m_pion = new TH1D("_h_m_pion", "#pi^{0} Mass; Mass (MeV); Count", 60, 0, 600);
+    _h_e_eplus = new TH1D("_h_e_eplus", "e^{+} Energy; Energy (MeV); Count", 60, 0, 600);
+    _h_p_eplus = new TH1D("_h_p_eplus", "e^{+} Momentum; Momentum (MeV); Count", 60, 0, 600);
+    _h_m_eplus = new TH1D("_h_m_eplus", "e^{+} Mass; Mass (MeV); Count", 20, 0, 1);
+
+    _h_e_pion_truth = new TH1D("_h_e_pion_truth", "Truth #pi^{0} Energy; Energy (MeV); Count", 60, 0, 600);
+    _h_p_pion_truth = new TH1D("_h_p_pion_truth", "Truth #pi^{0} Momentum; Momentum (MeV); Count", 60, 0, 600);
+    _h_m_pion_truth = new TH1D("_h_m_pion_truth", "Truth #pi^{0} Mass; Mass (MeV); Count", 60, 0, 600);
+    _h_e_eplus_truth = new TH1D("_h_e_eplus_truth", "Truth e^{+} Energy; Energy (MeV); Count", 60, 0, 600);
+    _h_p_eplus_truth = new TH1D("_h_p_eplus_truth", "Truth e^{+} Momentum; Momentum (MeV); Count", 60, 0, 600);
+    _h_m_eplus_truth = new TH1D("_h_m_eplus_truth", "Truth e^{+} Mass; Mass (MeV); Count", 20, 0, 1);
 
     _result_tree->Branch("_n_pion", &_n_pion, "n_pion/I");
     _result_tree->Branch("_e_pion", "vector<double>", &_e_pion);
@@ -57,7 +34,9 @@ namespace ertool {
     _result_tree->Branch("_z_pion", "vector<double>", &_z_pion);
     _result_tree->Branch("_px_pion", "vector<double>", &_px_pion);
     _result_tree->Branch("_py_pion", "vector<double>", &_py_pion);
-    _result_tree->Branch("_pz_pion", "vector<double>", &_pz_pion); 
+    _result_tree->Branch("_pz_pion", "vector<double>", &_pz_pion);
+    _result_tree->Branch("_p_pion", "vector<double>", &_p_pion);
+    _result_tree->Branch("_m_pion", "vector<double>", &_m_pion); 
     _result_tree->Branch("_n_eplus", &_n_eplus, "n_eplus/I");   
     _result_tree->Branch("_e_eplus", "vector<double>", &_e_eplus);
     _result_tree->Branch("_x_eplus", "vector<double>", &_x_eplus);
@@ -66,9 +45,41 @@ namespace ertool {
     _result_tree->Branch("_px_eplus", "vector<double>", &_px_eplus);
     _result_tree->Branch("_py_eplus", "vector<double>", &_py_eplus);
     _result_tree->Branch("_pz_eplus", "vector<double>", &_pz_eplus); 
+    _result_tree->Branch("_p_eplus", "vector<double>", &_p_eplus);
+    _result_tree->Branch("_m_eplus", "vector<double>", &_m_eplus);
+
+    _result_tree->Branch("_n_pion_truth", &_n_pion_truth, "n_pion_truth/I");
+    _result_tree->Branch("_e_pion_truth", "vector<double>", &_e_pion_truth);
+    _result_tree->Branch("_x_pion_truth", "vector<double>", &_x_pion_truth);
+    _result_tree->Branch("_y_pion_truth", "vector<double>", &_y_pion_truth);
+    _result_tree->Branch("_z_pion_truth", "vector<double>", &_z_pion_truth);
+    _result_tree->Branch("_px_pion_truth", "vector<double>", &_px_pion_truth);
+    _result_tree->Branch("_py_pion_truth", "vector<double>", &_py_pion_truth);
+    _result_tree->Branch("_pz_pion_truth", "vector<double>", &_pz_pion_truth);
+    _result_tree->Branch("_p_pion_truth", "vector<double>", &_p_pion_truth);
+    _result_tree->Branch("_m_pion_truth", "vector<double>", &_m_pion_truth); 
+    _result_tree->Branch("_n_eplus_truth", &_n_eplus_truth, "n_eplus_truth/I");   
+    _result_tree->Branch("_e_eplus_truth", "vector<double>", &_e_eplus_truth);
+    _result_tree->Branch("_x_eplus_truth", "vector<double>", &_x_eplus_truth);
+    _result_tree->Branch("_y_eplus_truth", "vector<double>", &_y_eplus_truth);
+    _result_tree->Branch("_z_eplus_truth", "vector<double>", &_z_eplus_truth);
+    _result_tree->Branch("_px_eplus_truth", "vector<double>", &_px_eplus_truth);
+    _result_tree->Branch("_py_eplus_truth", "vector<double>", &_py_eplus_truth);
+    _result_tree->Branch("_pz_eplus_truth", "vector<double>", &_pz_eplus_truth); 
+    _result_tree->Branch("_p_eplus_truth", "vector<double>", &_p_eplus_truth);
+    _result_tree->Branch("_m_eplus_truth", "vector<double>", &_m_eplus_truth);
 
     // keep track of number of events gone by
     _numEvts = 0;
+    _numPions = 0;
+    _numEplus = 0;
+    _numGamma = 0;
+    _numPi2eey = 0;
+    _missedPions = 0;
+    _missedEs = 0;
+    _misID_e = 0;
+    _misID_gamma = 0;
+    _badPions = 0;
 
     _debug = false;
 
@@ -86,58 +97,6 @@ namespace ertool {
     if (_debug)
       std::cout << "******  Begin ERAnaModeZero Analysis  ******" << std::endl;
 
-    if (_debug){
-      std::cout << "ParticleGraph Diagram: " << std::endl
-      << graph.Diagram() << std::endl;
-    }
-
-    // // Get MC particle set
-    // auto const& mc_graph = MCParticleGraph();
-    // auto const& mc_graph_arr = mc_graph.GetParticleArray();
-
-    // if (_debug){
-    //   std::cout << "MC Particle Diagram: " << std::endl
-    //   << mc_graph.Diagram() << std::endl;
-    // }
-
-    // // Reset tree variables
-    // // Assume we will mis-ID
-    // ResetTreeVariables();
-
-    // _numEvts++;
-
-    // // Get MC EventData (showers/tracks...)
-    // auto const& mc_data = MCEventData();
-
-    // // FIRST WE PERFORM OUR PDG BASED SEARCH
-
-    // // loop over all particles in MC particle set to store TRUTH-LEVEL information about the decay
-    // for (auto &p : mc_graph_arr){
-    //   // Find the pion and store its energy
-    //   if ((p.PdgCode() == 111) && (p.Energy() > _eCut)){
-    //     _n_pion++;
-    //     _e_pion.push_back(p.Energy());
-    //     _x_pion.push_back(p.Vertex()[0]);
-    //     _y_pion.push_back(p.Vertex()[1]);
-    //     _z_pion.push_back(p.Vertex()[2]);
-    //     _px_pion.push_back(p.Momentum()[0]);
-    //     _py_pion.push_back(p.Momentum()[1]);
-    //     _pz_pion.push_back(p.Momentum()[2]);
-    //   }
-
-    //   // Find the e+ and store its energy
-    //   if ((p.PdgCode() == -11) && (p.Energy() > _eCut)){
-    //     _n_eplus++;
-    //     _e_eplus.push_back(p.Energy());
-    //     _x_eplus.push_back(p.Vertex()[0]);
-    //     _y_eplus.push_back(p.Vertex()[1]);
-    //     _z_eplus.push_back(p.Vertex()[2]);
-    //     _px_eplus.push_back(p.Momentum()[0]);
-    //     _py_eplus.push_back(p.Momentum()[1]);
-    //     _pz_eplus.push_back(p.Momentum()[2]);
-    //   }
-    // }
-
      // Get particle set
     auto const& graph_arr = graph.GetParticleArray();
 
@@ -154,13 +113,68 @@ namespace ertool {
 
     // Get MC EventData (showers/tracks...)
     auto const& mc_data = MCEventData();
+    auto const& mc_graph = MCParticleGraph();
+    auto const& mc_graph_arr = mc_graph.GetParticleArray();
 
-    // FIRST WE PERFORM OUR PDG BASED SEARCH
+    if (_debug){
+      std::cout << "MCParticleGraph Diagram: " << std::endl
+      << mc_graph.Diagram() << std::endl;
+    }
 
-    // loop over all particles in MC particle set to store TRUTH-LEVEL information about the decay
+
+    // Here we determine how well we're doing in the event!
+
+    auto &datshowers = graph.GetParticleNodes(kShower);
+    auto &trushowers = mc_graph.GetParticleNodes(kShower);
+
+    _badPion = false;
+
+    for (int i=0; i<datshowers.size(); i++){
+      auto& truth_part = mc_graph.GetParticle(trushowers[i]);
+      auto& data_part = graph.GetParticle(datshowers[i]);
+      auto& truth_id = truth_part.PdgCode();
+      auto& data_id = data_part.PdgCode();
+
+      // check for a mismatch
+      if (abs(truth_id) != abs(data_id)) { 
+        if (data_id==22){ _misID_gamma++; }
+        if (abs(data_id)==11){ _misID_e++; }
+
+        if (mc_graph.GetParticle(truth_part.Parent()).PdgCode() == 111){
+        // This means we're looking at a reconstructed pion
+          if (graph.GetParticle(data_part.Parent()).PdgCode() != 111){
+            _badPion = true;
+          }
+          // check for Dalitz decay
+          if (mc_graph.GetParticle(truth_part.Parent()).Children().size() > 2){
+            _numPi2eey++;
+            if (_debug) { 
+              auto& sibs = mc_graph.GetParticle(truth_part.Parent()).Children();
+              std::cout<<"DALITZ DECAY..."<<std::endl;
+              std::cout<<mc_graph.GetParticle(sibs[0]).PdgCode()<<std::endl;
+              std::cout<<mc_graph.GetParticle(sibs[1]).PdgCode()<<std::endl;
+              std::cout<<mc_graph.GetParticle(sibs[2]).PdgCode()<<std::endl;
+               }
+            _badPion = true;
+          }
+        }
+
+      }
+    }
+
+    if (_badPion) {_badPions++; }
+
+    // FIRST WE SAVE ALL RECONSTRUCTED INFORMATION
+
     for (auto &p : graph_arr){
+
+      if ((p.PdgCode() == 22) && (p.Energy() > _eCut)){
+        _numGamma++;
+      }
+
       // Find the pion and store its energy
       if ((p.PdgCode() == 111) && (p.Energy() > _eCut)){
+        _numPions++;
         _n_pion++;
         _e_pion.push_back(p.Energy());
         _x_pion.push_back(p.Vertex()[0]);
@@ -169,10 +183,19 @@ namespace ertool {
         _px_pion.push_back(p.Momentum()[0]);
         _py_pion.push_back(p.Momentum()[1]);
         _pz_pion.push_back(p.Momentum()[2]);
+        _p_pion.push_back(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+        _m_pion.push_back(p.Mass());
+
+        _h_e_pion->Fill(p.Energy());
+        _h_p_pion->Fill(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+        _h_m_pion->Fill(p.Mass());
+
+
       }
 
       // Find the e+ and store its energy
       if ((abs(p.PdgCode()) == 11) && (p.Energy() > _eCut)){
+        _numEplus++;
         _n_eplus++;
         _e_eplus.push_back(p.Energy());
         _x_eplus.push_back(p.Vertex()[0]);
@@ -181,72 +204,62 @@ namespace ertool {
         _px_eplus.push_back(p.Momentum()[0]);
         _py_eplus.push_back(p.Momentum()[1]);
         _pz_eplus.push_back(p.Momentum()[2]);
+        _p_eplus.push_back(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+        _m_eplus.push_back(p.Mass());
+
+        _h_e_eplus->Fill(p.Energy());
+        _h_p_eplus->Fill(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+        _h_m_eplus->Fill(p.Mass());
+
+       
       }
     }
 
-    // // NOW LET'S DEAL WITH THE TOPOLOGY BASED SEARCH
 
-    // // vertices must be within one hundred cm of each other
-    // double _vtx_cutoff = 100;
+    // NOW WE SAVE ALL THE TRUTH INFORMATION
 
-    // // identify triplets of showers
-    // auto const& triplets = mc_graph.GetNodeCombinations(3, kShower, false);
-    
-    // // loop through these triplets to find showers with similar origin
-    // for (auto &trip : triplets){
-    //   // extract particles
-    //   auto const& p1 = mc_graph.GetParticle(trip[0]);
-    //   auto const& p2 = mc_graph.GetParticle(trip[1]);
-    //   auto const& p3 = mc_graph.GetParticle(trip[2]);
-    //   // access showers that were matched to these particles
-    //   auto const& shower1 = data.Shower(p1);
-    //   auto const& shower2 = data.Shower(p2);
-    //   auto const& shower3 = data.Shower(p3);
-    //   // extract vertices
-    //   auto const& vtx1 = shower1.Start();
-    //   auto const& vtx2 = shower2.Start();
-    //   auto const& vtx3 = shower3.Start();
-    //   ::geoalgo::Sphere sphere(vtx1, vtx2, vtx3);
-    //   // check to see if the vertices of the showers are nearby each other
-    //   if(sphere.Radius() < _vtx_cutoff){
+    for (auto &p : mc_graph_arr){
 
-    //     // fill all triplet-related branches
-    //     _n_triplets++;
-    //     _triplet_vtx_radius.push_back(sphere.Radius());
-    //     _triplet_energy.push_back(shower1.Energy()+shower2.Energy()+shower3.Energy());
-    //     _triplet_px.push_back(shower1.Momentum()[0]+shower2.Momentum()[0]+shower3.Momentum()[0]);
-    //     _triplet_py.push_back(shower1.Momentum()[1]+shower2.Momentum()[1]+shower3.Momentum()[1]);
-    //     _triplet_pz.push_back(shower1.Momentum()[2]+shower2.Momentum()[2]+shower3.Momentum()[2]);
-    //     _shower1_e.push_back(shower1.Energy());
-    //     _shower1_px.push_back(shower1.Momentum()[0]);
-    //     _shower1_py.push_back(shower1.Momentum()[1]);
-    //     _shower1_pz.push_back(shower1.Momentum()[2]);
-    //     _shower1_m.push_back(shower1.Mass());
-    //     _shower1_x.push_back(shower1.Vertex()[0]);
-    //     _shower1_y.push_back(shower1.Vertex()[1]);
-    //     _shower1_z.push_back(shower1.Vertex()[2]);
-    //     _shower1_pdg.push_back(shower1.PdgCode());
-    //     _shower2_e.push_back(shower2.Energy());
-    //     _shower2_px.push_back(shower2.Momentum()[0]);
-    //     _shower2_py.push_back(shower2.Momentum()[1]);
-    //     _shower2_pz.push_back(shower2.Momentum()[2]);
-    //     _shower2_m.push_back(shower2.Mass());
-    //     _shower2_x.push_back(shower2.Vertex()[0]);
-    //     _shower2_y.push_back(shower2.Vertex()[1]);
-    //     _shower2_z.push_back(shower2.Vertex()[2]);
-    //     _shower2_pdg.push_back(shower2.PdgCode());
-    //     _shower3_e.push_back(shower3.Energy());
-    //     _shower3_px.push_back(shower3.Momentum()[0]);
-    //     _shower3_py.push_back(shower3.Momentum()[1]);
-    //     _shower3_pz.push_back(shower3.Momentum()[2]);
-    //     _shower3_m.push_back(shower3.Mass());
-    //     _shower3_x.push_back(shower3.Vertex()[0]);
-    //     _shower3_y.push_back(shower3.Vertex()[1]);
-    //     _shower3_z.push_back(shower3.Vertex()[2]);
-    //     _shower3_pdg.push_back(shower3.PdgCode());
+      // Find the pion and store its energy
+      if ((p.PdgCode() == 111) && (p.Energy() > _eCut)){
+        _n_pion_truth++;
+        _e_pion_truth.push_back(p.Energy());
+        _x_pion_truth.push_back(p.Vertex()[0]);
+        _y_pion_truth.push_back(p.Vertex()[1]);
+        _z_pion_truth.push_back(p.Vertex()[2]);
+        _px_pion_truth.push_back(p.Momentum()[0]);
+        _py_pion_truth.push_back(p.Momentum()[1]);
+        _pz_pion_truth.push_back(p.Momentum()[2]);
+        _p_pion_truth.push_back(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+        _m_pion_truth.push_back(p.Mass());
 
-    //   }
-    // }
+        _h_e_pion_truth->Fill(p.Energy());
+        _h_p_pion_truth->Fill(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+        _h_m_pion_truth->Fill(p.Mass());
+
+
+      }
+
+      // Find the e+ and store its energy
+      if ((p.PdgCode() == -11) && (p.Energy() > _eCut) && (p.Parent()==0)){
+        _n_eplus_truth++;
+        _e_eplus_truth.push_back(p.Energy());
+        _x_eplus_truth.push_back(p.Vertex()[0]);
+        _y_eplus_truth.push_back(p.Vertex()[1]);
+        _z_eplus_truth.push_back(p.Vertex()[2]);
+        _px_eplus_truth.push_back(p.Momentum()[0]);
+        _py_eplus_truth.push_back(p.Momentum()[1]);
+        _pz_eplus_truth.push_back(p.Momentum()[2]);
+        _p_eplus_truth.push_back(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+        _m_eplus_truth.push_back(p.Mass());
+
+        _h_e_eplus_truth->Fill(p.Energy());
+        _h_p_eplus_truth->Fill(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+        _h_m_eplus_truth->Fill(p.Mass());
+
+       
+      }
+    }
 
     // fill the tree
     _result_tree->Fill();
@@ -257,14 +270,29 @@ namespace ertool {
   void ERAnaModeZero::ProcessEnd(TFile* fout)
   {
     
-    // std::cout << "RESULTS: " << std::endl;
-    // << "Tot Events    : " << _numEvts << std::endl
-    // << "SingleE Events: " << _singleE_ctr << std::endl
-    // << "Eff           : " << _eff << " " << std::endl;
+    std::cout << "RESULTS: " << std::endl << std::endl
+    << "Reconstructed Pions: " << _numPions << std::endl
+    << "Correctly IDed Pions: " << (_numPions-_badPions) << std::endl << std::endl
+    << "Reconstructed Electrons: " << _numEplus << std::endl
+    << "Correctly IDed Es: " << (_numEplus - _misID_e) << std::endl << std::endl
+    << "Correctly IDed Photons: " << (_numGamma - _misID_gamma) << std::endl
+    << "Dalitz decays (included in 'badPion' def): " << _numPi2eey << std::endl;
 
     if (fout){
       fout->cd();
       _result_tree->Write();
+      _h_e_pion->Write();
+      _h_p_pion->Write();
+      _h_m_pion->Write();
+      _h_e_eplus->Write();
+      _h_p_eplus->Write();
+      _h_m_eplus->Write();
+      _h_e_pion_truth->Write();
+      _h_p_pion_truth->Write();
+      _h_m_pion_truth->Write();
+      _h_e_eplus_truth->Write();
+      _h_p_eplus_truth->Write();
+      _h_m_eplus_truth->Write();
     }
 
     return;
@@ -301,48 +329,22 @@ namespace ertool {
 
  void ERAnaModeZero::ResetTreeVariables(){
 
-  // _n_triplets = 0;
-  // _triplet_vtx_radius.clear();
-  // _triplet_energy.clear();
-  // _triplet_px.clear();
-  // _triplet_py.clear();
-  // _triplet_pz.clear();
-  // _shower1_e.clear();
-  // _shower1_px.clear();
-  // _shower1_py.clear();
-  // _shower1_pz.clear();
-  // _shower1_m.clear();
-  // _shower1_x.clear();
-  // _shower1_y.clear();
-  // _shower1_z.clear();
-  // _shower1_pdg.clear();
-  // _shower2_e.clear();
-  // _shower2_px.clear();
-  // _shower2_py.clear();
-  // _shower2_pz.clear();
-  // _shower2_m.clear();
-  // _shower2_x.clear();
-  // _shower2_y.clear();
-  // _shower2_z.clear();
-  // _shower2_pdg.clear();
-  // _shower3_e.clear();
-  // _shower3_px.clear();
-  // _shower3_py.clear();
-  // _shower3_pz.clear();
-  // _shower3_m.clear();
-  // _shower3_x.clear();
-  // _shower3_y.clear();
-  // _shower3_z.clear();
-  // _shower3_pdg.clear();
-
-  _n_pion = 0;
-  _n_eplus = 0;
-  _e_pion.clear();
-  _x_pion.clear(); _y_pion.clear(); _z_pion.clear();
-  _px_pion.clear(); _py_pion.clear(); _pz_pion.clear();
-  _e_eplus.clear();
-  _x_eplus.clear(); _y_eplus.clear(); _z_eplus.clear();
-  _px_eplus.clear(); _py_eplus.clear(); _pz_eplus.clear();
+  _n_pion = 0; _n_pion_truth = 0;
+  _n_eplus = 0; _n_eplus_truth = 0;
+  _numTruePi0 = 0;
+  _numTrueE = 0;
+  _e_pion.clear(); _p_pion_truth.clear(); _m_pion_truth.clear();
+  _x_pion.clear(); _y_pion_truth.clear(); _z_pion_truth.clear();
+  _px_pion.clear(); _py_pion_truth.clear(); _pz_pion_truth.clear();
+  _e_eplus.clear(); _p_eplus_truth.clear(); _m_eplus_truth.clear();
+  _x_eplus.clear(); _y_eplus_truth.clear(); _z_eplus_truth.clear();
+  _px_eplus.clear(); _py_eplus_truth.clear(); _pz_eplus_truth.clear();
+  _e_pion_truth.clear(); _p_pion_truth.clear(); _m_pion_truth.clear();
+  _x_pion_truth.clear(); _y_pion_truth.clear(); _z_pion_truth.clear();
+  _px_pion_truth.clear(); _py_pion_truth.clear(); _pz_pion_truth.clear();
+  _e_eplus_truth.clear(); _p_eplus_truth.clear(); _m_eplus_truth.clear();
+  _x_eplus_truth.clear(); _y_eplus_truth.clear(); _z_eplus_truth.clear();
+  _px_eplus_truth.clear(); _py_eplus_truth.clear(); _pz_eplus_truth.clear();
 
   return;
 }

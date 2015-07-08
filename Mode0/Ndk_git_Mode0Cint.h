@@ -34,6 +34,7 @@ extern void G__set_cpp_environmentNdk_git_Mode0Cint();
 #include "ERAlgoPi0_NdkModeZero.h"
 #include "ERAlgoSingleE_NdkModeZero.h"
 #include "ERAnaModeZero.h"
+#include "ERAnaPi0Test.h"
 #include <algorithm>
 namespace std { }
 using namespace std;
@@ -192,5 +193,6 @@ extern G__linked_taginfo G__Ndk_git_Mode0CintLN_ertoolcLcLERAlgoPi0_NdkModeZero;
 extern G__linked_taginfo G__Ndk_git_Mode0CintLN_ertoolcLcLERAlgoSingleE_NdkModeZero;
 extern G__linked_taginfo G__Ndk_git_Mode0CintLN_ertoolcLcLAnaBase;
 extern G__linked_taginfo G__Ndk_git_Mode0CintLN_ertoolcLcLERAnaModeZero;
+extern G__linked_taginfo G__Ndk_git_Mode0CintLN_ertoolcLcLERAnaPi0Test;
 
 /* STUB derived class for protected member access */

@@ -54,10 +54,18 @@ namespace ertool {
     /// set the energy cut to be used when counting particles
     void SetECut(double c) { _eCut = c; }
 
+    // /// set tree name
+    // void SetTreeName(std::string tree_name) { _tree_name = tree_name };
+
   private:
 
     // debug flag
     bool _debug;
+    // do we want MC comparison?
+    bool _mc;
+
+    // // tree name
+    // std::string _tree_name = "_result_tree";
 
     // energy cut for counting particles
     float _eCut;
@@ -67,24 +75,47 @@ namespace ertool {
 
     // Result tree comparison for reconstructed events
     TTree* _result_tree;
+    
+    TH1D* _h_e_pion; 
+    TH1D* _h_p_pion;
+    TH1D* _h_m_pion;
+    TH1D* _h_e_eplus;
+    TH1D* _h_p_eplus;
+    TH1D* _h_m_eplus;
 
-    // int _n_triplets;
-    // std::vector<double> _triplet_vtx_radius, _triplet_energy, _triplet_px, _triplet_py, _triplet_pz;
-    // std::vector<double> _shower1_e, _shower1_px, _shower1_py, _shower1_pz, _shower1_m, _shower1_x, _shower1_y, _shower1_z, _shower1_pdg;
-    // std::vector<double> _shower2_e, _shower2_px, _shower2_py, _shower2_pz, _shower2_m, _shower2_x, _shower2_y, _shower2_z, _shower2_pdg;
-    // std::vector<double> _shower3_e, _shower3_px, _shower3_py, _shower3_pz, _shower3_m, _shower3_x, _shower3_y, _shower3_z, _shower3_pdg;
+    TH1D* _h_e_pion_truth; 
+    TH1D* _h_p_pion_truth;
+    TH1D* _h_m_pion_truth;
+    TH1D* _h_e_eplus_truth;
+    TH1D* _h_p_eplus_truth;
+    TH1D* _h_m_eplus_truth;
 
-    int _n_pion;
-    int _n_eplus;
-    std::vector<double> _e_pion;
+    int _n_pion, _numTruePi0;
+    int _n_eplus, _numTrueE;
+    std::vector<double> _e_pion, _p_pion, _m_pion;
     std::vector<double> _x_pion, _y_pion, _z_pion;
     std::vector<double> _px_pion, _py_pion, _pz_pion;
-    std::vector<double> _e_eplus;
+    std::vector<double> _e_eplus, _p_eplus, _m_eplus;
     std::vector<double> _x_eplus, _y_eplus, _z_eplus;
     std::vector<double> _px_eplus, _py_eplus, _pz_eplus;
 
+    int _n_pion_truth;
+    int _n_eplus_truth;
+    std::vector<double> _e_pion_truth, _p_pion_truth, _m_pion_truth;
+    std::vector<double> _x_pion_truth, _y_pion_truth, _z_pion_truth;
+    std::vector<double> _px_pion_truth, _py_pion_truth, _pz_pion_truth;
+    std::vector<double> _e_eplus_truth, _p_eplus_truth, _m_eplus_truth;
+    std::vector<double> _x_eplus_truth, _y_eplus_truth, _z_eplus_truth;
+    std::vector<double> _px_eplus_truth, _py_eplus_truth, _pz_eplus_truth;
+
     /// counters to cout to screen after running
     int _numEvts;
+    int _numPions, _numEplus, _numGamma;
+    int _missedEs, _missedPions;
+    int _numPi2eey;
+    int _misID_e, _misID_gamma, _badPions;
+
+    bool _badPion;
 
     ::geoalgo::GeoAlgo _geoAlgo;
     ::geoalgo::AABox fTPC;

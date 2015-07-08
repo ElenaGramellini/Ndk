@@ -26,7 +26,6 @@ namespace ertool {
 		_vtxProximityCut = 0;
 		_BDtW = 0; 
 		_BDtTW = 0;
-		_protons = 0;
 
 	}
 
@@ -235,7 +234,7 @@ namespace ertool {
 
 	// prepare holder for proton momentum
 	//::geoERAlgo::Vector_t protonMom(0,0,0);
-      	double protonMom = 0;
+      	// double protonMom = 0;
 
 	// fill in electron properties
       	double mom = sqrt( (thisShower._energy)*(thisShower._energy) - (_e_mass*_e_mass) );
@@ -243,61 +242,15 @@ namespace ertool {
       	if (_verbose) { std::cout << "Getting shower " << p << std::endl; }
       	auto& electron = graph.GetParticle(p);
       	if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
-      	electron.SetParticleInfo(11,_e_mass,thisShower.Start(),thisShower.Dir()*mom);
+      	if (thisShower._energy > _Ethreshold){
+      		electron.SetParticleInfo(11,_e_mass,thisShower.Start(),thisShower.Dir()*mom);
+      	}
 	// create a new particle for the proton!
- //      	std::cout<<graph.Diagram()<<std::endl;
  //      	if (_verbose) { std::cout << "number of particles before: " << graph.GetNumParticles() << std::endl; }
  //      	if (_verbose) { std::cout << "Making proton..." << std::endl; }
  //      	Particle& proton = graph.CreateParticle();
 	// protonMom += mom;//thisShower.Dir()*mom;
-	// proton.SetParticleInfo(2212, _p_mass);
-
-	// if (_verbose) { std::cout << "made proton with ID " << proton.ID() << " and PDG: " << proton.PdgCode() << std::endl; }
-	// if (_verbose) { std::cout << "number of partciles after: " << graph.GetNumParticles() << std::endl; }
-	// _protons += 1;
-	// // set relationship
-	// // THIS DOESN'T WORK NEEDS FIXING!!!!
-	// std::cout<<graph.Diagram()<<std::endl;
-	// graph.SetParentage(proton.ID(),p);
-	// std::cout<<graph.Diagram()<<std::endl;
-
-
-// // NOT SURE IF THIS IS THE TIME TO DO THIS YET!!!
-// 	// Now look for all potential siblins
-// 	// using ERAlgoFindRelationship
-// 	for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
-
-// 		auto const& track = datacpy.Track(graph.GetParticle(t).RecoID());
-// 	  // make sure track has a length of at least 0.3 cm (wire spacing)
-// 	  // greater longer than 3 mm
-// 		if (track.Length() < 0.3)
-// 			continue;
-
-// 		::geoalgo::Point_t vtx(3);
-// 		double score = -1;
-// 		auto const& rel = _findRel.FindRelation(thisShower,track,vtx,score);
-// 		if (rel == kSibling)
-// 	    { // add this track to PaticleTree
-// 	    	auto &trackParticle = graph.GetParticle(t);
-// 	      // if not primary according to primary finder -> don't add
-// 	    	if (!trackParticle.Primary())
-// 	    		continue;
-// 	      // track deposited energy
-// 	    	double Edep = track._energy;
-// 	      // track direction
-// 	    	geoalgo::Vector_t Dir = (track[1]-track[0]);
-// 	    	Dir.Normalize();
-// 	    	double mass = _findRel.GetMass(track);
-// 	    	geoalgo::Vector_t Mom = Dir * ( sqrt( Edep * (Edep+2*mass) ) );
-// 	    	trackParticle.SetParticleInfo(_findRel.GetPDG(track),mass,track[0],Mom);
-// 	    	protonMom += sqrt( Edep * ( Edep + 2*mass ) );
-// 	    	graph.SetParentage(proton.ID(),t);
-// 	    }
-// 	}
-// 	::geoalgo::Vector_t momdir(0,0,1);
-
-// 	proton.SetParticleInfo(2212,_p_mass,thisShower.Start(),momdir*protonMom);
-	
+	// proton.SetParticleInfo(2212, _p_mass);	
 
       }// if single
       // if not single
@@ -307,7 +260,9 @@ namespace ertool {
 
       
     }// for all primaries found / for all showers
-    
+     
+    if (_verbose) { std::cout<<graph.Diagram()<<std::endl; }
+
     return true;
 }
 

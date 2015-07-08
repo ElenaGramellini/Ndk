@@ -4,6 +4,7 @@
 #include "ERAlgoPi0_NdkModeZero.h"
 #include "GeoAlgo/GeoAlgo.h"
 #include "EMShowerTools/EMShowerProfile.h"
+#include "GeoAlgo/GeoVector.h"
 
 namespace ertool {
 
@@ -69,7 +70,7 @@ namespace ertool {
     _alg_emp.AcceptPSet(cfg);
 
     //Load user_info
-    auto p = cfg.get_pset(Name());
+    auto p = cfg.get_pset("Pi0");
 
     // Extract if parameters found
     std::cout << "["<<__FUNCTION__<<"] : Loading Pi0 Params." << std::endl;
@@ -205,11 +206,21 @@ namespace ertool {
 
     // calculate momentum:
     // add direction vectors scaled by shower energies and subtract mass
-    geoalgo::Vector_t energy(shower_a.Dir() * energy_a + shower_b.Dir() * energy_b);
-    energy *= (energy.Length() - _mass) / energy.Length();
-    mom = energy;
+    // geoalgo::Vector_t energy(shower_a.Dir() * energy_a + shower_b.Dir() * energy_b);
+    // energy *= (energy.Length() - _mass) / energy.Length();
+    // mom = energy;
 
-    if (_verbose) { std::cout << "reconstructed mass: " << _mass << std::endl; }
+
+    geoalgo::Vector_t energy(shower_a.Dir() * energy_a + shower_b.Dir() * energy_b);
+    energy.Normalize();
+    double mom2 = sqrt(pow(energy_a,2)+pow(energy_b,2)+2*energy_a*energy_b*cos(_angle));
+    mom = energy*mom2;
+
+    if (_verbose) { 
+      std::cout << "reconstructed mass: " << _mass << std::endl;
+      // std::cout << "reconstructed momentum out of the box: " << energy2 << std::endl;
+      // std::cout << "reconstructed momentum my way: " << mom2 << std::endl;
+      }
 
     // likelihood of each shower of being more e-like or g-like:
     _dedx_A = shower_a._dedx;
@@ -271,15 +282,17 @@ namespace ertool {
 	// or if we are comparing to self
 	if (shrID2 <= shrID1) continue;
 
-	// make sure the two gammas have not been "used" to form a relationship before 
-	if ( abs(graph.GetParticle(shrID1).PdgCode())==11 or
-	     abs(graph.GetParticle(shrID2).PdgCode())==11 ){
+	// make sure the two gammas have not been tagged before as electrons or pion products
+  auto sh1code = graph.GetParticle(shrID1).PdgCode();
+  auto sh2code = graph.GetParticle(shrID2).PdgCode();
+	if ( abs(sh1code)==11 or abs(sh1code)==22 or
+	     abs(sh2code)==11 or abs(sh2code)==22 ){
 	  if (_verbose) { std::cout << "either shower already used to make pi0 or anything else...cannot proceed." << std::endl; }
 	  continue;
 	}
 
-  std::cout<<"Shower 1: "<<abs(graph.GetParticle(shrID1).PdgCode())<<std::endl;
-  std::cout<<"Shower 2: "<<abs(graph.GetParticle(shrID2).PdgCode())<<std::endl;
+  // std::cout<<"Shower 1: "<<abs(graph.GetParticle(shrID1).PdgCode())<<std::endl;
+  // std::cout<<"Shower 2: "<<abs(graph.GetParticle(shrID2).PdgCode())<<std::endl;
 
 	auto const& shr1 = datacpy.Shower(graph.GetParticle(shrID1).RecoID());
 	auto const& shr2 = datacpy.Shower(graph.GetParticle(shrID2).RecoID());
@@ -292,9 +305,14 @@ namespace ertool {
 	LL(shr1, shr2, likelihood, mass, vertex, momentum);
 	if (likelihood > best_ll) { best_ll = likelihood; best_mass = mass; }
 	
-	
-	if ( (likelihood != -1.e-10) && (likelihood > -10)&& (mass > 0)&& shr1._energy > 20 && shr2._energy > 20 ){
+	// APPLY PION CUTS!!!
+	if ( (likelihood != -1.e-10) && (likelihood > -10) && (_vtx_IP < _IPMax)
+    && (mass > _fit_min) && (mass < _fit_max) 
+    && (shr1._energy > _energy_min) && (shr1._energy < _energy_max )
+    && (shr2._energy > _energy_min) && (shr2._energy < _energy_max )){
+
 	  _hMass_vs_LL->Fill(mass,likelihood);
+
 	  // edit particle info to reflect the fact 
 	  // that we have 2 gammas coming from a pi0
 
@@ -320,7 +338,7 @@ namespace ertool {
 	  graph.SetParentage(pi0.ID(),shrID1);
 	  graph.SetParentage(pi0.ID(),shrID2);
 	  graph.SetSiblings(shrID1,shrID2);
-    std::cout<<graph.Diagram()<<std::endl;
+    
 	  //Let's try to make a shower object out of this pi0
 	  double momDot = ( gamma1mom[0] * gamma2mom[0] + gamma1mom[1] * gamma2mom[1] + gamma1mom[2] * gamma2mom[2] );
 	  double momLengthProd = ( gamma1mom.Length() * gamma2mom.Length() ) ;
@@ -339,6 +357,7 @@ namespace ertool {
 
     if (best_mass != 0) { _hBestMass->Fill(best_mass); }
 
+    if (_verbose){ std::cout<<graph.Diagram()<<std::endl; }
     return true;
   }
 
