@@ -76,7 +76,7 @@ namespace ertool {
 
 	bool ERAlgoSingleE_NdkModeZero::Reconstruct(const EventData &data, ParticleGraph& graph){
 
-		auto datacpy = data;
+		// auto datacpy = data;
 
 		if (_verbose) { 
 			std::cout << "*********** BEGIN SingleE RECONSTRUCTION ************" << std::endl;
@@ -92,7 +92,7 @@ namespace ertool {
 			// skip any showers already tagged by the pi0 algorithm
 			if (graph.GetParticle(p).PdgCode()==22) { continue; }
 
-			auto const& thisShower = datacpy.Shower(graph.GetParticle(p).RecoID());
+			auto const& thisShower = data.Shower(graph.GetParticle(p).RecoID());
       // keep track of whether it is single
 			bool single = true;
       // if we find that this shower shares a vertex with a track -> change "_hassister" to true.
@@ -107,7 +107,7 @@ namespace ertool {
 			for (auto const& p2 : graph.GetParticleNodes(RecoType_t::kShower)){
 
 
-				auto const& thatShower = datacpy.Shower(graph.GetParticle(p2).RecoID());
+				auto const& thatShower = data.Shower(graph.GetParticle(p2).RecoID());
 				geoalgo::Point_t vtx(3);
 	// make sure we don't use "thisShower" in the loop
 				if (thatShower.RecoID() == thisShower.RecoID()) 
@@ -146,7 +146,7 @@ namespace ertool {
 
       for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
 
-      	auto const& thatTrack = datacpy.Track(graph.GetParticle(t).RecoID());
+      	auto const& thatTrack = data.Track(graph.GetParticle(t).RecoID());
 	// make sure track has a length of at least 0.3 cm (wire spacing)
 	// greater longer than 3 mm
       	if (thatTrack.Length() < 0.3)

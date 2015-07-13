@@ -14,8 +14,11 @@ from ROOT import ertool
 # Strictness level
 fullcuts = True
 
+# include mc?
+mc = False
+
 # Save file name
-outfile = "OUTPUT.root"
+outfile = "testtesttest.root"
 
 # Create ana_processor instance
 my_proc = fmwk.ana_processor()
@@ -45,6 +48,7 @@ pi0_algo_loose.setAngleMax(3.14)
 
 # Single e Algo Strict
 singlee_algo_strict = ertool.ERAlgoSingleE_NdkModeZero("strict_e")
+singlee_algo_strict.setVerbose(False)
 singlee_algo_strict.setEThreshold(200)
 singlee_algo_strict.setVtxToShrStartDist(10)
 singlee_algo_strict.setVtxToTrkStartDist(10)
@@ -52,6 +56,7 @@ singlee_algo_strict.setMaxIP(10)
 
 # Single e Algo Loose
 singlee_algo_loose = ertool.ERAlgoSingleE_NdkModeZero("loose_e")
+singlee_algo_loose.setVerbose(False)
 singlee_algo_loose.setEThreshold(0)
 singlee_algo_loose.setVtxToShrStartDist(0)
 singlee_algo_loose.setVtxToTrkStartDist(0)
@@ -74,6 +79,10 @@ Ecut = 20 # in MeV
 
 my_ana = ertool.ERAnaModeZero("ana")
 my_ana.SetDebug(False)
+if mc:
+	my_ana.SetMC(True)
+else:
+	my_ana.SetMC(False)
 my_ana.SetECut(Ecut)
 
 # Add analyzer to the unit
@@ -90,9 +99,13 @@ if fullcuts:
 my_anaunit._mgr.AddAna(my_ana)
 
 
-my_anaunit._mgr._mc_for_ana = True
-my_anaunit.SetShowerProducer(True,"mcreco")
-my_anaunit.SetTrackProducer(True,"mcreco")
+if mc:
+	my_anaunit._mgr._mc_for_ana = True
+	my_anaunit.SetShowerProducer(True,"mcreco")
+	my_anaunit.SetTrackProducer(True,"mcreco")
+else:
+	my_anaunit.SetShowerProducer(False,"mcreco")
+	my_anaunit.SetTrackProducer(False,"mcreco")
 
 
 # Add unit to the entire process

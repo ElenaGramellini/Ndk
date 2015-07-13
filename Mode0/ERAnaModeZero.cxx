@@ -72,8 +72,11 @@ namespace ertool {
     // keep track of number of events gone by
     _numEvts = 0;
     _numPions = 0;
+    _numPions_truth = 0;
     _numEplus = 0;
+    _numEplus_truth = 0;
     _numGamma = 0;
+    _numGamma_truth = 0;
     _numPi2eey = 0;
     _missedPions = 0;
     _missedEs = 0;
@@ -82,6 +85,7 @@ namespace ertool {
     _badPions = 0;
 
     _debug = false;
+    _mc = true;
 
     // set default energy cut (for counting) to 0
     _eCut = 0;
@@ -111,60 +115,114 @@ namespace ertool {
 
     _numEvts++;
 
+
+    if (_mc){
     // Get MC EventData (showers/tracks...)
-    auto const& mc_data = MCEventData();
-    auto const& mc_graph = MCParticleGraph();
-    auto const& mc_graph_arr = mc_graph.GetParticleArray();
+      auto const& mc_data = MCEventData();
+      auto const& mc_graph = MCParticleGraph();
+      auto const& mc_graph_arr = mc_graph.GetParticleArray();
 
-    if (_debug){
-      std::cout << "MCParticleGraph Diagram: " << std::endl
-      << mc_graph.Diagram() << std::endl;
-    }
 
+      if (_debug){
+        std::cout << "MCParticleGraph Diagram: " << std::endl
+        << mc_graph.Diagram() << std::endl;
+      }
 
     // Here we determine how well we're doing in the event!
 
-    auto &datshowers = graph.GetParticleNodes(kShower);
-    auto &trushowers = mc_graph.GetParticleNodes(kShower);
+    // The following is a hack. Do not apply to non-signal Mode0 samples.
 
-    _badPion = false;
+      auto &datshowers = graph.GetParticleNodes(kShower);
+      auto &trushowers = mc_graph.GetParticleNodes(kShower);
 
-    for (int i=0; i<datshowers.size(); i++){
-      auto& truth_part = mc_graph.GetParticle(trushowers[i]);
-      auto& data_part = graph.GetParticle(datshowers[i]);
-      auto& truth_id = truth_part.PdgCode();
-      auto& data_id = data_part.PdgCode();
+      _badPion = false;
+
+      for (int i=0; i<datshowers.size(); i++){
+        auto& truth_part = mc_graph.GetParticle(trushowers[i]);
+        auto& data_part = graph.GetParticle(datshowers[i]);
+        auto& truth_id = truth_part.PdgCode();
+        auto& data_id = data_part.PdgCode();
+
+        if (data_part.Energy() < _eCut) {continue;}
 
       // check for a mismatch
-      if (abs(truth_id) != abs(data_id)) { 
-        if (data_id==22){ _misID_gamma++; }
-        if (abs(data_id)==11){ _misID_e++; }
+        if (abs(truth_id) != abs(data_id)) { 
+          if (data_id==22){ _misID_gamma++; }
+          if (abs(data_id)==11){ _misID_e++; }
 
-        if (mc_graph.GetParticle(truth_part.Parent()).PdgCode() == 111){
+          if (mc_graph.GetParticle(truth_part.Parent()).PdgCode() == 111){
         // This means we're looking at a reconstructed pion
-          if (graph.GetParticle(data_part.Parent()).PdgCode() != 111){
-            _badPion = true;
-          }
+            if (graph.GetParticle(data_part.Parent()).PdgCode() != 111){
+              _badPion = true;
+            }
           // check for Dalitz decay
-          if (mc_graph.GetParticle(truth_part.Parent()).Children().size() > 2){
-            _numPi2eey++;
-            if (_debug) { 
-              auto& sibs = mc_graph.GetParticle(truth_part.Parent()).Children();
-              std::cout<<"DALITZ DECAY..."<<std::endl;
-              std::cout<<mc_graph.GetParticle(sibs[0]).PdgCode()<<std::endl;
-              std::cout<<mc_graph.GetParticle(sibs[1]).PdgCode()<<std::endl;
-              std::cout<<mc_graph.GetParticle(sibs[2]).PdgCode()<<std::endl;
-               }
-            _badPion = true;
+            if (mc_graph.GetParticle(truth_part.Parent()).Children().size() > 2){
+              _numPi2eey++;
+              if (_debug) { 
+                auto& sibs = mc_graph.GetParticle(truth_part.Parent()).Children();
+                std::cout<<"DALITZ DECAY..."<<std::endl;
+                std::cout<<mc_graph.GetParticle(sibs[0]).PdgCode()<<std::endl;
+                std::cout<<mc_graph.GetParticle(sibs[1]).PdgCode()<<std::endl;
+                std::cout<<mc_graph.GetParticle(sibs[2]).PdgCode()<<std::endl;
+              }
+              _badPion = true;
+            }
           }
+
+        }
+      }
+
+      if (_badPion) {_badPions++; }
+
+        // NOW WE SAVE ALL THE TRUTH INFORMATION
+      for (auto &p : mc_graph_arr){
+
+      // Find the pion and store its energy
+        if ((p.PdgCode() == 111) && (p.Energy() > _eCut)){
+          _numPions_truth++;
+          _n_pion_truth++;
+          _e_pion_truth.push_back(p.Energy());
+          _x_pion_truth.push_back(p.Vertex()[0]);
+          _y_pion_truth.push_back(p.Vertex()[1]);
+          _z_pion_truth.push_back(p.Vertex()[2]);
+          _px_pion_truth.push_back(p.Momentum()[0]);
+          _py_pion_truth.push_back(p.Momentum()[1]);
+          _pz_pion_truth.push_back(p.Momentum()[2]);
+          _p_pion_truth.push_back(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+          _m_pion_truth.push_back(p.Mass());
+
+          _h_e_pion_truth->Fill(p.Energy());
+          _h_p_pion_truth->Fill(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+          _h_m_pion_truth->Fill(p.Mass());
+
+
         }
 
+      // Find the e+ and store its energy
+        if ((p.PdgCode() == -11) && (p.Energy() > _eCut) && (p.Parent()==0)){
+          _numEplus_truth++;
+          _n_eplus_truth++;
+          _e_eplus_truth.push_back(p.Energy());
+          _x_eplus_truth.push_back(p.Vertex()[0]);
+          _y_eplus_truth.push_back(p.Vertex()[1]);
+          _z_eplus_truth.push_back(p.Vertex()[2]);
+          _px_eplus_truth.push_back(p.Momentum()[0]);
+          _py_eplus_truth.push_back(p.Momentum()[1]);
+          _pz_eplus_truth.push_back(p.Momentum()[2]);
+          _p_eplus_truth.push_back(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+          _m_eplus_truth.push_back(p.Mass());
+
+          _h_e_eplus_truth->Fill(p.Energy());
+          _h_p_eplus_truth->Fill(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
+          _h_m_eplus_truth->Fill(p.Mass());
+
+
+        }
       }
-    }
 
-    if (_badPion) {_badPions++; }
+    } // end _mc stuff
 
-    // FIRST WE SAVE ALL RECONSTRUCTED INFORMATION
+    // NOW WE SAVE ALL RECONSTRUCTED INFORMATION
 
     for (auto &p : graph_arr){
 
@@ -216,50 +274,6 @@ namespace ertool {
     }
 
 
-    // NOW WE SAVE ALL THE TRUTH INFORMATION
-
-    for (auto &p : mc_graph_arr){
-
-      // Find the pion and store its energy
-      if ((p.PdgCode() == 111) && (p.Energy() > _eCut)){
-        _n_pion_truth++;
-        _e_pion_truth.push_back(p.Energy());
-        _x_pion_truth.push_back(p.Vertex()[0]);
-        _y_pion_truth.push_back(p.Vertex()[1]);
-        _z_pion_truth.push_back(p.Vertex()[2]);
-        _px_pion_truth.push_back(p.Momentum()[0]);
-        _py_pion_truth.push_back(p.Momentum()[1]);
-        _pz_pion_truth.push_back(p.Momentum()[2]);
-        _p_pion_truth.push_back(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
-        _m_pion_truth.push_back(p.Mass());
-
-        _h_e_pion_truth->Fill(p.Energy());
-        _h_p_pion_truth->Fill(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
-        _h_m_pion_truth->Fill(p.Mass());
-
-
-      }
-
-      // Find the e+ and store its energy
-      if ((p.PdgCode() == -11) && (p.Energy() > _eCut) && (p.Parent()==0)){
-        _n_eplus_truth++;
-        _e_eplus_truth.push_back(p.Energy());
-        _x_eplus_truth.push_back(p.Vertex()[0]);
-        _y_eplus_truth.push_back(p.Vertex()[1]);
-        _z_eplus_truth.push_back(p.Vertex()[2]);
-        _px_eplus_truth.push_back(p.Momentum()[0]);
-        _py_eplus_truth.push_back(p.Momentum()[1]);
-        _pz_eplus_truth.push_back(p.Momentum()[2]);
-        _p_eplus_truth.push_back(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
-        _m_eplus_truth.push_back(p.Mass());
-
-        _h_e_eplus_truth->Fill(p.Energy());
-        _h_p_eplus_truth->Fill(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
-        _h_m_eplus_truth->Fill(p.Mass());
-
-       
-      }
-    }
 
     // fill the tree
     _result_tree->Fill();
@@ -271,12 +285,14 @@ namespace ertool {
   {
     
     std::cout << "RESULTS: " << std::endl << std::endl
-    << "Reconstructed Pions: " << _numPions << std::endl
-    << "Correctly IDed Pions: " << (_numPions-_badPions) << std::endl << std::endl
-    << "Reconstructed Electrons: " << _numEplus << std::endl
-    << "Correctly IDed Es: " << (_numEplus - _misID_e) << std::endl << std::endl
+    << "Reconstructed Pions: " << _numPions << std::endl;
+    if (_mc) { std::cout<< "Correctly IDed Pions: " << (_numPions-_badPions) << std::endl 
+    << "Total Truth Pions: " << _numPions_truth << std::endl << std::endl; }
+    std::cout<< "Reconstructed Electrons: " << _numEplus << std::endl;
+    if (_mc) { std::cout<< "Correctly IDed Es: " << (_numEplus - _misID_e) << std::endl 
+    << "Total Truth Es: " << _numEplus_truth << std::endl << std::endl
     << "Correctly IDed Photons: " << (_numGamma - _misID_gamma) << std::endl
-    << "Dalitz decays (included in 'badPion' def): " << _numPi2eey << std::endl;
+    << "Dalitz decays (included in 'badPion' def): " << _numPi2eey << std::endl; }
 
     if (fout){
       fout->cd();
@@ -287,12 +303,14 @@ namespace ertool {
       _h_e_eplus->Write();
       _h_p_eplus->Write();
       _h_m_eplus->Write();
+      if (_mc){
       _h_e_pion_truth->Write();
       _h_p_pion_truth->Write();
       _h_m_pion_truth->Write();
       _h_e_eplus_truth->Write();
       _h_p_eplus_truth->Write();
       _h_m_eplus_truth->Write();
+    }
     }
 
     return;
@@ -331,14 +349,12 @@ namespace ertool {
 
   _n_pion = 0; _n_pion_truth = 0;
   _n_eplus = 0; _n_eplus_truth = 0;
-  _numTruePi0 = 0;
-  _numTrueE = 0;
-  _e_pion.clear(); _p_pion_truth.clear(); _m_pion_truth.clear();
-  _x_pion.clear(); _y_pion_truth.clear(); _z_pion_truth.clear();
-  _px_pion.clear(); _py_pion_truth.clear(); _pz_pion_truth.clear();
-  _e_eplus.clear(); _p_eplus_truth.clear(); _m_eplus_truth.clear();
-  _x_eplus.clear(); _y_eplus_truth.clear(); _z_eplus_truth.clear();
-  _px_eplus.clear(); _py_eplus_truth.clear(); _pz_eplus_truth.clear();
+  _e_pion.clear(); _p_pion.clear(); _m_pion.clear();
+  _x_pion.clear(); _y_pion.clear(); _z_pion.clear();
+  _px_pion.clear(); _py_pion.clear(); _pz_pion.clear();
+  _e_eplus.clear(); _p_eplus.clear(); _m_eplus.clear();
+  _x_eplus.clear(); _y_eplus.clear(); _z_eplus.clear();
+  _px_eplus.clear(); _py_eplus.clear(); _pz_eplus.clear();
   _e_pion_truth.clear(); _p_pion_truth.clear(); _m_pion_truth.clear();
   _x_pion_truth.clear(); _y_pion_truth.clear(); _z_pion_truth.clear();
   _px_pion_truth.clear(); _py_pion_truth.clear(); _pz_pion_truth.clear();

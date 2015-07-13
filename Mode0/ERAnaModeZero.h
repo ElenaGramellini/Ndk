@@ -7,7 +7,6 @@
 #include "TH2F.h"
 #include "GeoAlgo/GeoAlgo.h"
 #include "ERTool/Algo/AlgoFindRelationship.h"
-//#include "DataFormat/mctruth.h"
 #include "ERTool/Base/AlgoBase.h"
 
 namespace ertool {
@@ -36,6 +35,8 @@ namespace ertool {
     virtual bool Analyze(const EventData &data, const ParticleGraph &graph);
 
     void SetDebug(bool on) { _debug = on; }
+
+    void SetMC(bool on) { _mc = on; }
 
     virtual void ProcessBegin() {}
 
@@ -90,8 +91,8 @@ namespace ertool {
     TH1D* _h_p_eplus_truth;
     TH1D* _h_m_eplus_truth;
 
-    int _n_pion, _numTruePi0;
-    int _n_eplus, _numTrueE;
+    int _n_pion;
+    int _n_eplus;
     std::vector<double> _e_pion, _p_pion, _m_pion;
     std::vector<double> _x_pion, _y_pion, _z_pion;
     std::vector<double> _px_pion, _py_pion, _pz_pion;
@@ -111,6 +112,7 @@ namespace ertool {
     /// counters to cout to screen after running
     int _numEvts;
     int _numPions, _numEplus, _numGamma;
+    int _numPions_truth, _numEplus_truth, _numGamma_truth;
     int _missedEs, _missedPions;
     int _numPi2eey;
     int _misID_e, _misID_gamma, _badPions;

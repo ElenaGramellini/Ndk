@@ -264,14 +264,14 @@ namespace ertool {
     if(graph.GetParticleNodes(RecoType_t::kShower).size() < 2) return true;
 
 //    std::cout<<"\n\n\nNew Event! "<<std::endl ;
+
     Combination_t comb(2);
 
     double best_ll = -1.e10;
     double best_mass = 0.;
     geoalgo::Point_t vertex(3);
     geoalgo::Vector_t momentum(3);
-
-    auto datacpy = data;
+    // auto datacpy = data;
 
     // loop over showers and compare showers pair-by-pair
     auto const& shrIDs = graph.GetParticleNodes(RecoType_t::kShower);
@@ -285,6 +285,7 @@ namespace ertool {
 	// make sure the two gammas have not been tagged before as electrons or pion products
   auto sh1code = graph.GetParticle(shrID1).PdgCode();
   auto sh2code = graph.GetParticle(shrID2).PdgCode();
+
 	if ( abs(sh1code)==11 or abs(sh1code)==22 or
 	     abs(sh2code)==11 or abs(sh2code)==22 ){
 	  if (_verbose) { std::cout << "either shower already used to make pi0 or anything else...cannot proceed." << std::endl; }
@@ -294,8 +295,8 @@ namespace ertool {
   // std::cout<<"Shower 1: "<<abs(graph.GetParticle(shrID1).PdgCode())<<std::endl;
   // std::cout<<"Shower 2: "<<abs(graph.GetParticle(shrID2).PdgCode())<<std::endl;
 
-	auto const& shr1 = datacpy.Shower(graph.GetParticle(shrID1).RecoID());
-	auto const& shr2 = datacpy.Shower(graph.GetParticle(shrID2).RecoID());
+	auto const& shr1 = data.Shower(graph.GetParticle(shrID1).RecoID());
+	auto const& shr2 = data.Shower(graph.GetParticle(shrID2).RecoID());
 
 	double likelihood = 0.;
 	double mass       = -1.;
@@ -304,7 +305,6 @@ namespace ertool {
       
 	LL(shr1, shr2, likelihood, mass, vertex, momentum);
 	if (likelihood > best_ll) { best_ll = likelihood; best_mass = mass; }
-	
 	// APPLY PION CUTS!!!
 	if ( (likelihood != -1.e-10) && (likelihood > -10) && (_vtx_IP < _IPMax)
     && (mass > _fit_min) && (mass < _fit_max) 
