@@ -104,8 +104,8 @@ if mc:
 	my_anaunit.SetShowerProducer(True,"mcreco")
 	my_anaunit.SetTrackProducer(True,"mcreco")
 else:
-	my_anaunit.SetShowerProducer(False,"mcreco")
-	my_anaunit.SetTrackProducer(False,"mcreco")
+	my_anaunit.SetShowerProducer(False,"showerrecofuzzy")
+	my_anaunit.SetTrackProducer(False,"trackkalmanhit")
 
 
 # Add unit to the entire process
