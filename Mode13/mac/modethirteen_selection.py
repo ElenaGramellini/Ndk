@@ -15,14 +15,12 @@ from ROOT import ertool
 # Create ana_processor instance
 my_proc = fmwk.ana_processor()
 
+
 # Primary finding algo
-primary_algo = ertool.AlgoPrimaryFinder()
-
-# Pi0 Algo
-pi0_algo = ertool.AlgoPi0()
-
+mu_algo = ertool.ERAlgoMu()
 # Single e Algo
 singlee_algo = ertool.AlgoSingleE()
+
 
 # Set input root file
 for x in xrange(len(sys.argv)-1):
@@ -44,9 +42,8 @@ my_ana = ertool.ERAnaMode13()
 
 # Add analyzer to the unit
 my_anaunit = fmwk.ExampleERSelection()
-# my_anaunit._mgr.AddAlgo(primary_algo)
-my_anaunit._mgr.AddAlgo(pi0_algo)
-my_anaunit._mgr.AddAlgo(singlee_algo)
+my_anaunit._mgr.AddAlgo(mu_algo)
+#my_anaunit._mgr.AddAlgo(singlee_algo)
 my_anaunit._mgr.AddAna(my_ana)
 
 my_anaunit._mgr._mc_for_ana = True

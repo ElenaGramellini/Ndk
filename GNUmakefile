@@ -20,7 +20,7 @@ endif
 #
 # Define directories to be compile upon a global "make"...
 #
-SUBDIRS := Mode0 Mode13 #ADD_NEW_SUBDIR ... do not remove this comment from this line
+SUBDIRS := Mode0 Mode13 #UnitTestMu_13 UnitTestGamma_13 UnitTestVtx_13 #ADD_NEW_SUBDIR ... do not remove this comment from this line
 
 #####################################################################################
 #

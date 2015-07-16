@@ -1,9 +1,9 @@
 /**
- * \file ERAnaMode13.h
+ * \file ERAnaGamma.h
  *
  * \ingroup Mode13
  * 
- * \brief Class def header for a class ERAnaMode13
+ * \brief Class def header for a class ERAnaGamma
  *
  * @author elenag
  */
@@ -12,10 +12,11 @@
 
     @{*/
 
-#ifndef ERTOOL_ERANAMODE13_H
-#define ERTOOL_ERANAMODE13_H
+#ifndef ERTOOL_ERANAGAMMA_H
+#define ERTOOL_ERANAGAMMA_H
 
-#include "ERTool/Base/AnaBase.h"
+
+#include "ERTool/Algo/AlgoEMPart.h"
 #include "TTree.h"
 #include "TH1D.h"
 #include "TH2F.h"
@@ -25,29 +26,23 @@
 #include "ERTool/Base/Particle.h"
 #include "ERTool/Base/ParticleGraph.h"
 #include "ERTool/Base/EventData.h"
-#include "ERTool/Algo/AlgoEMPart.h"
-
-
-//#include <algorithm> // used for std::find
-
-
 
 
 namespace ertool {
 
   /**
-     \class ERAnaMode13
+     \class ERAnaGamma
      User custom Analysis class made by kazuhiro
    */
-  class ERAnaMode13 : public AnaBase {
+  class ERAnaGamma : public AnaBase {
   
   public:
 
     /// Default constructor
-    ERAnaMode13(const std::string& name="ERAnaMode13");
+    ERAnaGamma(const std::string& name="ERAnaGamma");
 
     /// Default destructor
-    virtual ~ERAnaMode13(){}
+    virtual ~ERAnaGamma(){}
 
     /// Reset function
     virtual void Reset();
@@ -70,41 +65,11 @@ namespace ertool {
 
     bool isGammaLike(const double dedx, double radlen, bool forceRadLen = false);
     const geoalgo::Vector gammaEndpoint(const ertool::Shower shower);
+
+
+  protected:
     
     // histograms to be filled in Algo
-    // Muons 
-    TH1F* mu_energy;
-    TH1F* mu_px    ;
-    TH1F* mu_py    ;
-    TH1F* mu_pz    ;
-    TH1F* mu_pid   ;
-    TH1F* mu_x     ;
-    TH1F* mu_y     ;
-    TH1F* mu_z     ;
-    TH1F* mu_t     ;
-
-    TH1F* muTru_energy;
-    TH1F* muTru_px    ;
-    TH1F* muTru_py    ;
-    TH1F* muTru_pz    ;
-    TH1F* muTru_pid   ;
-    TH1F* muTru_x     ;
-    TH1F* muTru_y     ;
-    TH1F* muTru_z     ;
-    TH1F* muTru_t     ;
-
-    
-    // Counters : 
-    // True Muons
-    // ParticleGraph Muons
-    // Contained True Muons
-    // Contained ParticleGraph Muons
-    int MCMu        = 0;
-    int PartGraphMu = 0;
-    int Cont_MCMu        = 0;
-    int Cont_PartGraphMu = 0;
-
- // histograms to be filled in Algo
     // Gammas
     TH1F* gamma_energy;
     TH1F* gamma_px    ;
@@ -146,7 +111,6 @@ namespace ertool {
 
     // Other algorithms to use
     AlgoEMPart _alg_emp;
-    
 
   };
 }
