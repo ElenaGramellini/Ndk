@@ -1,5 +1,6 @@
 // Incomplete list of TO DO
 // [ ] Feed the cuts parameters from cgf file, not like the dick of the dog.
+// [ ] Implement loose calorimetry cuts -> events that passes those cuts can be filtered again in the creation of sibilings.
 
 #ifndef ERTOOL_ERALGOMODE13_CXX
 #define ERTOOL_ERALGOMODE13_CXX
@@ -11,21 +12,37 @@ namespace ertool {
   size_t total_e_showers = 0;
   size_t total_g_showers = 0;
   size_t nonzero_dedx_counter = 0;
+  int elect = 0;
 
-  double EnDepMax        = 99999999.;
-  double IPMax           = 99999999.;
-  double OpeningAngleMax = 99999999.;
+  // Sets of cuts, probably this is not the final location of this cuts
+  // Topologycal cuts
+  double EnDepDistanceMaxCut =  99999999.;
+  double IPMaxCut            =  99999999.;
+  double OpeningAngleMinCut  =  0.;
 
-  
+  // Calorimetry loose cuts
+  double MuonEnergyMaxCut    =  99999999.;
+  double GammaEnergyMaxCut   =  99999999.;
+  double TotalEnergyMaxCut   =  99999999.;
+  double TotMomXCutMax       =  99999999.;
+  double TotMomYCutMax       =  99999999.;
+  double TotMomZCutMax       =  99999999.;
+  double TotMomXCutMin       = -99999999.;
+  double TotMomYCutMin       = -99999999.;
+  double TotMomZCutMin       = -99999999.;
+
+  std::map<ertool::Track,int> muonMap;
+
   ERAlgoMode13::ERAlgoMode13(const std::string& name) 
   : AlgoBase(name)
     , fTPC(-10.,-126.,-10.,292.,136.,1150.)
     , _empart_tree(nullptr)
     , _alg_tree(nullptr)
   {
-    _e_mass           = ParticleMass(11);
+    _gamma_mass       = ParticleMass(22);
+    _mu_mass          = ParticleMass(13);
     _Ethreshold       = 0;
-    _verbose          = false;
+    _verbose          = true;
     _useRadLength     = false;
     _hassister        = false;
     _rejectLongTracks = true;
@@ -38,6 +55,7 @@ namespace ertool {
     _cOnePlusShower  = 0;
     _cEnDepRadius    = 0;
     _cIP             = 0;
+    _cRedundant      = 0;
     _cOnePlusGamma   = 0;
     _cOnePlusMu      = 0;
     _cNoVtxAct       = 0;
@@ -63,6 +81,8 @@ namespace ertool {
   {
     _alg_emp.ProcessBegin();
     _alg_emp.SetMode(true);
+    _nMu = 0;
+    _nGamma = 0;
 
     if (_alg_tree) { delete _alg_tree; }
     _alg_tree = new TTree("_alg_tree","Algo Mode13 Tree");
@@ -97,7 +117,6 @@ namespace ertool {
   bool ERAlgoMode13::Reconstruct(const EventData &data, ParticleGraph& graph)
   {
     auto datacpy = data;
-
     if (_verbose) { 
       std::cout << "*********** BEGIN PdK RECONSTRUCTION ************" << std::endl;
       std::cout << "Showers in event  : " << data.Shower().size() << std::endl;
@@ -113,10 +132,15 @@ namespace ertool {
     //Flags to determine if the event passes the cuts
     bool _cEnDepRadiusFlag  = false;
     bool _cIPFlag           = false;
+    bool _cRedundantFlag    = false;
     bool _cOnePlusGammaFlag = false;
     bool _cOnePlusMuFlag    = false;
     bool _cNoVtxActFlag     = false;
     bool _cOpeningAngleFlag = false;
+
+    // This map will store interesting paricles for our topology 
+    // This might be a good idea for cosmic sample... maybe not now...
+    //    std::map<ertool::Particle,int> mode13Map;
 
 
     // We have a list of showers.
@@ -134,8 +158,9 @@ namespace ertool {
       
 
 
-      // Make sure it satisfies pdk conditions 
-      // 1) loop over all tracks in event to make a vtx
+      // Make sure it satisfies pdk conditions: 
+      // 1) events has a shower
+      // 2) events has a track which is at least 3 mm
       for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
 	auto const& thatTrack = datacpy.Track(graph.GetParticle(t).RecoID());
 
@@ -143,6 +168,11 @@ namespace ertool {
 	// greater longer than 3 mm
 	if (thatTrack.Length() < 0.3) {_nTrack--; continue;}
 	if (_verbose) { std::cout << "Comparing with track (" << t << ")" << std::endl; }
+
+	// 3) the track must be a muon
+	if (thatTrack._pid !=4)  continue;
+	_cOnePlusMuFlag = true;
+	muonMap[thatTrack] = thatTrack.RecoID();  
 
 	// The decay vtx has to correspond with the first energy deposition of the muon
 	// unless big screw up with the muon reco
@@ -154,26 +184,32 @@ namespace ertool {
 	_EnDepDist = TMath::Sqrt(vtxPdK.SqDist(thisShower.Start()));
 	// check if the event passes the cut on this distance 
 	// if not, skip this couple, if yes set the flag to true
-	if (_EnDepDist > EnDepMax) continue;
+
+	// 4) the shower and the track are within a decent radius
+	if (_EnDepDist > EnDepDistanceMaxCut) continue;
 	_cEnDepRadiusFlag = true;
 
 	// !!! CAVEAT !!!
 	// I'm using vtx(3) for nothing but the IP calculation. 
-	// Possible room for improvement: this vtx should be in between the 1st energy depositions?
 	geoalgo::Point_t vtx(3);
 	// Calculate the distance impact parameter
+	//// get IP for this shower and the entire track
+	//// but constrain the search along the track
+	//// coordinates for closest points on the two objects
+
+	// 5) the IP of the shower and the track is decent
 	double IP =  _findRel.FindClosestApproach(thisShower,thatTrack,vtx); 
 	// check if the event passes the cut on the impact parameter 
 	// if not, skip this couple, if yes set the flag to true
-	if (IP > IPMax) continue;
+	if (IP > IPMaxCut) continue;
 	_cIPFlag = true;
  
 	_VsTrack = 1;
 	_thatE   = thatTrack._energy;
 	_IP = IP;
-	_IPthisStart = vtxPdK.Dist(thisShower.Start());
-	_IPthatStart = vtxPdK.Dist(thatTrack.front());
-	_IPtrkBody = sqrt(_geoAlgo.SqDist(vtxPdK,thatTrack));
+	_IPthisStart = vtx.Dist(thisShower.Start());// Distance between the first shower energy deposition and vtx as calculated by the IP
+	_IPthatStart = vtx.Dist(thatTrack.front()); // Distance between the first track energy deposition and vtx as calculated by the IP
+	_IPtrkBody = sqrt(_geoAlgo.SqDist(vtx,thatTrack)); // Distance between the track and vtx as calculated by the IP
 	_alg_tree->Fill();
 	if (_verbose)
 	std::cout << "\tImpact Parameter: " << _IP << std::endl
@@ -181,195 +217,115 @@ namespace ertool {
 		  << "\tIP to Trk Body  : " << _IPtrkBody << std::endl
 		  << "\tIP to Shr Start : " << _IPthisStart << std::endl;
 	
-	mode13 = true;
+	// 6) the distance of the shower and the track is decent (may be redundant)
+	/////////////////////////////////////////////////////// This cut might be superfluous....
+	if  (vtx.Dist(thatTrack.front())  > _vtxToTrkStartDist) continue ;   // vertex close to track start  
+	if  (vtx.Dist(thisShower.Start()) > _vtxToShrStartDist) continue ;   // vertex not unreasonably far from shower start
+	_cRedundant = true;
+	// our shower has a common origin with this track
 
-	///////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////// This is where I gave up
-	///////////////////////////////////////////////////////
-
-	std::cout<<"_maxIP "<<_maxIP<<"\n";
-	if ( (IP < _maxIP)                                              // good correlation
-	     && (vtx.Dist(thatTrack.front()) < _vtxToTrkStartDist)      // vertex close to track start
-	     && (vtx.Dist(thisShower.Start()) < _vtxToShrStartDist) )   // vertex not unreasonably far from shower start
-	  {
-	    // our shower has a common origin with this track
-	    // they are siblings
-	    if (_verbose) { std::cout << "common origin w/ track!" << std::endl; }
-	    _hassister = true;
-	    siblings.push_back(t);
-	    
-	    if (isGammaLike(thisShower._dedx,vtx.Dist(thisShower.Start()))){
-	      _dedx   = thisShower._dedx;
-	      _radlen = vtx.Dist(thisShower.Start());
-	      _pdg    = 22;
-	      if (_verbose) { std::cout << "Shower is gamma-like. Ignore " << std::endl; }
-	      mode13 = false;
-	      break;
-	    }
-	    else{
-	      _dedx   = thisShower._dedx;
-	      _radlen = vtx.Dist(thisShower.Start());
-	      _pdg    = 11;
-	      mode13 = true;
-	    }
-	    _empart_tree->Fill();
-	    
-	  }// if common origin with primary!
-      }// for all tracks
-
-
-      // if still mode13 go over showers. To find potential siblings (and kill that event)
-      if (!mode13) continue;
-
-      /*
-      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // 1) loop over all showers in event to make sure
-      //    we don't have sibilings showers
-      for (auto const& p2 : graph.GetParticleNodes(RecoType_t::kShower)){
-	
-	auto const& thatShower = datacpy.Shower(graph.GetParticle(p2).RecoID());
-
-	// make sure we don't use "thisShower" in the loop
-	if (thatShower.RecoID() == thisShower.RecoID()) continue;
-	if (_verbose) { std::cout << "Comparing with shower (" << p2 << ")" << std::endl; }
-
-	
-	// Right now, I don't care if that shower is e-like or gamma-like: 
-	// any other showers associated to the vertex are BAD! No other 
-	// vertex activity!!!! 
-
-	// is "thatshower" gamma or e-like?
-	// if gamma-like maybe a nearby pi0 -> ok if close
-	// if (isGammaLike(thatShower._dedx,-1)) continue;
-	
-
-	// If the two are correlated and siblings
-	// then we have two showers at the vertex -> do not count
-	// "thisShower" as a belonging to the PdK
-	// compare the two showers
-	geoalgo::Point_t vtx(3);
-	// let's calculate the vtx between the two showers 
-	// and the impact parameter
-	double IP = _findRel.FindClosestApproach(thisShower,thatShower,vtx); 
-	_VsTrack = 0;
-	_thatE   = thatShower._energy;
-	_IP = IP;
-	_IPthisStart = vtx.Dist(thisShower.Start());
-	_IPthatStart = vtx.Dist(thatShower.Start());
-	_alg_tree->Fill();
-	if (_verbose)
-	  std::cout << "\tImpact Parameter      : " << _IP << std::endl
-		    << "\tIP to other Shr Start : " << _IPthatStart << std::endl
-		    << "\tIP to this Shr Start  : " << _IPthisStart << std::endl;
-	if ( (IP < _maxIP) && ( vtx.Dist(thisShower.Start()) < _vtxToShrStartDist) && ( vtx.Dist(thatShower.Start()) < _vtxToShrStartDist) ){
+	if (_verbose) { std::cout << "common origin w/ track!" << std::endl; }
+	// 7) the shower is a gamma
+	if (!isGammaLike(thisShower._dedx,vtxPdK.Dist(thisShower.Start()))){
+	  _dedx   = thisShower._dedx;
+	  _radlen = vtxPdK.Dist(thisShower.Start());
+	  _pdg    = 11;
+	  if (_verbose) { std::cout << "Shower is electron-like. Ignore " << std::endl; }
 	  mode13 = false;
-	  if (_verbose) { std::cout << "NOT mode13 due to showers" << std::endl; }
+	  elect++;
 	  break;
+	}else{
+	  _cOnePlusGammaFlag = true;
+	  _nGamma++;
+	  _dedx   = thisShower._dedx;
+	  _radlen = vtxPdK.Dist(thisShower.Start());
+	  _pdg    = 22;
+	  mode13 = true;
 	}
-      }// loop over all showers in event
-      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      */
 
+	if (!mode13) continue;
+	// 8) Opening angle > OA_min
+	openingAngle = thisShower.Dir().Angle(thatTrack.Dir());
+	if(openingAngle < OpeningAngleMinCut) continue;
+	_cOpeningAngleFlag = true;
 
-
-      // If mode13 and there are "track-candidate-vertices" formed by 2 or more tracks
-      // compare shower start distance to these vertices.
-      // if more than some threshold not mode13
-      double distmin = 1036;
-      // get list of potential vertices that come from 2 or more objects
-      // sharing a start point
-      auto const& candidateVertices = _findRel.GetVertices(graph,2);
-      for (auto const& vertex : candidateVertices){
-	double thisdist = thisShower.Start().Dist(vertex);
-	if ( thisdist < distmin)
-	  distmin = thisdist;
-      }
-
-      if ( mode13 and !_hassister and (_vtxProximityCut != 0) ){
-	if ( (distmin != 1036) and (distmin > _vtxProximityCut) ){
-	  if(_verbose) { std::cout << "Trk-Vtx found @ distance of " << distmin << ". Shower not mode13!" << std::endl; }
-	  mode13 = false;
-	}
-      }
-
-
-      // Try and remove any shower that is on top of a track
-      // this could be due to a track mis-reconstructed as a 
-      // shower.
-
-      for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
+	// store siblings only if 
+	// shower is a gamma,  
+	// track is muons and
+	// the have right topology 
+	_empart_tree->Fill();
+	_hassister = true;
+	siblings.push_back(t);
 	
-	auto const& track = datacpy.Track(graph.GetParticle(t).RecoID());
+	//mode13Map[thisShower] = thisShower.RecoID();
+	//mode13Map[thatTrack] = thatTrack.RecoID();
+
+
+        // PAY ATTENTION TO DOUBLE COUNTING ==> maybe create a map of particles? this is especially problematic for cosmics (see note 3)). 
+	// This is where I'm forming my candidate proton.      
+	// We'll see. Right now, we need to create the sibiling relationship
+	// we need to be smart in creating that relationship: 
+	//  if nor muon nor gamma assigned: asses the relation and you're done
+	//  if either of the 2 assigned   : calculate score of then new couple
+	//                                  check which score is higher old or new?
+	//                                        Old is higher: ignore new couple
+	//                                        New is higher: distroy old relations, create new one
 	
-	// check if track and shower start points are close
-	if (thisShower.Start().Dist(track[0]) > 1 )
-	  continue;
-	// if their start point is very close:
-	// calculate a stupid track direction
-	size_t nsteps = track.size();
-	::geoalgo::Vector_t trackDir = track[int(nsteps/2.)]-track[0];
-	trackDir.Normalize();
-	// get dot product
-	double dot = thisShower.Dir()*trackDir;
-	if (dot > 0.9)
-	  mode13 = false;
-      }
-
-      // if still mode13 (and no sister track) look at
-      // dEdx to determine if e-like
-      if (mode13 && !_hassister){
-	if ( isGammaLike(thisShower._dedx,-1) || (thisShower._dedx <= 0) || (thisShower._dedx > 10.) ){
-	  if (_verbose) { std::cout << "Shower is mode13 but gamma-like -> reject" << std::endl; }
-	  mode13 = false;
-	}
-      }
-
-      //If mode13 still true -> we found it! Proceed!
-      // the particle with all it's info was already
-      // created, simply add it to the result vector
-      if (mode13){
-	if (_verbose) { std::cout << "Shower is Mode13!" << std::endl; }
-
-	// prepare holder for neutrino momentum
-	//::geoalgo::Vector_t neutrinoMom(0,0,0);
-	double neutrinoMom = 0;
-
-	// fill in electron properties
-	double mom = sqrt( (thisShower._energy)*(thisShower._energy) - (_e_mass*_e_mass) );
-	if (mom < 0) { mom = 1; }
-	if (_verbose) { std::cout << "Getting shower " << p << std::endl; }
-	auto& electron = graph.GetParticle(p);
-	if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
-	electron.SetParticleInfo(11,_e_mass,thisShower.Start(),thisShower.Dir()*mom);
-	// create a new particle for the neutrino!
-	if (_verbose) { std::cout << "number of partciles before: " << graph.GetNumParticles() << std::endl; }
-	if (_verbose) { std::cout << "Making neutrino..." << std::endl; }
-	Particle& neutrino = graph.CreateParticle();
-	neutrinoMom += mom;//thisShower.Dir()*mom;
-	//neutrino.SetParticleInfo(12,0.,thisShower.Start(),thisShower.Dir()*mom);
-	if (_verbose) { std::cout << "made neutrino with ID " << neutrino.ID() << " and PDG: " << neutrino.PdgCode() << std::endl; }
-	if (_verbose) { std::cout << "number of partciles after: " << graph.GetNumParticles() << std::endl; }
-	_neutrinos += 1;
-	// set relationship
-	graph.SetParentage(neutrino.ID(),p);
-
-	// Now look for all potential siblins
-	// using AlgoFindRelationship
-	for (auto const& t : graph.GetPrimaryNodes(RecoType_t::kTrack)){
+	// If mode13 still true -> we found a candidate! Proceed!
+	// The particle with all it's info was already
+	// created, do the checking
+	if (mode13){
+	  if (_verbose) { std::cout << "Mu + gamma might be Mode13!" << std::endl; }
 	  
-	  auto const& track = datacpy.Track(graph.GetParticle(t).RecoID());
-	  // make sure track has a length of at least 0.3 cm (wire spacing)
-	  // greater longer than 3 mm
-	  if (track.Length() < 0.3)
-	    continue;
+	  // prepare holder for proton momentum
+	  //::geoalgo::Vector_t protonMom(0,0,0);
+	  double protonMom = 0;
 
-	  ::geoalgo::Point_t vtx(3);
-	  double score = -1;
-	  auto const& rel = _findRel.FindRelation(thisShower,track,vtx,score);
-	  if (rel == kSibling)
-	    { // add this track to PaticleTree
-	      auto &trackParticle = graph.GetParticle(t);
-	      // if not primary according to primary finder -> don't add
+	  // fill in proton properties
+	  double momGamma = thisShower._energy; //I'm not sure if I should re-set the property of this shower, but ok...
+	  if (momGamma < 0) { momGamma = 1; throw ERException("Something is very wrong with this shower energy!");}
+	  if (_verbose) { std::cout << "Getting shower " << p << std::endl; }
+	  auto& gamma = graph.GetParticle(p);
+	  if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
+	  gamma.SetParticleInfo(22,_gamma_mass,thisShower.Start(),thisShower.Dir()*momGamma);
+
+	  double momMu = (thisShower._energy)*(thisShower._energy) - (_mu_mass*_mu_mass);
+	  if (momMu < 0) { momMu = 1; throw ERException("Something is very wrong with this track energy!");}
+	  if (_verbose) { std::cout << "Getting track " << t << std::endl; }
+	  auto& muon = graph.GetParticle(t);
+	  if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
+	  muon.SetParticleInfo(13,_mu_mass,thatTrack.front(),thatTrack.Dir()*momMu);
+
+	  /// ARRIVED HERE, NEED TO GO TO PHARMACY
+	  // create a new particle for the proton!
+	  if (_verbose) { std::cout << "number of partciles before: " << graph.GetNumParticles() << std::endl; }
+	  if (_verbose) { std::cout << "Making neutrino..." << std::endl; }
+	  Particle& neutrino = graph.CreateParticle();
+	  protonMom += momGamma;//thisShower.Dir()*mom;
+	  //neutrino.SetParticleInfo(12,0.,thisShower.Start(),thisShower.Dir()*mom);
+	  if (_verbose) { std::cout << "made neutrino with ID " << neutrino.ID() << " and PDG: " << neutrino.PdgCode() << std::endl; }
+	  if (_verbose) { std::cout << "number of partciles after: " << graph.GetNumParticles() << std::endl; }
+	  _neutrinos += 1;
+	  // set relationship
+	  graph.SetParentage(neutrino.ID(),p);
+	  
+	  // Now look for all potential siblins
+	  // using AlgoFindRelationship
+	  for (auto const& t : graph.GetPrimaryNodes(RecoType_t::kTrack)){
+	    
+	    auto const& track = datacpy.Track(graph.GetParticle(t).RecoID());
+	    // make sure track has a length of at least 0.3 cm (wire spacing)
+	    // greater longer than 3 mm
+	    if (track.Length() < 0.3)
+	      continue;
+	    
+	    ::geoalgo::Point_t vtx(3);
+	    double score = -1;
+	    auto const& rel = _findRel.FindRelation(thisShower,track,vtx,score);
+	    if (rel == kSibling)
+	      { // add this track to PaticleTree
+		auto &trackParticle = graph.GetParticle(t);
+		// if not primary according to primary finder -> don't add
 	      if (!trackParticle.Primary())
 		continue;
 	      // track deposited energy
@@ -380,30 +336,38 @@ namespace ertool {
 	      double mass = _findRel.GetMass(track);
 	      geoalgo::Vector_t Mom = Dir * ( sqrt( Edep * (Edep+2*mass) ) );
 	      trackParticle.SetParticleInfo(_findRel.GetPDG(track),mass,track[0],Mom);
-	      neutrinoMom += sqrt( Edep * ( Edep + 2*mass ) );
+	      protonMom += sqrt( Edep * ( Edep + 2*mass ) );
 	      graph.SetParentage(neutrino.ID(),t);
-	    }
-	}
+	      }
+	  }
+	  
+	  ::geoalgo::Vector_t momdir(0,0,1);
+	  
+	  neutrino.SetParticleInfo(12,0.,thisShower.Start(),momdir*protonMom);
 
-	::geoalgo::Vector_t momdir(0,0,1);
-
-	neutrino.SetParticleInfo(12,0.,thisShower.Start(),momdir*neutrinoMom);
-
+	}// if mode13
+	// if not mode13
+	else
+	  if (_verbose) { std::cout << "Topology is not mode13." << std::endl; }
 	
-
-      }// if mode13
-      // if not mode13
-      else
-	if (_verbose) { std::cout << "Shower is not mode13." << std::endl; }
-
+      }// for all tracks
+      
+      // Let's pinpoint where we are now.
+      // We are in a loop on all the showers of the event,
+      // we have a vector of siblings that contains a shower and possibly more than one track that passes all topology cuts
+      
 
       
     }// for all showers
-    
-    if (_nShower)          _cOnePlusShower++; 
-    if (_nTrack )          _cOnePlusTrack++ ;
-    if (_cEnDepRadiusFlag) _cEnDepRadius++  ;
-    if (_cIPFlag)          _cIP++           ;
+      
+    if (_nShower > 0 )      _cOnePlusShower++    ; 
+    if (_nTrack  > 0 )      _cOnePlusTrack++     ;
+    if (_cEnDepRadiusFlag)  _cEnDepRadius++      ;
+    if (_cIPFlag)           _cIP++               ;
+    if (_cRedundantFlag)    _cRedundant++        ;
+    if (_cOnePlusGammaFlag) _cOnePlusGamma++     ;
+    if (_cOnePlusMuFlag)    _cOnePlusMu++        ;
+    if (_cOpeningAngleFlag) _cOpeningAngle++     ;
 	
     return true;
   }
@@ -412,12 +376,17 @@ namespace ertool {
   {
     std::cout << "Events that have at least 1 track .................................... "<< _cOnePlusTrack << std::endl;
     std::cout << "Events that have at least 1 shower ................................... "<< _cOnePlusShower<< std::endl;
+    std::cout << "Events for which the track  is a muon ................................ "<< _cOnePlusMu    << std::endl;
     std::cout << "Events that have at least 1 track, 1 shower and  pass the radius cut . "<< _cEnDepRadius  << std::endl;
     std::cout << "Events that have at least 1 track, 1 shower and  pass the IP cut ..... "<< _cIP           << std::endl;
     std::cout << "Events for which the shower is a gamma ............................... "<< _cOnePlusGamma << std::endl;
-    std::cout << "Events for which the track  is a muon ................................ "<< _cOnePlusMu    << std::endl;
-    std::cout << "Events for there is no other vertex activity ......................... "<< _cNoVtxAct     << std::endl;
     std::cout << "Events that pass the opening angle cut ............................... "<< _cOpeningAngle << std::endl;
+    std::cout << "Events for there is no other vertex activity ......................... "<< _cNoVtxAct     << std::endl;
+    
+    std::cout << "Muons  ........... "<< muonMap.size() << std::endl;
+    std::cout << "Gammas ........... "<< _nGamma     << std::endl;
+    //    std::cout << "e ........... "<< elect     << std::endl;
+    
     
     if(fout){
       fout->cd();
@@ -468,7 +437,7 @@ namespace ertool {
     _nShower           = -1;
     _nMu               = -1;
     _nGamma            = -1;
-    _EnDepDist                 = -1;
+    _EnDepDist         = -1;
 
 
     return;
@@ -478,3 +447,139 @@ namespace ertool {
 
 #endif
 
+// Make sure it satisfies pdk conditions: 
+// 1) events has a shower
+// 2) events has a track which is at least 3 mm
+// 3) the track must be a muon
+// 4) the shower and the track are within a decent radius
+// 5) the IP of the shower and the track is decent
+// 6) the distance of the shower and the track to vtx is decent (may be redundant)
+// 7) the shower is a gamma
+// 8) Opening angle > OA_min
+/// Not implemented yet
+// 9) No vtx activity
+
+// Notes:
+// 1) There is an important CAVEAT regarding the order of the cut flow. 
+//    The starting position of the muon is used to identify wheter or not
+//    the shower associated with the vertex is a gamma or an electron.
+//       
+// 2) Do we really want to implement the no vtx activity cut? 
+//    Pro : the physics of pdk requires it
+//    Pro : the background in the cosmics will give us vtx activity
+//    Cons: in recostruction the showers are going to be a mess, I might be cutting out "good events"
+//    Thought: since reco of showers is crappy, we can end up asking for the right kinematics of  muon + a shower (no cuts on the energy)
+//    Right now, I DON'T WANT TO IMPLEMENT VTX ACTIVITY
+// 3) Creating a map that will store interesting paricles for our topology 
+//    might be a good idea for cosmic sample... maybe not now...
+//    std::map<ertool::Particle,int> mode13Map; or something similar.
+//    map might be an overkill in the case of signal only, but might be necessary in the case of
+//    cosmics. The idea being that you can end up with more than one "shower + track topology" per event.
+
+
+// A draft of no vtx activity to be implemented... if we see fit.
+
+      /*
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // NOT YET IMPLEMENTED Becaus I'm not sure we need it with the new strategy
+      // 9) No vtx activity
+      if (!mode13) continue;
+      // if still mode13 go over showers. To find potential siblings (and kill that event)
+      for (auto const& p2 : graph.GetParticleNodes(RecoType_t::kShower)){	
+	auto const& thatShower = datacpy.Shower(graph.GetParticle(p2).RecoID());
+	
+	// make sure we don't use "thisShower" in the loop
+	if (thatShower.RecoID() == thisShower.RecoID()) continue;
+	if (_verbose) { std::cout << "Comparing with shower (" << p2 << ")" << std::endl; }
+	
+	
+	// Right now, I don't care if that shower is e-like or gamma-like: 
+	// any other showers associated to the vertex are BAD! No other 
+	// vertex activity!!!! 
+
+	// is "thatshower" gamma or e-like?
+	// if gamma-like maybe a nearby pi0 -> ok if close
+	
+
+	// If the two are correlated and siblings
+	// then we have two showers at the vertex -> do not count
+	// "thisShower" as a belonging to the PdK
+	// compare the two showers
+	geoalgo::Point_t vtx(3);
+	// let's calculate the vtx between the two showers 
+	// and the impact parameter
+	double IP = _findRel.FindClosestApproach(thisShower,thatShower,vtx); 
+	_VsTrack = 0;
+	_thatE   = thatShower._energy;
+	_IP = IP;
+	_IPthisStart = vtx.Dist(thisShower.Start());
+	_IPthatStart = vtx.Dist(thatShower.Start());
+	_alg_tree->Fill();
+	if (_verbose)
+	  std::cout << "\tImpact Parameter      : " << _IP << std::endl
+		    << "\tIP to other Shr Start : " << _IPthatStart << std::endl
+		    << "\tIP to this Shr Start  : " << _IPthisStart << std::endl;
+	if ( (IP < _maxIP) && ( vtx.Dist(thisShower.Start()) < _vtxToShrStartDist) && ( vtx.Dist(thatShower.Start()) < _vtxToShrStartDist) ){
+	  mode13 = false;
+	  if (_verbose) { std::cout << "NOT mode13 due to showers" << std::endl; }
+	  break;
+	}
+      }// loop over all showers in event
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      */
+
+      /* // We'll think about these cuts  later!!!
+      // If mode13 and there are "track-candidate-vertices" formed by 1 shower and 1 track
+      // compare shower start distance to these vertices.
+      // if more than some threshold not mode13
+
+      double distmin = 1036;
+      // get list of potential vertices that come from 2 or more objects
+      // sharing a start point
+      auto const& candidateVertices = _findRel.GetVertices(graph,2);
+      for (auto const& vertex : candidateVertices){
+	double thisdist = thisShower.Start().Dist(vertex);
+	if ( thisdist < distmin)
+	  distmin = thisdist;
+      }
+      
+      if ( mode13 and !_hassister and (_vtxProximityCut != 0) ){
+	if ( (distmin != 1036) and (distmin > _vtxProximityCut) ){
+	  if(_verbose) { std::cout << "Trk-Vtx found @ distance of " << distmin << ". Shower not mode13!" << std::endl; }
+	  mode13 = false;
+	}
+      }
+
+
+      // Try and remove any shower that is on top of a track
+      // this could be due to a track mis-reconstructed as a 
+      // shower.
+
+      for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
+	
+	auto const& track = datacpy.Track(graph.GetParticle(t).RecoID());
+	
+	// check if track and shower start points are close
+	if (thisShower.Start().Dist(track[0]) > 1 )
+	  continue;
+	// if their start point is very close:
+	// calculate a stupid track direction
+	size_t nsteps = track.size();
+	::geoalgo::Vector_t trackDir = track[int(nsteps/2.)]-track[0];
+	trackDir.Normalize();
+	// get dot product
+	double dot = thisShower.Dir()*trackDir;
+	if (dot > 0.9)
+	  mode13 = false;
+      }
+      
+      // if still mode13 (and no sister track) look at
+      // dEdx to determine if e-like
+      if (mode13 && !_hassister){
+	if ( isGammaLike(thisShower._dedx,-1) || (thisShower._dedx <= 0) || (thisShower._dedx > 10.) ){
+	  if (_verbose) { std::cout << "Shower is mode13 but gamma-like -> reject" << std::endl; }
+	  mode13 = false;
+	}
+      }
+
+      */

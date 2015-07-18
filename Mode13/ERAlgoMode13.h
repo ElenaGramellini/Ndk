@@ -94,6 +94,11 @@ namespace ertool {
     bool _verbose;
     // electron mass
     double _e_mass;
+    // photon mass
+    double _gamma_mass;
+    // muon mass
+    double _mu_mass;
+
     // flag to decide whether to use EMPart or not
     // if True -> use radiation length to calculate LL
     // if False -> use only dEdx
@@ -110,16 +115,16 @@ namespace ertool {
     // start of a track for the vtx to be considered "on the track"
     // and the shower to come from the track, instead of the shower
     // and track being siblings.
-    double _vtxToTrkStartDist;
+    double _vtxToTrkStartDist = 9999999.;
     // maximum distance from the entire track for the reco-vertex
     // for the vertex to be considered on the track and the shower
     // to be considered as coming from the track
-    double _vtxToTrkDist;
+    double _vtxToTrkDist = 9999999.;
     // Max distance from shower start that the vertex can be
     // this value should be a few radiation lengths: the cut 
     // is placed to remove cases where the shower is meters
     // away from the vertex. Probably an accidental correlation
-    double _vtxToShrStartDist;
+    double _vtxToShrStartDist = 9999999.;
     // Maximum impact parameter allowed between the two objects
     // if larger it means that the two lines/segments do not come
     // within this value at any point and they therefore are 
@@ -153,11 +158,13 @@ namespace ertool {
     int _cOnePlusShower;//Count events that have at least 1 shower
     int _cEnDepRadius  ;//Count events that have at least 1 track, 1 shower and  pass the radius cut
     int _cIP           ;//Count events that have at least 1 track, 1 shower and  pass the IP cut
+    int _cRedundant    ;
     int _cOnePlusGamma ;//Count events for which the shower is a gamma
     int _cOnePlusMu    ;//Count events for which the track  is a muon
     int _cNoVtxAct     ;//Count events for there is no other vertex activity
     int _cOpeningAngle ;//Count events that pass the opening angle cut
-    
+
+    double openingAngle ;    
     
     // Other algorithms to use
     AlgoEMPart _alg_emp;
