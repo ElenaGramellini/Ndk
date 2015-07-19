@@ -1,7 +1,7 @@
 // Incomplete list of TO DO
 // [ ] Feed the cuts parameters from cgf file, not like the dick of the dog.
 // [ ] Implement loose calorimetry cuts -> events that passes those cuts can be filtered again in the creation of sibilings.
-
+// [ ] The mystery of kSiblings
 #ifndef ERTOOL_ERALGOMODE13_CXX
 #define ERTOOL_ERALGOMODE13_CXX
 
@@ -42,14 +42,14 @@ namespace ertool {
     _gamma_mass       = ParticleMass(22);
     _mu_mass          = ParticleMass(13);
     _Ethreshold       = 0;
-    _verbose          = true;
+    _verbose          = false;
     _useRadLength     = false;
     _hassister        = false;
     _rejectLongTracks = true;
     _vtxProximityCut = 0;
     _BDtW            = 0; 
     _BDtTW           = 0;
-    _neutrinos       = 0;
+    _protonsdKs      = 0;
 
     _cOnePlusTrack   = 0;
     _cOnePlusShower  = 0;
@@ -260,14 +260,16 @@ namespace ertool {
 	//mode13Map[thisShower] = thisShower.RecoID();
 	//mode13Map[thatTrack] = thatTrack.RecoID();
 
-
-        // PAY ATTENTION TO DOUBLE COUNTING ==> maybe create a map of particles? this is especially problematic for cosmics (see note 3)). 
+	// Let's pinpoint where we are now.
+	// I have 1 shower and 1 mu that passed my constraints
+	// now I want to create a common parent, but I've gotta be smart!
+        // PAY ATTENTION TO DOUBLE COUNTING ==> maybe create a map of particles? this is especially problematic for cosmics (see note 3)). We'll see. 
 	// This is where I'm forming my candidate proton.      
-	// We'll see. Right now, we need to create the sibiling relationship
+	// Right now, we need to create the sibiling relationship
 	// we need to be smart in creating that relationship: 
-	//  if nor muon nor gamma assigned: asses the relation and you're done
-	//  if either of the 2 assigned   : calculate score of then new couple
-	//                                  check which score is higher old or new?
+	//  1] if nor muon nor gamma have parent: asses the relation and you're done
+	//  2] if either of the 2 assigned      : calculate score of then new couple
+	//                                     check which score is higher old or new?
 	//                                        Old is higher: ignore new couple
 	//                                        New is higher: distroy old relations, create new one
 	
@@ -275,43 +277,54 @@ namespace ertool {
 	// The particle with all it's info was already
 	// created, do the checking
 	if (mode13){
-	  if (_verbose) { std::cout << "Mu + gamma might be Mode13!" << std::endl; }
+	  if (_verbose) { std::cout << "Mu + Gamma might be Mode13!" << std::endl; }
 	  
 	  // prepare holder for proton momentum
 	  //::geoalgo::Vector_t protonMom(0,0,0);
 	  double protonMom = 0;
 
-	  // fill in proton properties
+	  // fill in a particle the gamma properties
 	  double momGamma = thisShower._energy; //I'm not sure if I should re-set the property of this shower, but ok...
 	  if (momGamma < 0) { momGamma = 1; throw ERException("Something is very wrong with this shower energy!");}
 	  if (_verbose) { std::cout << "Getting shower " << p << std::endl; }
 	  auto& gamma = graph.GetParticle(p);
 	  if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
 	  gamma.SetParticleInfo(22,_gamma_mass,thisShower.Start(),thisShower.Dir()*momGamma);
-
-	  double momMu = (thisShower._energy)*(thisShower._energy) - (_mu_mass*_mu_mass);
+	  // fill in a particle the muon properties
+	  double momMu = (thisShower._energy)*(thisShower._energy) - (_mu_mass*_mu_mass); // NOT SURE IT'S CORRECT
 	  if (momMu < 0) { momMu = 1; throw ERException("Something is very wrong with this track energy!");}
 	  if (_verbose) { std::cout << "Getting track " << t << std::endl; }
 	  auto& muon = graph.GetParticle(t);
 	  if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
 	  muon.SetParticleInfo(13,_mu_mass,thatTrack.front(),thatTrack.Dir()*momMu);
 
-	  /// ARRIVED HERE, NEED TO GO TO PHARMACY
-	  // create a new particle for the proton!
-	  if (_verbose) { std::cout << "number of partciles before: " << graph.GetNumParticles() << std::endl; }
-	  if (_verbose) { std::cout << "Making neutrino..." << std::endl; }
-	  Particle& neutrino = graph.CreateParticle();
-	  protonMom += momGamma;//thisShower.Dir()*mom;
-	  //neutrino.SetParticleInfo(12,0.,thisShower.Start(),thisShower.Dir()*mom);
-	  if (_verbose) { std::cout << "made neutrino with ID " << neutrino.ID() << " and PDG: " << neutrino.PdgCode() << std::endl; }
-	  if (_verbose) { std::cout << "number of partciles after: " << graph.GetNumParticles() << std::endl; }
-	  _neutrinos += 1;
-	  // set relationship
-	  graph.SetParentage(neutrino.ID(),p);
-	  
-	  // Now look for all potential siblins
+	  if ((muon.ID() == muon.Parent())&&
+	      (gamma.ID() == gamma.Parent()))
+	    {
+	      // if neither muon and gamma has parent 
+	      // implementing 1] : create a new particle: the proton 
+	      if (_verbose) { std::cout << "Number of partciles before: " << graph.GetNumParticles() << std::endl; }
+	      if (_verbose) { std::cout << "Making original proton..." << std::endl; }
+	      Particle& proton = graph.CreateParticle();
+	      if (_verbose) { std::cout << "made proton with ID " << proton.ID() << " and PDG: " << proton.PdgCode() << std::endl; }
+	      if (_verbose) { std::cout << "number of partciles after: " << graph.GetNumParticles() << std::endl; }
+	      _protonsdKs += 1;
+	      graph.SetParentage(proton.ID(),p);
+	      graph.SetParentage(proton.ID(),t);
+ 
+	    }else 
+	    {
+	      // muon or gamma has parents 
+	      // mode 2] needs implementation
+	      if ( muon.ID() !=  muon.Parent()) std::cout <<"PUPPA, THE  MUON ALREADY HAS PARENT!!! \n";
+	      if (gamma.ID() != gamma.Parent()) std::cout <<"PUPPA, THE GAMMA ALREADY HAS PARENT!!! \n";
+	    }
+	  /*
+	  protonMom += momGamma;// THIS IS REALLY WRONG, BUT LET'S LEAVE IT FOR NOW
+
+	  // Now look for all potential siblins: I don't think I want this part of the code
 	  // using AlgoFindRelationship
-	  for (auto const& t : graph.GetPrimaryNodes(RecoType_t::kTrack)){
+	  for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
 	    
 	    auto const& track = datacpy.Track(graph.GetParticle(t).RecoID());
 	    // make sure track has a length of at least 0.3 cm (wire spacing)
@@ -319,6 +332,7 @@ namespace ertool {
 	    if (track.Length() < 0.3)
 	      continue;
 	    
+
 	    ::geoalgo::Point_t vtx(3);
 	    double score = -1;
 	    auto const& rel = _findRel.FindRelation(thisShower,track,vtx,score);
@@ -337,26 +351,20 @@ namespace ertool {
 	      geoalgo::Vector_t Mom = Dir * ( sqrt( Edep * (Edep+2*mass) ) );
 	      trackParticle.SetParticleInfo(_findRel.GetPDG(track),mass,track[0],Mom);
 	      protonMom += sqrt( Edep * ( Edep + 2*mass ) );
-	      graph.SetParentage(neutrino.ID(),t);
+	      graph.SetParentage(proton.ID(),t);
 	      }
 	  }
 	  
 	  ::geoalgo::Vector_t momdir(0,0,1);
 	  
-	  neutrino.SetParticleInfo(12,0.,thisShower.Start(),momdir*protonMom);
-
+	  proton.SetParticleInfo(12,0.,thisShower.Start(),momdir*protonMom);
+*/
 	}// if mode13
 	// if not mode13
 	else
 	  if (_verbose) { std::cout << "Topology is not mode13." << std::endl; }
 	
       }// for all tracks
-      
-      // Let's pinpoint where we are now.
-      // We are in a loop on all the showers of the event,
-      // we have a vector of siblings that contains a shower and possibly more than one track that passes all topology cuts
-      
-
       
     }// for all showers
       

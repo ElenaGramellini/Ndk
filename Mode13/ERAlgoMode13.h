@@ -148,7 +148,7 @@ namespace ertool {
     // negative for upwards facing showers.
     double _BDtTW ;
     // Keep track of number of neutrinos found
-    int _neutrinos;
+    int _protonsdKs;
     // Keep track of whether a sister track to the shower has
     // been found
     bool _hassister;
