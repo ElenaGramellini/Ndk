@@ -2,16 +2,14 @@
 // [ ] Feed the cuts parameters from cgf file, not like the dick of the dog.
 // [ ] Implement loose calorimetry cuts -> events that passes those cuts can be filtered again in the creation of sibilings.
 // [ ] The mystery of kSiblings
+// [ ] Put scores!!!!!
+
 #ifndef ERTOOL_ERALGOMODE13_CXX
 #define ERTOOL_ERALGOMODE13_CXX
 
 #include "ERAlgoMode13.h"
 
 namespace ertool {
-  size_t single_e_counter = 0;
-  size_t total_e_showers = 0;
-  size_t total_g_showers = 0;
-  size_t nonzero_dedx_counter = 0;
   int elect = 0;
 
   // Sets of cuts, probably this is not the final location of this cuts
@@ -65,10 +63,6 @@ namespace ertool {
 
   void ERAlgoMode13::Reset()
   {
-    std::cout<<__FUNCTION__<<" found "<<single_e_counter<<" events with a single electron in it."<<std::endl;
-    std::cout<<"and "<<nonzero_dedx_counter<<" nonzero dedx showers"<<std::endl;
-    std::cout<<"Found "<<total_e_showers<<" total e showers"<<std::endl;
-    std::cout<<"Found "<<total_g_showers<<" total g showers"<<std::endl;
   }
 
   void ERAlgoMode13::AcceptPSet(const ::fcllite::PSet& cfg)
@@ -125,7 +119,7 @@ namespace ertool {
 
     // Let's take the number of showers and tracks
     // we will make cuts on showers and tracks quantities (e.g minimum lenght)
-    //  acceptable showers and tracks < tot showers and tracks
+    // acceptable showers and tracks < tot showers and tracks
     _nShower = data.Shower().size();
     _nTrack = data.Track().size();
 
@@ -140,7 +134,7 @@ namespace ertool {
 
     // This map will store interesting paricles for our topology 
     // This might be a good idea for cosmic sample... maybe not now...
-    //    std::map<ertool::Particle,int> mode13Map;
+    // std::map<ertool::Particle,int> mode13Map;
 
 
     // We have a list of showers.
@@ -155,10 +149,9 @@ namespace ertool {
       std::vector<int> siblings;
       
       if (_verbose) { std::cout << "This shower: (" << p << ")" << "\tE: " << thisShower._energy << std::endl; }
-      
 
 
-      // Make sure it satisfies pdk conditions: 
+      // Make sure the event satisfies pdk conditions: 
       // 1) events has a shower
       // 2) events has a track which is at least 3 mm
       for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
@@ -173,7 +166,6 @@ namespace ertool {
 	if (thatTrack._pid !=4)  continue;
 	_cOnePlusMuFlag = true;
 	muonMap[thatTrack] = thatTrack.RecoID();  
-
 	// The decay vtx has to correspond with the first energy deposition of the muon
 	// unless big screw up with the muon reco
 	geoalgo::Point_t vtxPdK(3);
@@ -290,13 +282,11 @@ namespace ertool {
 	  auto& gamma = graph.GetParticle(p);
 	  if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
 	  gamma.SetParticleInfo(22,_gamma_mass,thisShower.Start(),thisShower.Dir()*momGamma);
-	  // fill in a particle the muon properties
-	  double momMu = (thisShower._energy)*(thisShower._energy) - (_mu_mass*_mu_mass); // NOT SURE IT'S CORRECT
-	  if (momMu < 0) { momMu = 1; throw ERException("Something is very wrong with this track energy!");}
-	  if (_verbose) { std::cout << "Getting track " << t << std::endl; }
+	  TLorentzVector gamma4Mom((gamma.Momentum())[0],(gamma.Momentum())[1],(gamma.Momentum())[2], gamma.Energy());
+
+	  // taking the muon!
 	  auto& muon = graph.GetParticle(t);
-	  if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
-	  muon.SetParticleInfo(13,_mu_mass,thatTrack.front(),thatTrack.Dir()*momMu);
+	  TLorentzVector muon4Mom((muon.Momentum())[0],(muon.Momentum())[1],(muon.Momentum())[2], muon.Energy());
 
 	  if ((muon.ID() == muon.Parent())&&
 	      (gamma.ID() == gamma.Parent()))
@@ -309,56 +299,56 @@ namespace ertool {
 	      if (_verbose) { std::cout << "made proton with ID " << proton.ID() << " and PDG: " << proton.PdgCode() << std::endl; }
 	      if (_verbose) { std::cout << "number of partciles after: " << graph.GetNumParticles() << std::endl; }
 	      _protonsdKs += 1;
-	      graph.SetParentage(proton.ID(),p);
-	      graph.SetParentage(proton.ID(),t);
- 
+	      TLorentzVector proton4Mom = muon4Mom+gamma4Mom;
+	      if (_verbose) {
+		std::cout<<"\n\n Checking if energy and momentum of muon, gamma and proton make sense \n";
+		std::cout<<" Muon   X: "<<muon4Mom.X()  <<" Y: "<<muon4Mom.Y()  <<"  Z: "<<muon4Mom.Z()  
+			 <<" T: "       <<muon4Mom.T()  <<" Mag: "<<muon4Mom.Mag()  <<"\n";
+		std::cout<<" Gamma  X: "<<gamma4Mom.X() <<" Y: "<<gamma4Mom.Y() <<"  Z: "<<gamma4Mom.Z() 
+			 <<" T: "       <<gamma4Mom.T() <<" Mag: "<<gamma4Mom.Mag() <<"\n";
+		std::cout<<" Proton X: "<<proton4Mom.X()<<" Y: "<<proton4Mom.Y()<<"  Z: "<<proton4Mom.Z()
+			 <<" T: "       <<proton4Mom.T()<<" Mag: "<<proton4Mom.Mag()<<"\n";
+		std::cout<<"\n\n ";
+	      }
+	      //
+	      ::geoalgo::Vector_t protonMom(proton4Mom.X(),proton4Mom.Y(),proton4Mom.Z()); 
+	      proton.SetParticleInfo(2212,proton4Mom.Mag(),thatTrack.front(),protonMom);
+	      // the score of the proton tells us how good is the couple...
+	      // the further we are from 930 the worst is the couple
+	      double scoreMode13 = std::abs(930 - proton4Mom.T());
+	      //Modify particle graph so to add all the info of the primary proton
+	      graph.SetParentage(proton.ID(),p,scoreMode13);
+	      graph.SetParentage(proton.ID(),t,scoreMode13);
+	      graph.SetPrimary(proton.ID());
+	      muon  = graph.GetParticle(t);
+	      gamma = graph.GetParticle(p);
+
+	      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	      ////////////////////////////  I need to understand this part better!!!  ///////////////////////////////////////
+	      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	      ::geoalgo::Point_t vtx(3);
+	      double score = -1;
+	      auto const& rel = _findRel.FindRelation(thisShower,thatTrack,vtx,score);
+	      if(_verbose) std::cout<<"\n\n\n Muon-Proton  score: "<<  muon.RelationshipScore(proton.ID())<<"\n"
+				    <<" Gamma-Proton score: "<< gamma.RelationshipScore(proton.ID())<<"\n"
+				    <<" Muon-Gamma   score: "<<  muon.RelationshipScore(gamma.ID() )<<"\n"
+				    <<" Muon-Gamma   Relat: "<< rel<<", if sibilings = "<<kSibling<<"\n"
+				    <<" MuonID   : "<< muon.ID()  <<" MuonParent ID   : "<<muon.Parent()<<"\n"
+				    <<" GammaID  : "<< gamma.ID() <<" GammaParent ID  : "<<gamma.Parent()<<"\n"
+				    <<" ProtonID : "<< proton.ID()<<" ProtonParent ID : "<<muon.Parent()<<"\n";
+	      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////	     
+	      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////	    
+	      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	      
 	    }else 
 	    {
 	      // muon or gamma has parents 
 	      // mode 2] needs implementation
 	      if ( muon.ID() !=  muon.Parent()) std::cout <<"PUPPA, THE  MUON ALREADY HAS PARENT!!! \n";
 	      if (gamma.ID() != gamma.Parent()) std::cout <<"PUPPA, THE GAMMA ALREADY HAS PARENT!!! \n";
+	      throw ERException("Implement this part of the code, you lazy ass!");
 	    }
-	  /*
-	  protonMom += momGamma;// THIS IS REALLY WRONG, BUT LET'S LEAVE IT FOR NOW
-
-	  // Now look for all potential siblins: I don't think I want this part of the code
-	  // using AlgoFindRelationship
-	  for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
-	    
-	    auto const& track = datacpy.Track(graph.GetParticle(t).RecoID());
-	    // make sure track has a length of at least 0.3 cm (wire spacing)
-	    // greater longer than 3 mm
-	    if (track.Length() < 0.3)
-	      continue;
-	    
-
-	    ::geoalgo::Point_t vtx(3);
-	    double score = -1;
-	    auto const& rel = _findRel.FindRelation(thisShower,track,vtx,score);
-	    if (rel == kSibling)
-	      { // add this track to PaticleTree
-		auto &trackParticle = graph.GetParticle(t);
-		// if not primary according to primary finder -> don't add
-	      if (!trackParticle.Primary())
-		continue;
-	      // track deposited energy
-	      double Edep = track._energy;
-	      // track direction
-	      geoalgo::Vector_t Dir = (track[1]-track[0]);
-	      Dir.Normalize();
-	      double mass = _findRel.GetMass(track);
-	      geoalgo::Vector_t Mom = Dir * ( sqrt( Edep * (Edep+2*mass) ) );
-	      trackParticle.SetParticleInfo(_findRel.GetPDG(track),mass,track[0],Mom);
-	      protonMom += sqrt( Edep * ( Edep + 2*mass ) );
-	      graph.SetParentage(proton.ID(),t);
-	      }
-	  }
 	  
-	  ::geoalgo::Vector_t momdir(0,0,1);
-	  
-	  proton.SetParticleInfo(12,0.,thisShower.Start(),momdir*protonMom);
-*/
 	}// if mode13
 	// if not mode13
 	else
@@ -392,8 +382,8 @@ namespace ertool {
     std::cout << "Events for there is no other vertex activity ......................... "<< _cNoVtxAct     << std::endl;
     
     std::cout << "Muons  ........... "<< muonMap.size() << std::endl;
-    std::cout << "Gammas ........... "<< _nGamma     << std::endl;
-    //    std::cout << "e ........... "<< elect     << std::endl;
+    std::cout << "Gammas ........... "<< _nGamma        << std::endl;
+    std::cout << "ProtonDk ......... "<< _protonsdKs    << std::endl;
     
     
     if(fout){
@@ -591,3 +581,39 @@ namespace ertool {
       }
 
       */
+
+
+	      /*	      
+	      // Now look for all potential siblins: I don't think I want this part of the code
+	      // using AlgoFindRelationship
+	      for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
+		
+		auto const& track = datacpy.Track(graph.GetParticle(t).RecoID());
+		// make sure track has a length of at least 0.3 cm (wire spacing)
+		// greater longer than 3 mm
+		if (track.Length() < 0.3)
+		  continue;
+		
+		
+		::geoalgo::Point_t vtx(3);
+		double score = -1;
+		auto const& rel = _findRel.FindRelation(thisShower,track,vtx,score);
+		if (rel == kSibling)
+		  { // add this track to PaticleTree
+		    auto &trackParticle = graph.GetParticle(t);
+		    // if not primary according to primary finder -> don't add
+		    if (!trackParticle.Primary())
+		      continue;
+		    // track deposited energy
+		    double Edep = track._energy;
+		    // track direction
+		    geoalgo::Vector_t Dir = (track[1]-track[0]);
+		    Dir.Normalize();
+		    double mass = _findRel.GetMass(track);
+		    geoalgo::Vector_t Mom = Dir * ( sqrt( Edep * (Edep+2*mass) ) );
+		    trackParticle.SetParticleInfo(_findRel.GetPDG(track),mass,track[0],Mom);
+		    protonMom += sqrt( Edep * ( Edep + 2*mass ) );
+		    graph.SetParentage(proton.ID(),t);
+		  }
+	      }
+	      */
