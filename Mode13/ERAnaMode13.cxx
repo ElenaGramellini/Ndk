@@ -83,6 +83,7 @@ namespace ertool {
       _proton_pdg    = proton.PdgCode()       ;
       _proton_energy = proton.Energy()        ;
       _proton_mass   = proton.Mass()          ;
+
       Particle muon;
       Particle gamma;
       for (auto const& c : proton.Children()) 
