@@ -163,8 +163,8 @@ namespace ertool {
 	if (_verbose) { std::cout << "Comparing with track (" << t << ")" << std::endl; }
 
 	// 3) the track must be a muon
-	if (thatTrack._pid !=4)  continue;
-	_cOnePlusMuFlag = true;
+	//if (thatTrack._pid !=4)  continue;
+	//_cOnePlusMuFlag = true;
 	muonMap[thatTrack] = thatTrack.RecoID();  
 	// The decay vtx has to correspond with the first energy deposition of the muon
 	// unless big screw up with the muon reco
