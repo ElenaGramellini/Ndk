@@ -153,7 +153,7 @@ namespace ertool {
     // been found
     bool _hassister;
 
-
+    // Counters for the variables on which we cut
     int _cOnePlusTrack ;//Count events that have at least 1 track
     int _cOnePlusShower;//Count events that have at least 1 shower
     int _cEnDepRadius  ;//Count events that have at least 1 track, 1 shower and  pass the radius cut
@@ -163,6 +163,10 @@ namespace ertool {
     int _cOnePlusMu    ;//Count events for which the track  is a muon
     int _cNoVtxAct     ;//Count events for there is no other vertex activity
     int _cOpeningAngle ;//Count events that pass the opening angle cut
+    int _cMuonEnergy   ;//Count events that pass the  Muon Energy cut
+    int _cGammaEnergy  ;//Count events that pass the Gamma Energy cut
+    int _cTotalEnergy  ;//Count events that pass the Total Energy cut
+    int _cTotMom       ;//Count events that pass the Total Energy cut
 
     double openingAngle ;    
     

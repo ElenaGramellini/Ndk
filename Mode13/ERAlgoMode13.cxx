@@ -1,8 +1,8 @@
 // Incomplete list of TO DO
 // [ ] Feed the cuts parameters from cgf file, not like the dick of the dog.
-// [ ] Implement loose calorimetry cuts -> events that passes those cuts can be filtered again in the creation of sibilings.
 // [ ] The mystery of kSiblings
 // [ ] Put scores!!!!!
+// [ ] there's a bug!!
 
 #ifndef ERTOOL_ERALGOMODE13_CXX
 #define ERTOOL_ERALGOMODE13_CXX
@@ -22,6 +22,9 @@ namespace ertool {
   double MuonEnergyMaxCut    =  99999999.;
   double GammaEnergyMaxCut   =  99999999.;
   double TotalEnergyMaxCut   =  99999999.;
+  double MuonEnergyMinCut    =  0.;
+  double GammaEnergyMinCut   =  0.;
+  double TotalEnergyMinCut   =  0.;
   double TotMomXCutMax       =  99999999.;
   double TotMomYCutMax       =  99999999.;
   double TotMomZCutMax       =  99999999.;
@@ -58,7 +61,10 @@ namespace ertool {
     _cOnePlusMu      = 0;
     _cNoVtxAct       = 0;
     _cOpeningAngle   = 0;
-
+    _cMuonEnergy     = 0;
+    _cGammaEnergy    = 0;
+    _cTotalEnergy    = 0;
+    _cTotMom         = 0;
   }
 
   void ERAlgoMode13::Reset()
@@ -131,6 +137,12 @@ namespace ertool {
     bool _cOnePlusMuFlag    = false;
     bool _cNoVtxActFlag     = false;
     bool _cOpeningAngleFlag = false;
+
+    bool _cMuonEnergyFlag   =  false;
+    bool _cGammaEnergyFlag  =  false;
+    bool _cTotalEnergyFlag  =  false;
+    bool _cTotMomFlag       =  false;
+
 
     // This map will store interesting paricles for our topology 
     // This might be a good idea for cosmic sample... maybe not now...
@@ -240,7 +252,32 @@ namespace ertool {
 	openingAngle = thisShower.Dir().Angle(thatTrack.Dir());
 	if(openingAngle < OpeningAngleMinCut) continue;
 	_cOpeningAngleFlag = true;
+	
+	//Now we have a mu and a gamma that passed geometry cuts, 
+	//Let play with kinematics!!!
 
+	// taking the muon!
+	auto& muon = graph.GetParticle(t);
+	TLorentzVector muon4Mom((muon.Momentum())[0],(muon.Momentum())[1],(muon.Momentum())[2], muon.Energy());
+	// fill in a particle the gamma properties
+	double momGamma = thisShower._energy; //I'm not sure if I should re-set the property of this shower, but ok...
+	if (momGamma < 0) { momGamma = 1; throw ERException("Something is very wrong with this shower energy!");}
+	if (_verbose) { std::cout << "Getting shower " << p << std::endl; }
+	auto& gamma = graph.GetParticle(p);
+	if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
+	gamma.SetParticleInfo(22,_gamma_mass,thisShower.Start(),thisShower.Dir()*momGamma);
+	TLorentzVector gamma4Mom((gamma.Momentum())[0],(gamma.Momentum())[1],(gamma.Momentum())[2], gamma.Energy());
+      
+	// 9)   MuonEn > MuonEnMin   &&   MuonEn < MuonEnMax
+	if( muon.Energy() < MuonEnergyMinCut) continue;
+	if( muon.Energy() > MuonEnergyMaxCut) continue;
+	_cMuonEnergyFlag = true;
+
+	// 10) GammaEn > GammaEnMin  &&  GammaEn < MuonEnMax
+	if( gamma.Energy() < GammaEnergyMinCut) continue;
+	if( gamma.Energy() > GammaEnergyMaxCut) continue;
+	_cGammaEnergyFlag = true;
+	
 	// store siblings only if 
 	// shower is a gamma,  
 	// track is muons and
@@ -275,19 +312,6 @@ namespace ertool {
 	  //::geoalgo::Vector_t protonMom(0,0,0);
 	  double protonMom = 0;
 
-	  // fill in a particle the gamma properties
-	  double momGamma = thisShower._energy; //I'm not sure if I should re-set the property of this shower, but ok...
-	  if (momGamma < 0) { momGamma = 1; throw ERException("Something is very wrong with this shower energy!");}
-	  if (_verbose) { std::cout << "Getting shower " << p << std::endl; }
-	  auto& gamma = graph.GetParticle(p);
-	  if (_verbose) { std::cout << " and modifying properties..." << std::endl; }
-	  gamma.SetParticleInfo(22,_gamma_mass,thisShower.Start(),thisShower.Dir()*momGamma);
-	  TLorentzVector gamma4Mom((gamma.Momentum())[0],(gamma.Momentum())[1],(gamma.Momentum())[2], gamma.Energy());
-
-	  // taking the muon!
-	  auto& muon = graph.GetParticle(t);
-	  TLorentzVector muon4Mom((muon.Momentum())[0],(muon.Momentum())[1],(muon.Momentum())[2], muon.Energy());
-
 	  if ((muon.ID() == muon.Parent())&&
 	      (gamma.ID() == gamma.Parent()))
 	    {
@@ -298,7 +322,7 @@ namespace ertool {
 	      Particle& proton = graph.CreateParticle();
 	      if (_verbose) { std::cout << "made proton with ID " << proton.ID() << " and PDG: " << proton.PdgCode() << std::endl; }
 	      if (_verbose) { std::cout << "number of partciles after: " << graph.GetNumParticles() << std::endl; }
-	      _protonsdKs += 1;
+	      
 	      TLorentzVector proton4Mom = muon4Mom+gamma4Mom;
 	      if (_verbose) {
 		std::cout<<"\n\n Checking if energy and momentum of muon, gamma and proton make sense \n";
@@ -310,7 +334,22 @@ namespace ertool {
 			 <<" T: "       <<proton4Mom.T()<<" Mag: "<<proton4Mom.Mag()<<"\n";
 		std::cout<<"\n\n ";
 	      }
+	      
 	      //
+	      // 11)   TotEn > TotEnMin    &&    TotEn < TotEnMax
+	      if( proton4Mom.T() < TotalEnergyMinCut) continue;
+	      if( proton4Mom.T() > TotalEnergyMaxCut) continue;
+	      _cTotalEnergyFlag = true;
+	      // 12) TotMom > TotMomMin    &&    TotMom < TotMomMax
+	      if( proton4Mom.X() < TotMomXCutMin) continue;
+	      if( proton4Mom.X() > TotMomXCutMax) continue;
+	      if( proton4Mom.Y() < TotMomYCutMin) continue;
+	      if( proton4Mom.Y() > TotMomYCutMax) continue;
+	      if( proton4Mom.Z() < TotMomZCutMin) continue;
+	      if( proton4Mom.Z() > TotMomZCutMax) continue;
+	      _cTotMomFlag = true;
+	      
+	      _protonsdKs += 1;
 	      ::geoalgo::Vector_t protonMom(proton4Mom.X(),proton4Mom.Y(),proton4Mom.Z()); 
 	      proton.SetParticleInfo(2212,proton4Mom.Mag(),thatTrack.front(),protonMom);
 	      // the score of the proton tells us how good is the couple...
@@ -346,7 +385,7 @@ namespace ertool {
 	      // mode 2] needs implementation
 	      if ( muon.ID() !=  muon.Parent()) std::cout <<"PUPPA, THE  MUON ALREADY HAS PARENT!!! \n";
 	      if (gamma.ID() != gamma.Parent()) std::cout <<"PUPPA, THE GAMMA ALREADY HAS PARENT!!! \n";
-	      throw ERException("Implement this part of the code, you lazy ass!");
+	      // throw ERException("Implement this part of the code, you lazy ass!");
 	    }
 	  
 	}// if mode13
@@ -358,14 +397,20 @@ namespace ertool {
       
     }// for all showers
       
-    if (_nShower > 0 )      _cOnePlusShower++    ; 
-    if (_nTrack  > 0 )      _cOnePlusTrack++     ;
-    if (_cEnDepRadiusFlag)  _cEnDepRadius++      ;
-    if (_cIPFlag)           _cIP++               ;
-    if (_cRedundantFlag)    _cRedundant++        ;
-    if (_cOnePlusGammaFlag) _cOnePlusGamma++     ;
-    if (_cOnePlusMuFlag)    _cOnePlusMu++        ;
-    if (_cOpeningAngleFlag) _cOpeningAngle++     ;
+    if (_nShower > 0 )      _cOnePlusShower++; 
+    if (_nTrack  > 0 )      _cOnePlusTrack++ ;
+    if (_cEnDepRadiusFlag)  _cEnDepRadius++  ;
+    if (_cIPFlag)           _cIP++           ;
+    if (_cRedundantFlag)    _cRedundant++    ;
+    if (_cOnePlusGammaFlag) _cOnePlusGamma++ ;
+    if (_cOnePlusMuFlag)    _cOnePlusMu++    ;
+    if (_cOpeningAngleFlag) _cOpeningAngle++ ;
+
+    if (_cMuonEnergyFlag )  _cMuonEnergy++   ;
+    if (_cGammaEnergyFlag)  _cGammaEnergy++  ;
+    if (_cTotalEnergyFlag)  _cTotalEnergy++  ;
+    if (_cTotMomFlag     )  _cTotMom++       ;
+
 	
     return true;
   }
@@ -380,7 +425,12 @@ namespace ertool {
     std::cout << "Events for which the shower is a gamma ............................... "<< _cOnePlusGamma << std::endl;
     std::cout << "Events that pass the opening angle cut ............................... "<< _cOpeningAngle << std::endl;
     std::cout << "Events for there is no other vertex activity ......................... "<< _cNoVtxAct     << std::endl;
-    
+    std::cout << "Events that pass the  Muon Energy cut ................................ "<< _cMuonEnergy   << std::endl;
+    std::cout << "Events that pass the Gamma Energy cut ................................ "<< _cGammaEnergy  << std::endl;
+    std::cout << "Events that pass the Total Energy cut ................................ "<< _cTotalEnergy  << std::endl;
+    std::cout << "Events that pass the Total Energy cut ................................ "<< _cTotMom       << std::endl;
+
+
     std::cout << "Muons  ........... "<< muonMap.size() << std::endl;
     std::cout << "Gammas ........... "<< _nGamma        << std::endl;
     std::cout << "ProtonDk ......... "<< _protonsdKs    << std::endl;
@@ -446,14 +496,19 @@ namespace ertool {
 #endif
 
 // Make sure it satisfies pdk conditions: 
-// 1) events has a shower
-// 2) events has a track which is at least 3 mm
-// 3) the track must be a muon
-// 4) the shower and the track are within a decent radius
-// 5) the IP of the shower and the track is decent
-// 6) the distance of the shower and the track to vtx is decent (may be redundant)
-// 7) the shower is a gamma
-// 8) Opening angle > OA_min
+// 1)  events has a shower
+// 2)  events has a track which is at least 3 mm
+// 3)  the track must be a muon
+// 4)  the shower and the track are within a decent radius
+// 5)  the IP of the shower and the track is decent
+// 6)  the distance of the shower and the track to vtx is decent (may be redundant)
+// 7)  the shower is a gamma
+// 8)  Opening angle > OA_min
+// Let's play with kinematics
+// 9)  MuonEn  > MuonEnMin   &&   MuonEn < MuonEnMax
+// 10) GammaEn > GammaEnMin  &&  GammaEn < MuonEnMax
+// 11) TotEn   > TotEnMin    &&    TotEn < TotEnMax
+// 12) TotMom  > TotMomMin   &&   TotMom < TotMomMax
 /// Not implemented yet
 // 9) No vtx activity
 
