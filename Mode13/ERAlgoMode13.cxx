@@ -1,6 +1,5 @@
 // Incomplete list of TO DO
 // [ ] Feed the cuts parameters from cgf file, not like the dick of the dog.
-// [ ] The mystery of kSiblings
 // [ ] Put scores!!!!!
 // [ ] there's a bug!!
 
@@ -56,7 +55,6 @@ namespace ertool {
     _cOnePlusShower  = 0;
     _cEnDepRadius    = 0;
     _cIP             = 0;
-    _cRedundant      = 0;
     _cOnePlusGamma   = 0;
     _cOnePlusMu      = 0;
     _cNoVtxAct       = 0;
@@ -132,7 +130,6 @@ namespace ertool {
     //Flags to determine if the event passes the cuts
     bool _cEnDepRadiusFlag  = false;
     bool _cIPFlag           = false;
-    bool _cRedundantFlag    = false;
     bool _cOnePlusGammaFlag = false;
     bool _cOnePlusMuFlag    = false;
     bool _cNoVtxActFlag     = false;
@@ -174,10 +171,7 @@ namespace ertool {
 	if (thatTrack.Length() < 0.3) {_nTrack--; continue;}
 	if (_verbose) { std::cout << "Comparing with track (" << t << ")" << std::endl; }
 
-	// 3) the track must be a muon
-	//if (thatTrack._pid !=4)  continue;
-	//_cOnePlusMuFlag = true;
-	muonMap[thatTrack] = thatTrack.RecoID();  
+	
 	// The decay vtx has to correspond with the first energy deposition of the muon
 	// unless big screw up with the muon reco
 	geoalgo::Point_t vtxPdK(3);
@@ -207,25 +201,7 @@ namespace ertool {
 	// if not, skip this couple, if yes set the flag to true
 	if (IP > IPMaxCut) continue;
 	_cIPFlag = true;
- 
-	_VsTrack = 1;
-	_thatE   = thatTrack._energy;
-	_IP = IP;
-	_IPthisStart = vtx.Dist(thisShower.Start());// Distance between the first shower energy deposition and vtx as calculated by the IP
-	_IPthatStart = vtx.Dist(thatTrack.front()); // Distance between the first track energy deposition and vtx as calculated by the IP
-	_IPtrkBody = sqrt(_geoAlgo.SqDist(vtx,thatTrack)); // Distance between the track and vtx as calculated by the IP
-	_alg_tree->Fill();
-	if (_verbose)
-	std::cout << "\tImpact Parameter: " << _IP << std::endl
-		  << "\tIP to Trk Start : " << _IPthatStart << std::endl
-		  << "\tIP to Trk Body  : " << _IPtrkBody << std::endl
-		  << "\tIP to Shr Start : " << _IPthisStart << std::endl;
-	
-	// 6) the distance of the shower and the track is decent (may be redundant)
-	/////////////////////////////////////////////////////// This cut might be superfluous....
-	if  (vtx.Dist(thatTrack.front())  > _vtxToTrkStartDist) continue ;   // vertex close to track start  
-	if  (vtx.Dist(thisShower.Start()) > _vtxToShrStartDist) continue ;   // vertex not unreasonably far from shower start
-	_cRedundant = true;
+
 	// our shower has a common origin with this track
 
 	if (_verbose) { std::cout << "common origin w/ track!" << std::endl; }
@@ -288,6 +264,11 @@ namespace ertool {
 	
 	//mode13Map[thisShower] = thisShower.RecoID();
 	//mode13Map[thatTrack] = thatTrack.RecoID();
+
+	// 3) the track must be a muon
+	if (thatTrack._pid !=4)  continue;
+	_cOnePlusMuFlag = true;
+	muonMap[thatTrack] = thatTrack.RecoID();  
 
 	// Let's pinpoint where we are now.
 	// I have 1 shower and 1 mu that passed my constraints
@@ -401,11 +382,9 @@ namespace ertool {
     if (_nTrack  > 0 )      _cOnePlusTrack++ ;
     if (_cEnDepRadiusFlag)  _cEnDepRadius++  ;
     if (_cIPFlag)           _cIP++           ;
-    if (_cRedundantFlag)    _cRedundant++    ;
     if (_cOnePlusGammaFlag) _cOnePlusGamma++ ;
     if (_cOnePlusMuFlag)    _cOnePlusMu++    ;
     if (_cOpeningAngleFlag) _cOpeningAngle++ ;
-
     if (_cMuonEnergyFlag )  _cMuonEnergy++   ;
     if (_cGammaEnergyFlag)  _cGammaEnergy++  ;
     if (_cTotalEnergyFlag)  _cTotalEnergy++  ;
@@ -419,14 +398,16 @@ namespace ertool {
   {
     std::cout << "Events that have at least 1 track .................................... "<< _cOnePlusTrack << std::endl;
     std::cout << "Events that have at least 1 shower ................................... "<< _cOnePlusShower<< std::endl;
-    std::cout << "Events for which the track  is a muon ................................ "<< _cOnePlusMu    << std::endl;
     std::cout << "Events that have at least 1 track, 1 shower and  pass the radius cut . "<< _cEnDepRadius  << std::endl;
     std::cout << "Events that have at least 1 track, 1 shower and  pass the IP cut ..... "<< _cIP           << std::endl;
-    std::cout << "Events for which the shower is a gamma ............................... "<< _cOnePlusGamma << std::endl;
     std::cout << "Events that pass the opening angle cut ............................... "<< _cOpeningAngle << std::endl;
     std::cout << "Events for there is no other vertex activity ......................... "<< _cNoVtxAct     << std::endl;
     std::cout << "Events that pass the  Muon Energy cut ................................ "<< _cMuonEnergy   << std::endl;
     std::cout << "Events that pass the Gamma Energy cut ................................ "<< _cGammaEnergy  << std::endl;
+
+    std::cout << "Events for which the track  is a muon ................................ "<< _cOnePlusMu    << std::endl;
+    std::cout << "Events for which the shower is a gamma ............................... "<< _cOnePlusGamma << std::endl;
+
     std::cout << "Events that pass the Total Energy cut ................................ "<< _cTotalEnergy  << std::endl;
     std::cout << "Events that pass the Total Energy cut ................................ "<< _cTotMom       << std::endl;
 
@@ -501,7 +482,6 @@ namespace ertool {
 // 3)  the track must be a muon
 // 4)  the shower and the track are within a decent radius
 // 5)  the IP of the shower and the track is decent
-// 6)  the distance of the shower and the track to vtx is decent (may be redundant)
 // 7)  the shower is a gamma
 // 8)  Opening angle > OA_min
 // Let's play with kinematics
@@ -672,3 +652,27 @@ namespace ertool {
 		  }
 	      }
 	      */
+
+
+// REDUNDANT
+	/*
+	_VsTrack = 1;
+	_thatE   = thatTrack._energy;
+	_IP = IP;
+	_IPthisStart = vtx.Dist(thisShower.Start());// Distance between the first shower energy deposition and vtx as calculated by the IP
+	_IPthatStart = vtx.Dist(thatTrack.front()); // Distance between the first track energy deposition and vtx as calculated by the IP
+	_IPtrkBody = sqrt(_geoAlgo.SqDist(vtx,thatTrack)); // Distance between the track and vtx as calculated by the IP
+	_alg_tree->Fill();
+	if (_verbose)
+	std::cout << "\tImpact Parameter: " << _IP << std::endl
+		  << "\tIP to Trk Start : " << _IPthatStart << std::endl
+		  << "\tIP to Trk Body  : " << _IPtrkBody << std::endl
+		  << "\tIP to Shr Start : " << _IPthisStart << std::endl;
+	
+	
+	// 6) the distance of the shower and the track is decent (may be redundant)
+	/////////////////////////////////////////////////////// This cut might be superfluous....
+	if  (vtx.Dist(thatTrack.front())  > _vtxToTrkStartDist) continue ;   // vertex close to track start  
+	if  (vtx.Dist(thisShower.Start()) > _vtxToShrStartDist) continue ;   // vertex not unreasonably far from shower start
+	_cRedundant = true;
+	*/
