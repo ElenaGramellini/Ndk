@@ -43,7 +43,7 @@ namespace ertool {
     _gamma_mass       = ParticleMass(22);
     _mu_mass          = ParticleMass(13);
     _Ethreshold       = 0;
-    _verbose          = false;
+    _verbose          = true;
     _useRadLength     = false;
     _hassister        = false;
     _rejectLongTracks = true;
