@@ -53,6 +53,9 @@ my_anaunit.SetTrackProducer(True,"mcreco");
 my_anaunit._mgr._mc_for_ana = True
 
 my_anaunit._mgr.AddAlgo(my_algo)
+# Add my algorithm's config file
+my_anaunit._mgr.AddCfgFile('mac/Mode13.cfg')
+
 my_anaunit._mgr.AddAna(my_ana)
 
 my_proc.add_process(my_anaunit)

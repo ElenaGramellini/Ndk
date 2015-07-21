@@ -153,6 +153,26 @@ namespace ertool {
     // been found
     bool _hassister;
 
+    // Sets of cuts, probably this is not the final location of these cuts
+    // Topologycal cuts
+    double _EnDepDistanceMaxCut =  99999999.;
+    double _IPMaxCut            =  99999999.;
+    double _OpeningAngleMinCut  =  0.;
+    
+    // Calorimetry loose cuts
+    double _MuonEnergyMaxCut    =  99999999.;
+    double _GammaEnergyMaxCut   =  99999999.;
+    double _TotalEnergyMaxCut   =  99999999.;
+    double _MuonEnergyMinCut    =  0.;
+    double _GammaEnergyMinCut   =  0.;
+    double _TotalEnergyMinCut   =  0.;
+    double _TotMomXCutMax       =  99999999.;
+    double _TotMomYCutMax       =  99999999.;
+    double _TotMomZCutMax       =  99999999.;
+    double _TotMomXCutMin       = -99999999.;
+    double _TotMomYCutMin       = -99999999.;
+    double _TotMomZCutMin       = -99999999.;
+
     // Counters for the variables on which we cut
     int _cOnePlusTrack ;//Count events that have at least 1 track
     int _cOnePlusShower;//Count events that have at least 1 shower

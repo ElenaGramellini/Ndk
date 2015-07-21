@@ -9,28 +9,9 @@
 #include "ERAlgoMode13.h"
 
 namespace ertool {
+  
+  //Variables for checking...  
   int elect = 0;
-
-  // Sets of cuts, probably this is not the final location of this cuts
-  // Topologycal cuts
-  double EnDepDistanceMaxCut =  99999999.;
-  double IPMaxCut            =  99999999.;
-  double OpeningAngleMinCut  =  0.;
-
-  // Calorimetry loose cuts
-  double MuonEnergyMaxCut    =  99999999.;
-  double GammaEnergyMaxCut   =  99999999.;
-  double TotalEnergyMaxCut   =  99999999.;
-  double MuonEnergyMinCut    =  0.;
-  double GammaEnergyMinCut   =  0.;
-  double TotalEnergyMinCut   =  0.;
-  double TotMomXCutMax       =  99999999.;
-  double TotMomYCutMax       =  99999999.;
-  double TotMomZCutMax       =  99999999.;
-  double TotMomXCutMin       = -99999999.;
-  double TotMomYCutMin       = -99999999.;
-  double TotMomZCutMin       = -99999999.;
-
   std::map<ertool::Track,int> muonMap;
 
   ERAlgoMode13::ERAlgoMode13(const std::string& name) 
@@ -41,16 +22,33 @@ namespace ertool {
   {
     _gamma_mass       = ParticleMass(22);
     _mu_mass          = ParticleMass(13);
-    _Ethreshold       = 0;
     _verbose          = false;
     _useRadLength     = false;
-    _hassister        = false;
-    _rejectLongTracks = true;
-    _vtxProximityCut = 0;
+
+    // Sets of cuts, probably this is not the final location of these cuts
+    // Topologycal cuts
+     _EnDepDistanceMaxCut =  99999999.;
+     _IPMaxCut            =  99999999.;
+     _OpeningAngleMinCut  =  0.;
+    
+    // Calorimetry loose cuts
+     _MuonEnergyMaxCut    =  99999999.;
+     _GammaEnergyMaxCut   =  99999999.;
+     _TotalEnergyMaxCut   =  99999999.;
+     _MuonEnergyMinCut    =  0.;
+     _GammaEnergyMinCut   =  0.;
+     _TotalEnergyMinCut   =  0.;
+     _TotMomXCutMax       =  99999999.;
+     _TotMomYCutMax       =  99999999.;
+     _TotMomZCutMax       =  99999999.;
+     _TotMomXCutMin       = -99999999.;
+     _TotMomYCutMin       = -99999999.;
+     _TotMomZCutMin       = -99999999.;
+
+
     _BDtW            = 0; 
     _BDtTW           = 0;
     _protonsdKs      = 0;
-
     _cOnePlusTrack   = 0;
     _cOnePlusShower  = 0;
     _cEnDepRadius    = 0;
@@ -63,6 +61,13 @@ namespace ertool {
     _cGammaEnergy    = 0;
     _cTotalEnergy    = 0;
     _cTotMom         = 0;
+
+    /*   
+     _Ethreshold       = 0;
+    _hassister        = false;
+    _rejectLongTracks = true;
+    _vtxProximityCut = 0;
+    */
   }
 
   void ERAlgoMode13::Reset()
@@ -71,14 +76,56 @@ namespace ertool {
 
   void ERAlgoMode13::AcceptPSet(const ::fcllite::PSet& cfg)
   {
-     // Load EMPart params
+    // Load EMPart params
     _alg_emp.AcceptPSet(cfg);
-  }
+    
+    std::cout << this->Name().c_str() << " called... " << std::endl;
+    // Look for a configuration
+    if(cfg.contains_pset(this->Name())) {
+      std::cout << "I found my config... ("
+		<< this->Name()
+		<< ") ... dumping it!"
+		<< std::endl;
+      
+      auto const& pset = cfg.get_pset(this->Name());
+      
+      std::cout << pset.dump() << std::endl;
+      
+      //      _vtx_min_radius = pset.get<double>("vtx_min_radius");
+      
+      _verbose = pset.get<bool>("verbosity");
 
+      _EnDepDistanceMaxCut = pset.get<double>("EnDepDistanceMaxCut") ;
+      _IPMaxCut            = pset.get<double>("IPMaxCut")            ;
+      _OpeningAngleMinCut  = pset.get<double>("OpeningAngleMinCut")  ;
+      _MuonEnergyMaxCut    = pset.get<double>("MuonEnergyMaxCut")    ;
+      _GammaEnergyMaxCut   = pset.get<double>("GammaEnergyMaxCut")   ;
+      _TotalEnergyMaxCut   = pset.get<double>("TotalEnergyMaxCut")   ;
+      _MuonEnergyMinCut    = pset.get<double>("MuonEnergyMinCut")    ;
+      _GammaEnergyMinCut   = pset.get<double>("GammaEnergyMinCut")   ;
+      _TotalEnergyMinCut   = pset.get<double>("TotalEnergyMinCut")   ;
+      _TotMomXCutMax       = pset.get<double>("TotMomXCutMax")       ;
+      _TotMomYCutMax       = pset.get<double>("TotMomYCutMax")       ;
+      _TotMomZCutMax       = pset.get<double>("TotMomZCutMax")       ;
+      _TotMomXCutMin       = pset.get<double>("TotMomXCutMin")       ;
+      _TotMomYCutMin       = pset.get<double>("TotMomYCutMin")       ;
+      _TotMomZCutMin       = pset.get<double>("TotMomZCutMin")       ;
+
+      
+    }else{
+      std::cout << "oops I didn't find my config... ("
+		<< this->Name()
+		<< ")"
+		<< std::endl;
+      throw ERException();
+    }
+  }
+  
   void ERAlgoMode13::ProcessBegin()
   {
     _alg_emp.ProcessBegin();
     _alg_emp.SetMode(true);
+
     _nMu = 0;
     _nGamma = 0;
 
@@ -152,8 +199,10 @@ namespace ertool {
       auto const& thisShower = datacpy.Shower(graph.GetParticle(p).RecoID());
       // keep track of whether it is mode13
       bool mode13 = true;
+
       // if we find that this shower shares a vertex with a track -> change "_hassister" to true.
-      _hassister = false;
+      //      _hassister = false;
+
       // Keep track of list of siblings found for the shower (will be used to reconstruct full proton decay)
       std::vector<int> siblings;
       
@@ -162,15 +211,15 @@ namespace ertool {
 
       // Make sure the event satisfies pdk conditions: 
       // 1) events has a shower
+      
       // 2) events has a track which is at least 3 mm
       for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
 	auto const& thatTrack = datacpy.Track(graph.GetParticle(t).RecoID());
-
 	// make sure track has a length of at least 0.3 cm (wire spacing)
 	// greater longer than 3 mm
 	if (thatTrack.Length() < 0.3) {_nTrack--; continue;}
 	if (_verbose) { std::cout << "Comparing with track (" << t << ")" << std::endl; }
-
+	
 	
 	// The decay vtx has to correspond with the first energy deposition of the muon
 	// unless big screw up with the muon reco
@@ -183,32 +232,29 @@ namespace ertool {
 	// check if the event passes the cut on this distance 
 	// if not, skip this couple, if yes set the flag to true
 
-	// 4) the shower and the track are within a decent radius
-	if (_EnDepDist > EnDepDistanceMaxCut) continue;
+	// 3) the shower and the track are within a decent radius
+	if (_EnDepDist > _EnDepDistanceMaxCut) continue;
 	_cEnDepRadiusFlag = true;
 
-	// !!! CAVEAT !!!
 	// I'm using vtx(3) for nothing but the IP calculation. 
 	geoalgo::Point_t vtx(3);
 	// Calculate the distance impact parameter
 	//// get IP for this shower and the entire track
 	//// but constrain the search along the track
 	//// coordinates for closest points on the two objects
-
-	// 5) the IP of the shower and the track is decent
+	// 4) the IP of the shower and the track is decent
 	double IP =  _findRel.FindClosestApproach(thisShower,thatTrack,vtx); 
 	// check if the event passes the cut on the impact parameter 
 	// if not, skip this couple, if yes set the flag to true
-	if (IP > IPMaxCut) continue;
+	if (IP > _IPMaxCut) continue;
 	_cIPFlag = true;
 
 	// our shower has a common origin with this track
-
 	if (_verbose) { std::cout << "common origin w/ track!" << std::endl; }
 
-	// 8) Opening angle > OA_min
+	// 5) Opening angle > OA_min
 	openingAngle = thisShower.Dir().Angle(thatTrack.Dir());
-	if(openingAngle < OpeningAngleMinCut) continue;
+	if(openingAngle < _OpeningAngleMinCut) continue;
 	_cOpeningAngleFlag = true;
 	
 	//Now we have a mu and a gamma that passed geometry cuts, 
@@ -226,14 +272,14 @@ namespace ertool {
 	gamma.SetParticleInfo(22,_gamma_mass,thisShower.Start(),thisShower.Dir()*momGamma);
 	TLorentzVector gamma4Mom((gamma.Momentum())[0],(gamma.Momentum())[1],(gamma.Momentum())[2], gamma.Energy());
       
-	// 9)   MuonEn > MuonEnMin   &&   MuonEn < MuonEnMax
-	if( muon.Energy() < MuonEnergyMinCut) continue;
-	if( muon.Energy() > MuonEnergyMaxCut) continue;
+	// 6)   MuonEn > MuonEnMin   &&   MuonEn < MuonEnMax
+	if( muon.Energy() < _MuonEnergyMinCut) continue;
+	if( muon.Energy() > _MuonEnergyMaxCut) continue;
 	_cMuonEnergyFlag = true;
 
-	// 10) GammaEn > GammaEnMin  &&  GammaEn < MuonEnMax
-	if( gamma.Energy() < GammaEnergyMinCut) continue;
-	if( gamma.Energy() > GammaEnergyMaxCut) continue;
+	// 7) GammaEn > GammaEnMin  &&  GammaEn < MuonEnMax
+	if( gamma.Energy() < _GammaEnergyMinCut) continue;
+	if( gamma.Energy() > _GammaEnergyMaxCut) continue;
 	_cGammaEnergyFlag = true;
 	
 	// store siblings only if 
@@ -241,19 +287,18 @@ namespace ertool {
 	// track is muons and
 	// the have right topology 
 	_empart_tree->Fill();
-	_hassister = true;
 	siblings.push_back(t);
 	
+	//The following 2 lines might be helful in the future...
 	//mode13Map[thisShower] = thisShower.RecoID();
 	//mode13Map[thatTrack] = thatTrack.RecoID();
 
-	// 3) the track must be a muon
+	// 8) the track must be a muon
 	if (thatTrack._pid !=4)  continue;
-	std::cout<<"PDGPDG "<<muon.PdgCode()<<"\n";
 	_cOnePlusMuFlag = true;
 	muonMap[thatTrack] = thatTrack.RecoID();  
 
-	// 7) the shower is a gamma
+	// 9) the shower is a gamma
 	if (!isGammaLike(thisShower._dedx,vtxPdK.Dist(thisShower.Start()))){
 	  _dedx   = thisShower._dedx;
 	  _radlen = vtxPdK.Dist(thisShower.Start());
@@ -320,17 +365,17 @@ namespace ertool {
 	      }
 	      
 	      //
-	      // 11)   TotEn > TotEnMin    &&    TotEn < TotEnMax
-	      if( proton4Mom.T() < TotalEnergyMinCut) continue;
-	      if( proton4Mom.T() > TotalEnergyMaxCut) continue;
+	      // 10)   TotEn > TotEnMin    &&    TotEn < TotEnMax
+	      if( proton4Mom.T() < _TotalEnergyMinCut) continue;
+	      if( proton4Mom.T() > _TotalEnergyMaxCut) continue;
 	      _cTotalEnergyFlag = true;
-	      // 12) TotMom > TotMomMin    &&    TotMom < TotMomMax
-	      if( proton4Mom.X() < TotMomXCutMin) continue;
-	      if( proton4Mom.X() > TotMomXCutMax) continue;
-	      if( proton4Mom.Y() < TotMomYCutMin) continue;
-	      if( proton4Mom.Y() > TotMomYCutMax) continue;
-	      if( proton4Mom.Z() < TotMomZCutMin) continue;
-	      if( proton4Mom.Z() > TotMomZCutMax) continue;
+	      // 11) TotMom > TotMomMin    &&    TotMom < TotMomMax
+	      if( proton4Mom.X() < _TotMomXCutMin) continue;
+	      if( proton4Mom.X() > _TotMomXCutMax) continue;
+	      if( proton4Mom.Y() < _TotMomYCutMin) continue;
+	      if( proton4Mom.Y() > _TotMomYCutMax) continue;
+	      if( proton4Mom.Z() < _TotMomZCutMin) continue;
+	      if( proton4Mom.Z() > _TotMomZCutMax) continue;
 	      _cTotMomFlag = true;
 	      
 	      _protonsdKs += 1;
@@ -404,15 +449,13 @@ namespace ertool {
     std::cout << "Events that have at least 1 track, 1 shower and  pass the radius cut . "<< _cEnDepRadius  << std::endl;
     std::cout << "Events that have at least 1 track, 1 shower and  pass the IP cut ..... "<< _cIP           << std::endl;
     std::cout << "Events that pass the opening angle cut ............................... "<< _cOpeningAngle << std::endl;
-    std::cout << "Events for there is no other vertex activity ......................... "<< _cNoVtxAct     << std::endl;
+    // std::cout << "Events for there is no other vertex activity ......................... "<< _cNoVtxAct     << std::endl;
     std::cout << "Events that pass the  Muon Energy cut ................................ "<< _cMuonEnergy   << std::endl;
     std::cout << "Events that pass the Gamma Energy cut ................................ "<< _cGammaEnergy  << std::endl;
-
     std::cout << "Events for which the track  is a muon ................................ "<< _cOnePlusMu    << std::endl;
     std::cout << "Events for which the shower is a gamma ............................... "<< _cOnePlusGamma << std::endl;
-
     std::cout << "Events that pass the Total Energy cut ................................ "<< _cTotalEnergy  << std::endl;
-    std::cout << "Events that pass the Total Energy cut ................................ "<< _cTotMom       << std::endl;
+    std::cout << "Events that pass the Total Momentum cut .............................. "<< _cTotMom       << std::endl;
 
 
     std::cout << "Muons  ........... "<< muonMap.size() << std::endl;
@@ -482,16 +525,16 @@ namespace ertool {
 // Make sure it satisfies pdk conditions: 
 // 1)  events has a shower
 // 2)  events has a track which is at least 3 mm
-// 3)  the track must be a muon
-// 4)  the shower and the track are within a decent radius
-// 5)  the IP of the shower and the track is decent
-// 7)  the shower is a gamma
-// 8)  Opening angle > OA_min
+// 3)  the shower and the track are within a decent radius
+// 4)  the IP of the shower and the track is decent
+// 5)  Opening angle > OA_min
 // Let's play with kinematics
-// 9)  MuonEn  > MuonEnMin   &&   MuonEn < MuonEnMax
-// 10) GammaEn > GammaEnMin  &&  GammaEn < MuonEnMax
-// 11) TotEn   > TotEnMin    &&    TotEn < TotEnMax
-// 12) TotMom  > TotMomMin   &&   TotMom < TotMomMax
+// 6)  MuonEn  > MuonEnMin   &&   MuonEn < MuonEnMax
+// 7)  GammaEn > GammaEnMin  &&  GammaEn < MuonEnMax
+// 8)  the track must be a muon
+// 9)  the shower is a gamma
+// 10) TotEn   > TotEnMin    &&    TotEn < TotEnMax
+// 11) TotMom  > TotMomMin   &&   TotMom < TotMomMax
 /// Not implemented yet
 // 9) No vtx activity
 
