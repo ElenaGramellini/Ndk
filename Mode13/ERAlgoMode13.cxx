@@ -175,6 +175,8 @@ namespace ertool {
     _nTrack = data.Track().size();
 
     //Flags to determine if the event passes the cuts
+    bool _cOnePlusShowerFlag= false;
+    bool _cOnePlusTrackFlag = false;
     bool _cEnDepRadiusFlag  = false;
     bool _cIPFlag           = false;
     bool _cOnePlusGammaFlag = false;
@@ -196,6 +198,7 @@ namespace ertool {
     // We have a list of showers.
     // Filter them to select gamma-mu showers
     for (auto const& p : graph.GetParticleNodes(RecoType_t::kShower)){
+      _cOnePlusShowerFlag = true;
       auto const& thisShower = datacpy.Shower(graph.GetParticle(p).RecoID());
       // keep track of whether it is mode13
       bool mode13 = true;
@@ -218,6 +221,7 @@ namespace ertool {
 	// make sure track has a length of at least 0.3 cm (wire spacing)
 	// greater longer than 3 mm
 	if (thatTrack.Length() < 0.3) {_nTrack--; continue;}
+	_cOnePlusTrackFlag = true;
 	if (_verbose) { std::cout << "Comparing with track (" << t << ")" << std::endl; }
 	
 	
@@ -426,8 +430,8 @@ namespace ertool {
       
     }// for all showers
       
-    if (_nShower > 0 )      _cOnePlusShower++; 
-    if (_nTrack  > 0 )      _cOnePlusTrack++ ;
+    if (_cOnePlusShowerFlag)_cOnePlusShower++; 
+    if (_cOnePlusTrackFlag) _cOnePlusTrack++ ;
     if (_cEnDepRadiusFlag)  _cEnDepRadius++  ;
     if (_cIPFlag)           _cIP++           ;
     if (_cOnePlusGammaFlag) _cOnePlusGamma++ ;
