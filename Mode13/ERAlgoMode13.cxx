@@ -62,6 +62,7 @@ namespace ertool {
     _cTotalEnergy    = 0;
     _cTotMom         = 0;
 
+    _cEvt= 0;
     /*   
      _Ethreshold       = 0;
     _hassister        = false;
@@ -125,7 +126,7 @@ namespace ertool {
   {
     _alg_emp.ProcessBegin();
     _alg_emp.SetMode(true);
-
+    _cEvt++;
     _nMu = 0;
     _nGamma = 0;
 
@@ -448,8 +449,9 @@ namespace ertool {
   
   void ERAlgoMode13::ProcessEnd(TFile* fout)
   {
-    std::cout << "Events that have at least 1 track .................................... "<< _cOnePlusTrack << std::endl;
+    std::cout << "Total number of events ............................................... "<< _cEvt          << std::endl;
     std::cout << "Events that have at least 1 shower ................................... "<< _cOnePlusShower<< std::endl;
+    std::cout << "Events that have at least 1 track .................................... "<< _cOnePlusTrack << std::endl;
     std::cout << "Events that have at least 1 track, 1 shower and  pass the radius cut . "<< _cEnDepRadius  << std::endl;
     std::cout << "Events that have at least 1 track, 1 shower and  pass the IP cut ..... "<< _cIP           << std::endl;
     std::cout << "Events that pass the opening angle cut ............................... "<< _cOpeningAngle << std::endl;

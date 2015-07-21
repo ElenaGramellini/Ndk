@@ -174,6 +174,7 @@ namespace ertool {
     double _TotMomZCutMin       = -99999999.;
 
     // Counters for the variables on which we cut
+    int _cEvt          ;//Count tot number of events
     int _cOnePlusTrack ;//Count events that have at least 1 track
     int _cOnePlusShower;//Count events that have at least 1 shower
     int _cEnDepRadius  ;//Count events that have at least 1 track, 1 shower and  pass the radius cut
