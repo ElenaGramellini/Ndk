@@ -126,7 +126,7 @@ namespace ertool {
   {
     _alg_emp.ProcessBegin();
     _alg_emp.SetMode(true);
-    _cEvt++;
+
     _nMu = 0;
     _nGamma = 0;
 
@@ -168,7 +168,7 @@ namespace ertool {
       std::cout << "Showers in event  : " << data.Shower().size() << std::endl;
       std::cout << "Tracks  in event  : " << data.Track().size() << std::endl;
     }
-
+    _cEvt++;
     // Let's take the number of showers and tracks
     // we will make cuts on showers and tracks quantities (e.g minimum lenght)
     // acceptable showers and tracks < tot showers and tracks
