@@ -205,25 +205,7 @@ namespace ertool {
 	// our shower has a common origin with this track
 
 	if (_verbose) { std::cout << "common origin w/ track!" << std::endl; }
-	// 7) the shower is a gamma
-	if (!isGammaLike(thisShower._dedx,vtxPdK.Dist(thisShower.Start()))){
-	  _dedx   = thisShower._dedx;
-	  _radlen = vtxPdK.Dist(thisShower.Start());
-	  _pdg    = 11;
-	  if (_verbose) { std::cout << "Shower is electron-like. Ignore " << std::endl; }
-	  mode13 = false;
-	  elect++;
-	  break;
-	}else{
-	  _cOnePlusGammaFlag = true;
-	  _nGamma++;
-	  _dedx   = thisShower._dedx;
-	  _radlen = vtxPdK.Dist(thisShower.Start());
-	  _pdg    = 22;
-	  mode13 = true;
-	}
 
-	if (!mode13) continue;
 	// 8) Opening angle > OA_min
 	openingAngle = thisShower.Dir().Angle(thatTrack.Dir());
 	if(openingAngle < OpeningAngleMinCut) continue;
@@ -267,9 +249,30 @@ namespace ertool {
 
 	// 3) the track must be a muon
 	if (thatTrack._pid !=4)  continue;
+	std::cout<<"PDGPDG "<<muon.PdgCode()<<"\n";
 	_cOnePlusMuFlag = true;
 	muonMap[thatTrack] = thatTrack.RecoID();  
 
+	// 7) the shower is a gamma
+	if (!isGammaLike(thisShower._dedx,vtxPdK.Dist(thisShower.Start()))){
+	  _dedx   = thisShower._dedx;
+	  _radlen = vtxPdK.Dist(thisShower.Start());
+	  _pdg    = 11;
+	  if (_verbose) { std::cout << "Shower is electron-like. Ignore " << std::endl; }
+	  mode13 = false;
+	  elect++;
+	  break;
+	}else{
+	  _cOnePlusGammaFlag = true;
+	  _nGamma++;
+	  _dedx   = thisShower._dedx;
+	  _radlen = vtxPdK.Dist(thisShower.Start());
+	  _pdg    = 22;
+	  mode13 = true;
+	}
+	if (!mode13) continue;
+	
+	
 	// Let's pinpoint where we are now.
 	// I have 1 shower and 1 mu that passed my constraints
 	// now I want to create a common parent, but I've gotta be smart!
