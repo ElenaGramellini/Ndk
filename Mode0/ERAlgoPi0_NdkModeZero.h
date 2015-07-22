@@ -107,6 +107,9 @@ namespace ertool {
     /// Set maximum Opening Angle for two showers
     void setAngleMax(double angle) { _angle_max = angle; }
 
+    /// Set minimum opening angle for two showers
+    void setAngleMin(double angle) { _angle_min = angle; }
+
     /// Set minimum shower energy
     void setMinShrEnergy(double E) { _energy_min = E; }
 

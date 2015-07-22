@@ -217,10 +217,36 @@ namespace ertool {
       	}
       }
 
+      ////////////////////////////////////////////////////////////////////
+      // THIS IS A TEST!!! KEEP NOTE OF THE EFFECT!!! WATCH ME CLOSE NOW! -WD
+      auto piontoeplus_v = geoalgo::Vector(0,0,0);
+      double piontoeplus_dist=100000;
+      double piontoeplus_dist_min=100000;
+      int pion_count=0;
+      double eplusradl=-1;
+
+      for (auto& p : graph.GetParticleArray()){ // loop through and grab pions
+      	if (p.PdgCode()==111){
+      		pion_count++;
+      		piontoeplus_v = p.Vertex() - thisShower.Start();
+      		piontoeplus_dist = piontoeplus_v.Length();
+      		if (piontoeplus_dist<piontoeplus_dist_min){piontoeplus_dist_min=piontoeplus_dist;} // if multiple pions, keep rad length from nearest vertex
+      	}
+      }
+
+      if (pion_count>0){
+      	eplusradl = piontoeplus_dist_min;
+      	if (_verbose){ std::cout<<"Using radlength in isGammaLike. Value: "<<eplusradl<<std::endl; }
+      }else{
+      	if (_verbose){ std::cout<<"No pion found. Using -1 as radlength."<<std::endl; }
+      	eplusradl = -1;
+      }
+      /////////////////////////////////////////////////////////////////////
+
       // if still single (and no sister track) look at
       // dEdx to determine if e-like
       if (single && !_hassister){
-      	if ( isGammaLike(thisShower._dedx,-1) || (thisShower._dedx <= 0) || (thisShower._dedx > 10.) ){
+      	if ( isGammaLike(thisShower._dedx, eplusradl) || (thisShower._dedx <= 0) || (thisShower._dedx > 10.) ){
       		if (_verbose) { std::cout << "Shower is single but gamma-like -> reject" << std::endl; }
       		single = false;
       	}

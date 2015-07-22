@@ -83,6 +83,7 @@ namespace ertool {
     TH1D* _h_e_eplus;
     TH1D* _h_p_eplus;
     TH1D* _h_m_eplus;
+    TH1D* _h_angle;
 
     TH1D* _h_e_pion_truth; 
     TH1D* _h_p_pion_truth;
@@ -90,6 +91,7 @@ namespace ertool {
     TH1D* _h_e_eplus_truth;
     TH1D* _h_p_eplus_truth;
     TH1D* _h_m_eplus_truth;
+    TH1D* _h_angle_truth;
 
     int _n_pion;
     int _n_eplus;
@@ -99,6 +101,9 @@ namespace ertool {
     std::vector<double> _e_eplus, _p_eplus, _m_eplus;
     std::vector<double> _x_eplus, _y_eplus, _z_eplus;
     std::vector<double> _px_eplus, _py_eplus, _pz_eplus;
+    std::vector<double> _x_ph1, _y_ph1, _z_ph1;
+    std::vector<double> _x_ph2, _y_ph2, _z_ph2;
+    std::vector<double> _angle;
 
     int _n_pion_truth;
     int _n_eplus_truth;
@@ -108,6 +113,10 @@ namespace ertool {
     std::vector<double> _e_eplus_truth, _p_eplus_truth, _m_eplus_truth;
     std::vector<double> _x_eplus_truth, _y_eplus_truth, _z_eplus_truth;
     std::vector<double> _px_eplus_truth, _py_eplus_truth, _pz_eplus_truth;
+    std::vector<double> _x_ph1_truth, _y_ph1_truth, _z_ph1_truth;
+    std::vector<double> _x_ph2_truth, _y_ph2_truth, _z_ph2_truth;
+    std::vector<double> _angle_truth;
+    int _correctlyIDed;
 
     /// counters to cout to screen after running
     int _numEvts;

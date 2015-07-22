@@ -19,6 +19,7 @@ namespace ertool {
     _h_e_eplus = new TH1D("_h_e_eplus", "e^{+} Energy; Energy (MeV); Count", 60, 0, 600);
     _h_p_eplus = new TH1D("_h_p_eplus", "e^{+} Momentum; Momentum (MeV); Count", 60, 0, 600);
     _h_m_eplus = new TH1D("_h_m_eplus", "e^{+} Mass; Mass (MeV); Count", 20, 0, 1);
+    _h_angle = new TH1D("_h_angle", "Opening angle of photons from #pi^{0}; Angle (rad); Count", 60, 0, 3.14);
 
     _h_e_pion_truth = new TH1D("_h_e_pion_truth", "Truth #pi^{0} Energy; Energy (MeV); Count", 60, 0, 600);
     _h_p_pion_truth = new TH1D("_h_p_pion_truth", "Truth #pi^{0} Momentum; Momentum (MeV); Count", 60, 0, 600);
@@ -26,6 +27,7 @@ namespace ertool {
     _h_e_eplus_truth = new TH1D("_h_e_eplus_truth", "Truth e^{+} Energy; Energy (MeV); Count", 60, 0, 600);
     _h_p_eplus_truth = new TH1D("_h_p_eplus_truth", "Truth e^{+} Momentum; Momentum (MeV); Count", 60, 0, 600);
     _h_m_eplus_truth = new TH1D("_h_m_eplus_truth", "Truth e^{+} Mass; Mass (MeV); Count", 20, 0, 1);
+    _h_angle_truth = new TH1D("_h_angle_truth", "Truth opening angle of photons from #pi^{0}; Angle (rad); Count", 60, 0, 3.14);
 
     _result_tree->Branch("_n_pion", &_n_pion, "n_pion/I");
     _result_tree->Branch("_e_pion", "vector<double>", &_e_pion);
@@ -47,6 +49,13 @@ namespace ertool {
     _result_tree->Branch("_pz_eplus", "vector<double>", &_pz_eplus); 
     _result_tree->Branch("_p_eplus", "vector<double>", &_p_eplus);
     _result_tree->Branch("_m_eplus", "vector<double>", &_m_eplus);
+    _result_tree->Branch("_x_ph1", "vector<double>", &_x_ph1);
+    _result_tree->Branch("_y_ph1", "vector<double>", &_y_ph1);
+    _result_tree->Branch("_z_ph1", "vector<double>", &_z_ph1);
+    _result_tree->Branch("_x_ph2", "vector<double>", &_x_ph2);
+    _result_tree->Branch("_y_ph2", "vector<double>", &_y_ph2);
+    _result_tree->Branch("_z_ph2", "vector<double>", &_z_ph2);
+    _result_tree->Branch("_angle", "vector<double>", &_angle);
 
     _result_tree->Branch("_n_pion_truth", &_n_pion_truth, "n_pion_truth/I");
     _result_tree->Branch("_e_pion_truth", "vector<double>", &_e_pion_truth);
@@ -68,6 +77,14 @@ namespace ertool {
     _result_tree->Branch("_pz_eplus_truth", "vector<double>", &_pz_eplus_truth); 
     _result_tree->Branch("_p_eplus_truth", "vector<double>", &_p_eplus_truth);
     _result_tree->Branch("_m_eplus_truth", "vector<double>", &_m_eplus_truth);
+    _result_tree->Branch("_x_ph1_truth", "vector<double>", &_x_ph1_truth);
+    _result_tree->Branch("_y_ph1_truth", "vector<double>", &_y_ph1_truth);
+    _result_tree->Branch("_z_ph1_truth", "vector<double>", &_z_ph1_truth);
+    _result_tree->Branch("_x_ph2_truth", "vector<double>", &_x_ph2_truth);
+    _result_tree->Branch("_y_ph2_truth", "vector<double>", &_y_ph2_truth);
+    _result_tree->Branch("_z_ph2_truth", "vector<double>", &_z_ph2_truth);
+    _result_tree->Branch("_angle_truth", "vector<double>", &_angle_truth);
+    _result_tree->Branch("_correctlyIDed", &_correctlyIDed, "correctlyIDed/I");
 
     // keep track of number of events gone by
     _numEvts = 0;
@@ -103,6 +120,10 @@ namespace ertool {
 
      // Get particle set
     auto const& graph_arr = graph.GetParticleArray();
+    auto &datshowers = graph.GetParticleNodes(kShower);
+    auto &dattracks = graph.GetParticleNodes(kTrack);
+
+    if (_debug){ std::cout<<"In event: "<<datshowers.size()<<" showers and "<<dattracks.size()<<" tracks."<<std::endl; }
 
     if (_debug){
       std::cout << "Particle Diagram: " << std::endl
@@ -132,10 +153,10 @@ namespace ertool {
 
     // The following is a hack. Do not apply to non-signal Mode0 samples.
 
-      auto &datshowers = graph.GetParticleNodes(kShower);
       auto &trushowers = mc_graph.GetParticleNodes(kShower);
 
       _badPion = false;
+      _correctlyIDed = 0;
 
       for (int i=0; i<datshowers.size(); i++){
         auto& truth_part = mc_graph.GetParticle(trushowers[i]);
@@ -151,7 +172,7 @@ namespace ertool {
           if (abs(data_id)==11){ _misID_e++; }
 
           if (mc_graph.GetParticle(truth_part.Parent()).PdgCode() == 111){
-        // This means we're looking at a reconstructed pion
+        // This means we're looking at a true pion
             if (graph.GetParticle(data_part.Parent()).PdgCode() != 111){
               _badPion = true;
             }
@@ -174,6 +195,8 @@ namespace ertool {
 
       if (_badPion) {_badPions++; }
 
+      if (_badPion) {_correctlyIDed = 0;} else {_correctlyIDed = 1;}
+
         // NOW WE SAVE ALL THE TRUTH INFORMATION
       for (auto &p : mc_graph_arr){
 
@@ -195,6 +218,29 @@ namespace ertool {
           _h_p_pion_truth->Fill(sqrt(pow(p.Momentum()[0],2) + pow(p.Momentum()[1],2) + pow(p.Momentum()[2],2)));
           _h_m_pion_truth->Fill(p.Mass());
 
+          // Calculate opening angle and save
+          auto& ch_truth = p.Children();
+          // Make sure it's not Dalitz decay
+          if (ch_truth.size() != 2){ continue; }
+          // Now get photons
+          auto& photon1 = mc_graph.GetParticle(ch_truth[0]);
+          auto& photon2 = mc_graph.GetParticle(ch_truth[1]);
+
+          auto& ph1_vtx = photon1.Vertex();
+          auto& ph2_vtx = photon2.Vertex();
+
+          _x_ph1_truth.push_back(ph1_vtx[0]);
+          _y_ph1_truth.push_back(ph1_vtx[1]);
+          _z_ph1_truth.push_back(ph1_vtx[2]);
+          _x_ph2_truth.push_back(ph2_vtx[0]);
+          _y_ph2_truth.push_back(ph2_vtx[1]);
+          _z_ph2_truth.push_back(ph2_vtx[2]);
+
+          auto& ph1_mom = photon1.Momentum();
+          auto& ph2_mom = photon2.Momentum();
+
+          _angle_truth.push_back(ph1_mom.Angle(ph2_mom));
+          _h_angle_truth->Fill(ph1_mom.Angle(ph2_mom));
 
         }
 
@@ -249,6 +295,35 @@ namespace ertool {
         _h_m_pion->Fill(p.Mass());
 
 
+        // Take care of truth events with one pi0 but >1 IDed pi0s
+        // if (_n_pion > 1){ _badPions++; }
+
+
+        // Calculate opening angle and save
+        auto& ch = p.Children();
+        // Make sure it's not Dalitz decay
+        if (ch.size() != 2){ continue; }
+        // Now get photons
+        auto& photon1 = graph.GetParticle(ch[0]);
+        auto& photon2 = graph.GetParticle(ch[1]);
+
+        auto& ph1_vtx = photon1.Vertex();
+        auto& ph2_vtx = photon2.Vertex();
+
+        _x_ph1.push_back(ph1_vtx[0]);
+        _y_ph1.push_back(ph1_vtx[1]);
+        _z_ph1.push_back(ph1_vtx[2]);
+        _x_ph2.push_back(ph2_vtx[0]);
+        _y_ph2.push_back(ph2_vtx[1]);
+        _z_ph2.push_back(ph2_vtx[2]);
+
+        auto& ph1_mom = photon1.Momentum();
+        auto& ph2_mom = photon2.Momentum();
+
+        _angle.push_back(ph1_mom.Angle(ph2_mom));
+        _h_angle->Fill(ph1_mom.Angle(ph2_mom));
+
+
       }
 
       // Find the e+ and store its energy
@@ -273,6 +348,8 @@ namespace ertool {
       }
     }
 
+    // _badPions+=(_n_pion - _n_truth_pion);
+
 
 
     // fill the tree
@@ -289,8 +366,8 @@ namespace ertool {
     if (_mc) { std::cout<< "Correctly IDed Pions: " << (_numPions-_badPions) << std::endl 
     << "Total Truth Pions: " << _numPions_truth << std::endl << std::endl; }
     std::cout<< "Reconstructed Electrons: " << _numEplus << std::endl;
-    if (_mc) { std::cout<< "Correctly IDed Es: " << (_numEplus - _misID_e) << std::endl 
-    << "Total Truth Es: " << _numEplus_truth << std::endl << std::endl
+    if (_mc) { std::cout<< "Correctly IDed e(+/-)s: " << (_numEplus - _misID_e) << std::endl 
+    << "Total Truth e+s: " << _numEplus_truth << std::endl << std::endl
     << "Correctly IDed Photons: " << (_numGamma - _misID_gamma) << std::endl
     << "Dalitz decays (included in 'badPion' def): " << _numPi2eey << std::endl; }
 
@@ -303,6 +380,7 @@ namespace ertool {
       _h_e_eplus->Write();
       _h_p_eplus->Write();
       _h_m_eplus->Write();
+      _h_angle->Write();
       if (_mc){
       _h_e_pion_truth->Write();
       _h_p_pion_truth->Write();
@@ -310,6 +388,7 @@ namespace ertool {
       _h_e_eplus_truth->Write();
       _h_p_eplus_truth->Write();
       _h_m_eplus_truth->Write();
+      _h_angle_truth->Write();
     }
     }
 
@@ -355,12 +434,17 @@ namespace ertool {
   _e_eplus.clear(); _p_eplus.clear(); _m_eplus.clear();
   _x_eplus.clear(); _y_eplus.clear(); _z_eplus.clear();
   _px_eplus.clear(); _py_eplus.clear(); _pz_eplus.clear();
+  _x_ph1.clear(); _y_ph1.clear(); _z_ph1.clear();
+  _x_ph2.clear(); _y_ph2.clear(); _z_ph2.clear();
   _e_pion_truth.clear(); _p_pion_truth.clear(); _m_pion_truth.clear();
   _x_pion_truth.clear(); _y_pion_truth.clear(); _z_pion_truth.clear();
   _px_pion_truth.clear(); _py_pion_truth.clear(); _pz_pion_truth.clear();
   _e_eplus_truth.clear(); _p_eplus_truth.clear(); _m_eplus_truth.clear();
   _x_eplus_truth.clear(); _y_eplus_truth.clear(); _z_eplus_truth.clear();
   _px_eplus_truth.clear(); _py_eplus_truth.clear(); _pz_eplus_truth.clear();
+  _x_ph1_truth.clear(); _y_ph1_truth.clear(); _z_ph1_truth.clear();
+  _x_ph2_truth.clear(); _y_ph2_truth.clear(); _z_ph2_truth.clear();
+  _angle.clear(); _angle_truth.clear();
 
   return;
 }

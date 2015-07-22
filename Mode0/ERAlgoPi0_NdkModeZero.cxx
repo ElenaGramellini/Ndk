@@ -185,7 +185,8 @@ namespace ertool {
 
     // Opening angle
     _angle = shower_a.Dir().Angle(shower_b.Dir());
-    //if (_angle > _angle_max) return;
+    if (_angle > _angle_max) return;
+    if (_angle < _angle_min) return;
     if (_verbose) { std::cout << "Opening angle:" << _angle << std::endl; }
 
     // Corrected energies
