@@ -28,6 +28,7 @@ my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 my_proc.set_ana_output_file("Mode13.root")
 
 # create an instance of the ERAlgo we want to use
+my_MuAlgo = ertool.ERAlgoMu()
 my_algo = ertool.ERAlgoMode13()
 my_ana = ertool.ERAnaMode13()
 
@@ -52,6 +53,7 @@ my_anaunit.SetTrackProducer(True,"mcreco");
 # this is stuff that can come useful in ERAna module
 my_anaunit._mgr._mc_for_ana = True
 
+my_anaunit._mgr.AddAlgo(my_MuAlgo)
 my_anaunit._mgr.AddAlgo(my_algo)
 # Add my algorithm's config file
 my_anaunit._mgr.AddCfgFile('mac/Mode13.cfg')

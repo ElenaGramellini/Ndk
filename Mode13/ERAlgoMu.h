@@ -82,7 +82,7 @@ namespace ertool {
 
     // verbosity flag
     bool _verbose;
-    
+    int n_mu = 0;
     
   };
 }

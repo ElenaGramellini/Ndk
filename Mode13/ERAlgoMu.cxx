@@ -34,43 +34,65 @@ namespace ertool {
 
   bool ERAlgoMu::Reconstruct(const EventData &data, ParticleGraph& graph)
   {
-    /*
+    int Pdg = -1; 
     // Loop through Particles associated with a track
     for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
       
       // get track object
       auto const& track = data.Track(graph.GetParticle(t).RecoID());
-      
-      // calculate distance between track end point and shower start point
-      auto const& trackEnd = track.back();
-      
-      n_mu++;
-    */
-      /*
-      // edit the particle's information
-      graph.GetParticle(p).SetParticleInfo(11,
-					   ParticleMass(11),
-					   trackEnd,
-					   shower.Dir()*shower._energy);
-      */
-
-      // also since we know it, add info on relationship
-      
-      // finally, if in verbose mode, cout some info
-    /*  
-    if (_verbose){
-	std::cout << "We found a muon!" << std::endl
-		  << "Track end point: " << trackEnd << std::endl
-		  << "Track energy: " << track._energy << " [MeV]" << std::endl
-		  << std::endl;
+     
+      if (_verbose){
+	std::cout<<track._pid_score[Track::kProton]<<" score proton\n";
+	std::cout<<track._pid_score[Track::kPion]<<" score pion\n";
+	std::cout<<track._pid_score[Track::kKaon]<<" score kaon\n";
+	std::cout<<track._pid_score[Track::kMuon]<<" score muon\n";
       }
+      n_mu++;
+
+      if ((track._pid_score[Track::kProton]<track._pid_score[Track::kPion])&&
+	  (track._pid_score[Track::kProton]<track._pid_score[Track::kKaon])&&
+	  (track._pid_score[Track::kProton]<track._pid_score[Track::kMuon]))      Pdg = 2212;
+     
+      if ((track._pid_score[Track::kPion]<track._pid_score[Track::kProton])&&
+	  (track._pid_score[Track::kPion]<track._pid_score[Track::kKaon])&&
+	  (track._pid_score[Track::kPion]<track._pid_score[Track::kMuon]))        Pdg = 211; 
+
+      if ((track._pid_score[Track::kKaon]<track._pid_score[Track::kProton])&&
+	  (track._pid_score[Track::kKaon]<track._pid_score[Track::kPion])&&
+	  (track._pid_score[Track::kKaon]<track._pid_score[Track::kMuon]))        Pdg = 321;
+
+      if ((track._pid_score[Track::kMuon]<track._pid_score[Track::kProton])&&
+	  (track._pid_score[Track::kMuon]<track._pid_score[Track::kPion])&&
+	  (track._pid_score[Track::kMuon]<track._pid_score[Track::kKaon]))        Pdg = 13;      
       
-      // fill histogram with muon electron energy
-      mu_energy->Fill(track._energy);
+      // track deposited energy
+      double Edep = track._energy;
+      // track direction
+      geoalgo::Vector_t Dir = (track[1]-track[0]);
+      Dir.Normalize();
+      double mass = ParticleMass(Pdg);
+      geoalgo::Vector_t Mom = Dir * ( sqrt( Edep * (Edep+2*mass) ) );
+
+      if (_verbose){
+	std::cout<<Edep<<" Edep\n";
+	std::cout<<Dir <<" Dir\n";
+	std::cout<<mass<<" mass\n";
+	std::cout<<Mom <<" Mom\n";
+      }
+
+      graph.GetParticle(t).SetParticleInfo(Pdg,
+					   mass,
+					   track.front(),
+					   Mom);
+      
+
+
+      
+
       
     }//End loop over tracks
 
-    */
+    
     return true;
   }
 

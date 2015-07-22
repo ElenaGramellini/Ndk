@@ -280,8 +280,6 @@ namespace ertool {
 	gamma.SetParticleInfo(22,_gamma_mass,thisShower.Start(),thisShower.Dir()*momGamma);
 	TLorentzVector gamma4Mom((gamma.Momentum())[0],(gamma.Momentum())[1],(gamma.Momentum())[2], gamma.Energy());
       
-	std::cout << " Muon"<< muon.Momentum() << std::endl; 
-	std::cout << " Gamma"<< gamma.Momentum() << std::endl; 
 	// 6)   MuonEn > MuonEnMin   &&   MuonEn < MuonEnMax
 	if( muon.Energy() < _MuonEnergyMinCut) continue;
 	if( muon.Energy() > _MuonEnergyMaxCut) continue;
