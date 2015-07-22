@@ -302,7 +302,8 @@ namespace ertool {
 	//mode13Map[thatTrack] = thatTrack.RecoID();
 
 	// 8) the track must be a muon
-	if (thatTrack._pid !=4)  continue;
+	//if (thatTrack._pid !=4)  continue;
+	if (muon.PdgCode() !=13)  continue;
 	_cOnePlusMuFlag = true;
 	muonMap[thatTrack] = thatTrack.RecoID();  
 
