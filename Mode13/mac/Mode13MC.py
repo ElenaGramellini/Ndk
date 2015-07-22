@@ -45,10 +45,10 @@ my_ana = ertool.ERAnaMode13()
 my_anaunit = fmwk.ExampleERSelection()
 # Set Producers
 # First Argument: True = MC, False = Reco
-#my_anaunit.SetShowerProducer(True,"mcreco");
-#my_anaunit.SetTrackProducer(True,"mcreco");
-my_anaunit.SetShowerProducer(False,"trackkalmanhitcc");
-my_anaunit.SetTrackProducer(False,"showerrecopandora");
+my_anaunit.SetShowerProducer(True,"mcreco");
+my_anaunit.SetTrackProducer(True,"mcreco");
+#my_anaunit.SetShowerProducer(False,"showerreco");
+#my_anaunit.SetTrackProducer(False,"");
 # should we load the MCTruth information? decide here
 # this is stuff that can come useful in ERAna module
 my_anaunit._mgr._mc_for_ana = True
