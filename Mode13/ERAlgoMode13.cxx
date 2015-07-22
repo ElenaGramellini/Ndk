@@ -168,6 +168,9 @@ namespace ertool {
       std::cout << "Showers in event  : " << data.Shower().size() << std::endl;
       std::cout << "Tracks  in event  : " << data.Track().size() << std::endl;
     }
+
+    if (!data.Shower().size()) std::cout<<"event_id : "<<data.Event_ID()<<" run: "<<data.Run()<<" subrun: "<<data.SubRun()<<"\n";
+
     _cEvt++;
     // Let's take the number of showers and tracks
     // we will make cuts on showers and tracks quantities (e.g minimum lenght)
