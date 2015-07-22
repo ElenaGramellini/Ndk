@@ -14,6 +14,7 @@
 #pragma link C++ class ertool::ERAlgoSingleE_NdkModeZero+;
 #pragma link C++ class ertool::ERAlgoPi0_NdkModeZero+;
 #pragma link C++ class ertool::ERAnaPi0Test+;
+#pragma link C++ class larlite::ShowerFilter_NdkModeZero+;
 //ADD_NEW_CLASS ... do not change this line
 #endif
 
