@@ -132,8 +132,8 @@ namespace ertool {
     _MCproton_y     = trackParticle.Vertex()[1];
     _MCproton_z     = trackParticle.Vertex()[2];
     
-    TLorentzVector shower4Mom((showerParticle.Momentum())[0],(showerParticle.Momentum())[1],(showerParticle.Momentum())[2], showerParticle.Energy());
-    TLorentzVector track4Mom((trackParticle.Momentum())[0],(trackParticle.Momentum())[1],(trackParticle.Momentum())[2], trackParticle.Energy());
+    TLorentzVector shower4Mom((showerParticle.Momentum())[0],(showerParticle.Momentum())[1],(showerParticle.Momentum())[2], showerParticle.Mass());
+    TLorentzVector track4Mom((trackParticle.Momentum())[0],(trackParticle.Momentum())[1],(trackParticle.Momentum())[2], trackParticle.Mass());
     TLorentzVector proton4Mom = shower4Mom + track4Mom ;
     
     _MCmu_momentum = sqrt(_MCmu_px*_MCmu_px+_MCmu_py*_MCmu_py+_MCmu_pz*_MCmu_pz);
