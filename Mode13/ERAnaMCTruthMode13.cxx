@@ -45,6 +45,7 @@ namespace ertool {
     _anaMC_tree->Branch("_MCmu_pdg"       ,&_MCmu_pdg       ,"_MCmu_pdg/I       ");
     _anaMC_tree->Branch("_MCmu_energy"    ,&_MCmu_energy    ,"_MCmu_energy/D    ");
     _anaMC_tree->Branch("_MCmu_mass"      ,&_MCmu_mass      ,"_MCmu_mass/D      ");
+    _anaMC_tree->Branch("_MCmu_momentum"  ,&_MCmu_momentum  ,"_MCmu_momentum/D  ");
 		                                                          
     _anaMC_tree->Branch("_MCgamma_x"      ,&_MCgamma_x      ,"_MCgamma_x/D      ");
     _anaMC_tree->Branch("_MCgamma_y"      ,&_MCgamma_y      ,"_MCgamma_y/D      ");
@@ -56,6 +57,7 @@ namespace ertool {
     _anaMC_tree->Branch("_MCgamma_energy" ,&_MCgamma_energy ,"_MCgamma_energy/D ");
     _anaMC_tree->Branch("_MCgamma_pgd"    ,&_MCgamma_pgd    ,"_MCgamma_pgd/I    ");
     _anaMC_tree->Branch("_MCgamma_mass"   ,&_MCgamma_mass   ,"_MCgamma_mass/D   ");
+    _anaMC_tree->Branch("_MCgamma_momentum",&_MCgamma_momentum   ,"_MCgamma_momentum/D   ");
 			    		       		        
     _anaMC_tree->Branch("_MCmu_gamma_angle",&_MCmu_gamma_angle,"_MCmu_gamma_angle/D");
   }
@@ -134,6 +136,8 @@ namespace ertool {
     TLorentzVector track4Mom((trackParticle.Momentum())[0],(trackParticle.Momentum())[1],(trackParticle.Momentum())[2], trackParticle.Energy());
     TLorentzVector proton4Mom = shower4Mom + track4Mom ;
     
+    _MCmu_momentum = sqrt(_MCmu_px*_MCmu_px+_MCmu_py*_MCmu_py+_MCmu_pz*_MCmu_pz);
+    _MCgamma_momentum = sqrt(_MCgamma_px*_MCgamma_px+_MCgamma_py*_MCgamma_py+_MCgamma_pz*_MCgamma_pz);
     
     //    _MCproton_t     = ;
     _MCproton_px    = proton4Mom.X()*conversion;
@@ -193,7 +197,8 @@ namespace ertool {
     _MCmu_pdg       = -1 ;
     _MCmu_energy    = -1 ;
     _MCmu_mass      = -1 ;
-       
+    _MCmu_momentum  = -1 ;      
+
     _MCgamma_x      = -1 ;
     _MCgamma_y      = -1 ;
     _MCgamma_z      = -1 ;
@@ -204,7 +209,8 @@ namespace ertool {
     _MCgamma_energy = -1 ;
     _MCgamma_pgd    = -1 ;
     _MCgamma_mass   = -1 ;
-       
+    _MCgamma_momentum  = -1 ;      
+
     _MCmu_gamma_angle = -1 ;
 
     return;

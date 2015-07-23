@@ -95,7 +95,8 @@ namespace ertool {
     int    _MCmu_pdg       ;
     double _MCmu_energy    ;
     double _MCmu_mass      ;
-	      
+    double _MCmu_momentum  ;
+
     double _MCgamma_x      ;
     double _MCgamma_y      ;
     double _MCgamma_z      ;
@@ -106,7 +107,8 @@ namespace ertool {
     double _MCgamma_energy ;
     int    _MCgamma_pgd    ;
     double _MCgamma_mass   ;
-	      
+    double _MCgamma_momentum  ;
+
     double _MCmu_gamma_angle;
 
 
