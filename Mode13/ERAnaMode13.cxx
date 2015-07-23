@@ -18,7 +18,6 @@ namespace ertool {
 
   void ERAnaMode13::ProcessBegin()
   {
-
     if (_ana_tree) { delete _ana_tree; }
     _ana_tree = new TTree("_ana_tree","Ana Mode13 Tree");
 

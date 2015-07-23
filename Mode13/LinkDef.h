@@ -16,8 +16,10 @@
 #pragma link C++ class ertool::ERAnaMu+;
 #pragma link C++ class ertool::ERAnaGamma+;
 #pragma link C++ class ertool::ERAnaMode13+;
+#pragma link C++ class ertool::ERAnaMCTruthMode13+;
 //ADD_NEW_CLASS ... do not change this line
 #endif
+
 
 
 

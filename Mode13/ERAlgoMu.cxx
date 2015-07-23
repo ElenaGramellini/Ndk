@@ -34,14 +34,18 @@ namespace ertool {
 
   bool ERAlgoMu::Reconstruct(const EventData &data, ParticleGraph& graph)
   {
+    auto datacpy = data;
     int Pdg = -1; 
     // Loop through Particles associated with a track
     for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
       
       // get track object
-      auto const& track = data.Track(graph.GetParticle(t).RecoID());
-     
+      auto const& track = datacpy.Track(graph.GetParticle(t).RecoID());
+
       if (_verbose){
+	std::cout<<track._pid_score[Track::kTrackPartIDMax]<<" score kTrackPartIDMax\n";
+	std::cout<<track._pid_score[Track::kPIDA]<<" score kPIDA\n";
+	std::cout<<track._pid_score[Track::kUnknown]<<" score kUnknown\n";
 	std::cout<<track._pid_score[Track::kProton]<<" score proton\n";
 	std::cout<<track._pid_score[Track::kPion]<<" score pion\n";
 	std::cout<<track._pid_score[Track::kKaon]<<" score kaon\n";
@@ -65,27 +69,46 @@ namespace ertool {
 	  (track._pid_score[Track::kMuon]<track._pid_score[Track::kPion])&&
 	  (track._pid_score[Track::kMuon]<track._pid_score[Track::kKaon]))        Pdg = 13;      
       
+
       // track deposited energy
+
       double Edep = track._energy;
+      double lenght = track.Length();
+      double rough_dEdx = Edep/lenght;
+
+      if  (rough_dEdx < 2.4) Pdg = 13;
+
       // track direction
       geoalgo::Vector_t Dir = (track[1]-track[0]);
       Dir.Normalize();
       double mass = ParticleMass(Pdg);
       geoalgo::Vector_t Mom = Dir * ( sqrt( Edep * (Edep+2*mass) ) );
 
-      if (_verbose){
-	std::cout<<Edep<<" Edep\n";
-	std::cout<<Dir <<" Dir\n";
-	std::cout<<mass<<" mass\n";
-	std::cout<<Mom <<" Mom\n";
-      }
 
       graph.GetParticle(t).SetParticleInfo(Pdg,
 					   mass,
 					   track.front(),
 					   Mom);
-      
 
+      auto muon =graph.GetParticle(t);
+      double Energy = sqrt(Mom*Mom + mass*mass);
+      if (_verbose){
+	std::cout<<"Edep  .............. "<<Edep      <<" \n";
+	std::cout<<"lenght.............. "<<lenght    <<" \n";
+	std::cout<<"dedx  .............. "<<rough_dEdx<<"\n";
+	std::cout<<"mass  .............. "<<mass      <<"  \n";
+	std::cout<<"Dir   .............. "<<Dir       <<"  \n";
+	std::cout<<"Momentum ........... "<<Mom       <<"  \n";
+	std::cout<<"Energy ............. "<<Energy    <<" \n";
+      }
+
+      std::cout<<"\n\n\nEdep  .............. "<<Edep      <<" \n";
+      std::cout<<"lenght.............. "<<lenght    <<" \n";
+      std::cout<<"dedx  .............. "<<rough_dEdx<<"\n";
+      std::cout<<"mass  .............. "<<mass      <<"  \n";
+      std::cout<<"Dir   .............. "<<Dir       <<"  \n";
+      std::cout<<"Momentum ........... "<<Mom       <<"  \n";
+      std::cout<<"Energy ............. "<<Energy    <<" \n";
 
       
 
