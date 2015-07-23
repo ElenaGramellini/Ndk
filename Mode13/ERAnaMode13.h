@@ -87,6 +87,7 @@ namespace ertool {
     int    _proton_pdg   ;
     double _proton_energy;
     double _proton_mass  ;
+    double _proton_momentum;
 
     double _mu_x         ;
     double _mu_y         ;
@@ -98,6 +99,7 @@ namespace ertool {
     int    _mu_pdg       ;
     double _mu_energy    ;
     double _mu_mass      ;
+    double _mu_momentum  ;
 
     double _gamma_x      ;
     double _gamma_y      ;
@@ -109,6 +111,7 @@ namespace ertool {
     double _gamma_energy ;
     int    _gamma_pgd    ;
     double _gamma_mass   ;
+    double _gamma_momentum;
 
     double _mu_gamma_angle;
 

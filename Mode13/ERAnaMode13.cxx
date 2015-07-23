@@ -31,7 +31,8 @@ namespace ertool {
     _ana_tree->Branch("_proton_pdg"   ,&_proton_pdg   ,"_proton_pdg/I   ");
     _ana_tree->Branch("_proton_energy",&_proton_energy,"_proton_energy/D");
     _ana_tree->Branch("_proton_mass"  ,&_proton_mass  ,"_proton_mass/D  ");
-		                                                    
+    _ana_tree->Branch("_proton_momentum"  ,&_proton_momentum  ,"_proton_momentum/D  ");
+
     _ana_tree->Branch("_mu_x"         ,&_mu_x         ,"_mu_x/D         ");
     _ana_tree->Branch("_mu_y"         ,&_mu_y         ,"_mu_y/D         ");
     _ana_tree->Branch("_mu_z"         ,&_mu_z         ,"_mu_z/D         ");
@@ -42,7 +43,8 @@ namespace ertool {
     _ana_tree->Branch("_mu_pdg"       ,&_mu_pdg       ,"_mu_pdg/I       ");
     _ana_tree->Branch("_mu_energy"    ,&_mu_energy    ,"_mu_energy/D    ");
     _ana_tree->Branch("_mu_mass"      ,&_mu_mass      ,"_mu_mass/D      ");
-		                                                    
+    _ana_tree->Branch("_mu_momentum"  ,&_mu_momentum  ,"_mu_momentum/D  ");		                                                    
+
     _ana_tree->Branch("_gamma_x"      ,&_gamma_x      ,"_gamma_x/D      ");
     _ana_tree->Branch("_gamma_y"      ,&_gamma_y      ,"_gamma_y/D      ");
     _ana_tree->Branch("_gamma_z"      ,&_gamma_z      ,"_gamma_z/D      ");
@@ -53,6 +55,7 @@ namespace ertool {
     _ana_tree->Branch("_gamma_energy" ,&_gamma_energy ,"_gamma_energy/D ");
     _ana_tree->Branch("_gamma_pgd"    ,&_gamma_pgd    ,"_gamma_pgd/I    ");
     _ana_tree->Branch("_gamma_mass"   ,&_gamma_mass   ,"_gamma_mass/D   ");
+    _ana_tree->Branch("_gamma_momentum"  ,&_gamma_momentum  ,"_gamma_momentum/D  ");		                                                    
 
     _ana_tree->Branch("_mu_gamma_angle",&_mu_gamma_angle,"_mu_gamma_angle/D");
 
@@ -82,11 +85,12 @@ namespace ertool {
       _proton_pdg    = proton.PdgCode()       ;
       _proton_energy = proton.Energy()        ;
       _proton_mass   = proton.Mass()          ;
-
+      _proton_momentum = sqrt(_proton_px*_proton_px+_proton_py*_proton_py+_proton_pz*_proton_pz);
       Particle muon;
       Particle gamma;
       for (auto const& c : proton.Children()) 
 	{
+
 	  auto& children = graph.GetParticle(c);
 	  if (children.PdgCode() == 22)
 	    {
@@ -101,6 +105,9 @@ namespace ertool {
 	      _gamma_energy = gamma.Energy()        ;
 	      _gamma_pgd    = gamma.PdgCode()       ;
 	      _gamma_mass   = gamma.Mass()          ;
+	      //	      _gamma_momentum   = gamma.Mass()          ;
+	      _gamma_momentum = sqrt(_gamma_px*_gamma_px+_gamma_py*_gamma_py+_gamma_pz*_gamma_pz);
+
 	    } else
 	    {
 	      muon = children;
@@ -114,6 +121,7 @@ namespace ertool {
 	      _mu_pdg       = muon.PdgCode()       ;
 	      _mu_energy    = muon.Energy()        ;
 	      _mu_mass      = muon.Mass()          ;   
+	      _mu_momentum = sqrt(_mu_px*_mu_px+_mu_py*_mu_py+_mu_pz*_mu_pz);
 	    }
 	  //_mu_gamma_angle;
 	  
