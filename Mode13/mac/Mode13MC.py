@@ -30,6 +30,7 @@ my_proc.set_ana_output_file("Mode13.root")
 # create an instance of the ERAlgo we want to use
 my_MuAlgo = ertool.ERAlgoMu()
 my_algo = ertool.ERAlgoMode13()
+my_anaMC = ertool.ERAnaMCTruthMode13()
 my_ana = ertool.ERAnaMode13()
 
 
@@ -59,6 +60,7 @@ my_anaunit._mgr.AddAlgo(my_algo)
 my_anaunit._mgr.AddCfgFile('mac/Mode13.cfg')
 
 my_anaunit._mgr.AddAna(my_ana)
+my_anaunit._mgr.AddAna(my_anaMC)
 
 my_proc.add_process(my_anaunit)
 

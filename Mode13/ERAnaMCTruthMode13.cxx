@@ -144,10 +144,10 @@ namespace ertool {
     _MCproton_py    = proton4Mom.Y()*conversion;
     _MCproton_pz    = proton4Mom.Z()*conversion;
     //    _MCproton_pdg   = ;
-    _MCproton_energy= (showerParticle.Energy()+trackParticle.Energy())*conversion;
+    _MCproton_energy= (proton4Mom.Energy())*conversion;
     _MCproton_mass  = proton4Mom.Mag()*conversion;
     
-  
+    std::cout <<"Energy: "<<    _MCproton_energy <<" Mass  : "<<    _MCproton_mass <<" \n"; 
   
     for (auto const& I : mc_graph.GetParticleNodes(RecoType_t::kInvisible)){
       //      auto const& thatInvisible = mc_data.Invisible(mc_graph.GetParticle(I).RecoID());
