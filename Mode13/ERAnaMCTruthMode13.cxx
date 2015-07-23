@@ -69,7 +69,8 @@ namespace ertool {
     auto const& mc_graph = MCParticleGraph();
     auto const& mc_graph_arr = mc_graph.GetParticleArray();
     auto const& mc_data = MCEventData();
-    double conversion = 1./1000;
+    //    double conversion = 1./1000;
+    double conversion = 1.;
     Particle showerParticle;
     Particle trackParticle;
     Track  thatTrack;
