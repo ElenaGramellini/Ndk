@@ -9,7 +9,7 @@ namespace ertool {
   : AnaBase(name)
   , _anaMC_tree(nullptr)
   {
-    _verbose = true;
+    _verbose = false;
   }
 
   void ERAnaMCTruthMode13::Reset()
@@ -67,7 +67,7 @@ namespace ertool {
     auto const& mc_graph = MCParticleGraph();
     auto const& mc_graph_arr = mc_graph.GetParticleArray();
     auto const& mc_data = MCEventData();
-
+    double conversion = 1./1000;
     Particle showerParticle;
     Particle trackParticle;
     Track  thatTrack;
@@ -105,24 +105,24 @@ namespace ertool {
     _MCgamma_y      =  showerParticle.Vertex()[1]  ;
     _MCgamma_z      =  showerParticle.Vertex()[2]  ;
     //      _MCgamma_t      =  DO WE HAVE THIS INFO???
-    _MCgamma_px     =  showerParticle.Momentum()[0];
-    _MCgamma_py     =  showerParticle.Momentum()[1];
-    _MCgamma_pz     =  showerParticle.Momentum()[2];
-    _MCgamma_energy =  showerParticle.Energy()     ;
+    _MCgamma_px     =  showerParticle.Momentum()[0]*conversion;
+    _MCgamma_py     =  showerParticle.Momentum()[1]*conversion;
+    _MCgamma_pz     =  showerParticle.Momentum()[2]*conversion;
+    _MCgamma_energy =  showerParticle.Energy()*conversion     ;
     _MCgamma_pgd    =  showerParticle.PdgCode()    ;
-    _MCgamma_mass   =  showerParticle.Mass()       ;
+    _MCgamma_mass   =  showerParticle.Mass()*conversion       ;
     
     
     _MCmu_x         = trackParticle.Vertex()[0]  ;
     _MCmu_y         = trackParticle.Vertex()[1]  ;
     _MCmu_z         = trackParticle.Vertex()[2]  ;
     //_MCmu_t         = ; DO WE HAVE THIS INFO???
-    _MCmu_px        = trackParticle.Momentum()[0];
-    _MCmu_py        = trackParticle.Momentum()[1];
-    _MCmu_pz        = trackParticle.Momentum()[2];
+    _MCmu_px        = trackParticle.Momentum()[0]*conversion;
+    _MCmu_py        = trackParticle.Momentum()[1]*conversion;
+    _MCmu_pz        = trackParticle.Momentum()[2]*conversion;
     _MCmu_pdg       = trackParticle.PdgCode()    ;    
-    _MCmu_energy    = trackParticle.Energy()     ;    
-    _MCmu_mass      = trackParticle.Mass()       ;      
+    _MCmu_energy    = trackParticle.Energy()*conversion     ;    
+    _MCmu_mass      = trackParticle.Mass()*conversion       ;      
     
     
     _MCmu_gamma_angle = thisShower.Dir().Angle(thatTrack.Dir());
@@ -136,12 +136,12 @@ namespace ertool {
     
     
     //    _MCproton_t     = ;
-    _MCproton_px    = proton4Mom.X();
-    _MCproton_py    = proton4Mom.Y();
-    _MCproton_pz    = proton4Mom.Z();
+    _MCproton_px    = proton4Mom.X()*conversion;
+    _MCproton_py    = proton4Mom.Y()*conversion;
+    _MCproton_pz    = proton4Mom.Z()*conversion;
     //    _MCproton_pdg   = ;
-    _MCproton_energy= proton4Mom.T();
-    _MCproton_mass  = proton4Mom.Mag();
+    _MCproton_energy= proton4Mom.T()*conversion;
+    _MCproton_mass  = proton4Mom.Mag()*conversion;
     
   
   
