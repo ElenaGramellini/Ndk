@@ -84,10 +84,8 @@ namespace ertool {
 
     if (_verbose) std::cout<<"Number of showers: "<<mc_data.Shower().size()<<"\n";
     for (auto const& p : mc_graph.GetParticleNodes(RecoType_t::kShower)){
-      
       thisShower = mc_data.Shower(mc_graph.GetParticle(p).RecoID());
-      showerParticle = mc_graph.GetParticle(p);
-      
+      if (mc_graph.GetParticle(p).PdgCode() == 22) showerParticle = mc_graph.GetParticle(p);
       if (_verbose) { 
 	std::cout << "Shower:             (" << p << ")" << "\tE: " << thisShower._energy << std::endl; 
 	std::cout << "Shower particle:    (" << p << ")" << "\tE: " << showerParticle.Energy() << std::endl; }     
@@ -97,61 +95,57 @@ namespace ertool {
     if (_verbose) std::cout<<"Number of Tracks: "<<mc_data.Track().size()<<"\n";
     for (auto const& t : mc_graph.GetParticleNodes(RecoType_t::kTrack)){
       thatTrack = mc_data.Track(mc_graph.GetParticle(t).RecoID());
-      trackParticle = mc_graph.GetParticle(t);
+      if (mc_graph.GetParticle(t).PdgCode() == -13) trackParticle = mc_graph.GetParticle(t);
       if (_verbose) { 
 	std::cout << "Track:              (" << t << ")" << "\tE: " << thatTrack._energy << std::endl; 
 	std::cout << "Track particle:     (" << t << ")" << "\tE: " << trackParticle.Energy() << std::endl; }      
     }
     
-    if ((trackParticle.PdgCode() == -13)&&(showerParticle.PdgCode() == 22)){
-
-
-      _MCgamma_x      =  showerParticle.Vertex()[0]  ;
-      _MCgamma_y      =  showerParticle.Vertex()[1]  ;
-      _MCgamma_z      =  showerParticle.Vertex()[2]  ;
-      //      _MCgamma_t      =  DO WE HAVE THIS INFO???
-      _MCgamma_px     =  showerParticle.Momentum()[0];
-      _MCgamma_py     =  showerParticle.Momentum()[1];
-      _MCgamma_pz     =  showerParticle.Momentum()[2];
-      _MCgamma_energy =  showerParticle.PdgCode()    ;
-      _MCgamma_pgd    =  showerParticle.Energy()     ;
-      _MCgamma_mass   =  showerParticle.Mass()       ;
-
-
-      _MCmu_x         = trackParticle.Vertex()[0]  ;
-      _MCmu_y         = trackParticle.Vertex()[1]  ;
-      _MCmu_z         = trackParticle.Vertex()[2]  ;
-      //_MCmu_t         = ; DO WE HAVE THIS INFO???
-      _MCmu_px        = trackParticle.Momentum()[0];
-      _MCmu_py        = trackParticle.Momentum()[1];
-      _MCmu_pz        = trackParticle.Momentum()[2];
-      _MCmu_pdg       = trackParticle.PdgCode()    ;    
-      _MCmu_energy    = trackParticle.Energy()     ;    
-      _MCmu_mass      = trackParticle.Mass()       ;      
-      
-
-
-      _MCmu_gamma_angle = thisShower.Dir().Angle(thatTrack.Dir());
-      _MCproton_x     = trackParticle.Vertex()[0];
-      _MCproton_y     = trackParticle.Vertex()[1];
-      _MCproton_z     = trackParticle.Vertex()[2];
-
-      TLorentzVector shower4Mom((showerParticle.Momentum())[0],(showerParticle.Momentum())[1],(showerParticle.Momentum())[2], showerParticle.Energy());
-      TLorentzVector track4Mom((trackParticle.Momentum())[0],(trackParticle.Momentum())[1],(trackParticle.Momentum())[2], trackParticle.Energy());
-      TLorentzVector proton4Mom = shower4Mom + track4Mom ;
-      
-      
-      //    _MCproton_t     = ;
-      _MCproton_px    = proton4Mom.X();
-      _MCproton_py    = proton4Mom.Y();
-      _MCproton_pz    = proton4Mom.Z();
-      //    _MCproton_pdg   = ;
-      _MCproton_energy= proton4Mom.T();
-      _MCproton_mass  = proton4Mom.Mag();
-      
-    }
+    _MCgamma_x      =  showerParticle.Vertex()[0]  ;
+    _MCgamma_y      =  showerParticle.Vertex()[1]  ;
+    _MCgamma_z      =  showerParticle.Vertex()[2]  ;
+    //      _MCgamma_t      =  DO WE HAVE THIS INFO???
+    _MCgamma_px     =  showerParticle.Momentum()[0];
+    _MCgamma_py     =  showerParticle.Momentum()[1];
+    _MCgamma_pz     =  showerParticle.Momentum()[2];
+    _MCgamma_energy =  showerParticle.Energy()     ;
+    _MCgamma_pgd    =  showerParticle.PdgCode()    ;
+    _MCgamma_mass   =  showerParticle.Mass()       ;
     
     
+    _MCmu_x         = trackParticle.Vertex()[0]  ;
+    _MCmu_y         = trackParticle.Vertex()[1]  ;
+    _MCmu_z         = trackParticle.Vertex()[2]  ;
+    //_MCmu_t         = ; DO WE HAVE THIS INFO???
+    _MCmu_px        = trackParticle.Momentum()[0];
+    _MCmu_py        = trackParticle.Momentum()[1];
+    _MCmu_pz        = trackParticle.Momentum()[2];
+    _MCmu_pdg       = trackParticle.PdgCode()    ;    
+    _MCmu_energy    = trackParticle.Energy()     ;    
+    _MCmu_mass      = trackParticle.Mass()       ;      
+    
+    
+    _MCmu_gamma_angle = thisShower.Dir().Angle(thatTrack.Dir());
+    _MCproton_x     = trackParticle.Vertex()[0];
+    _MCproton_y     = trackParticle.Vertex()[1];
+    _MCproton_z     = trackParticle.Vertex()[2];
+    
+    TLorentzVector shower4Mom((showerParticle.Momentum())[0],(showerParticle.Momentum())[1],(showerParticle.Momentum())[2], showerParticle.Energy());
+    TLorentzVector track4Mom((trackParticle.Momentum())[0],(trackParticle.Momentum())[1],(trackParticle.Momentum())[2], trackParticle.Energy());
+    TLorentzVector proton4Mom = shower4Mom + track4Mom ;
+    
+    
+    //    _MCproton_t     = ;
+    _MCproton_px    = proton4Mom.X();
+    _MCproton_py    = proton4Mom.Y();
+    _MCproton_pz    = proton4Mom.Z();
+    //    _MCproton_pdg   = ;
+    _MCproton_energy= proton4Mom.T();
+    _MCproton_mass  = proton4Mom.Mag();
+    
+  
+  
+  
     for (auto const& I : mc_graph.GetParticleNodes(RecoType_t::kInvisible)){
       //      auto const& thatInvisible = mc_data.Invisible(mc_graph.GetParticle(I).RecoID());
       //if (_verbose) { std::cout << "That invisible: (" << I << ")" << "\tE: " << thatInvisible._energy << std::endl; }
