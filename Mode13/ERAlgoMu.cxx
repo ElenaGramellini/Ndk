@@ -101,17 +101,6 @@ namespace ertool {
 	std::cout<<"Momentum ........... "<<Mom       <<"  \n";
 	std::cout<<"Energy ............. "<<Energy    <<" \n";
       }
-
-      std::cout<<"\n\n\nEdep  .............. "<<Edep      <<" \n";
-      std::cout<<"lenght.............. "<<lenght    <<" \n";
-      std::cout<<"dedx  .............. "<<rough_dEdx<<"\n";
-      std::cout<<"mass  .............. "<<mass      <<"  \n";
-      std::cout<<"Dir   .............. "<<Dir       <<"  \n";
-      std::cout<<"Momentum ........... "<<Mom       <<"  \n";
-      std::cout<<"Energy ............. "<<Energy    <<" \n";
-
-      
-
       
     }//End loop over tracks
 
