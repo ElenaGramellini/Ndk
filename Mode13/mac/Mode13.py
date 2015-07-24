@@ -25,7 +25,7 @@ for x in xrange(len(sys.argv)-1):
 my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
-my_proc.set_ana_output_file("Mode13.root")
+my_proc.set_ana_output_file("Mode13RecoCorrect.root")
 
 # create an instance of the ERAlgo we want to use
 my_MuAlgo = ertool.ERAlgoMu()
