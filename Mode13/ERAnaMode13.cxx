@@ -4,7 +4,6 @@
 #include "ERAnaMode13.h"
 
 namespace ertool {
-  int count = 0;
   ERAnaMode13::ERAnaMode13(const std::string& name) 
   : AnaBase(name)
   , _ana_tree(nullptr)
@@ -72,7 +71,6 @@ namespace ertool {
 
     // Filter them to select gamma-mu showers
     for (auto const& p : graph.GetPrimaryNodes(RecoType_t::kInvisible)){ 
-      count++;
       //Let's fill the proton quantities...
       auto& proton = graph.GetParticle(p);
       _proton_x      = (proton.Vertex())[0]   ;
@@ -135,7 +133,6 @@ namespace ertool {
 
   void ERAnaMode13::ProcessEnd(TFile* fout)
   {
-    std::cout<<count<<" count\n";
     if(fout){
       fout->cd();
       if (_ana_tree)
