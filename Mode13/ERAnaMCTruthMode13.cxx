@@ -127,7 +127,7 @@ namespace ertool {
     _MCmu_energy    = trackParticle.Energy()*conversion     ;    
     _MCmu_mass      = trackParticle.Mass()*conversion       ;      
     
-    
+    if (thatTrack.Length() < 0.3)  continue;
     _MCmu_gamma_angle = thisShower.Dir().Angle(thatTrack.Dir());
     _MCproton_x     = trackParticle.Vertex()[0];
     _MCproton_y     = trackParticle.Vertex()[1];
