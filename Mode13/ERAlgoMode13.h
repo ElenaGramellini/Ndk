@@ -158,7 +158,12 @@ namespace ertool {
     double _EnDepDistanceMaxCut =  99999999.;
     double _IPMaxCut            =  99999999.;
     double _OpeningAngleMinCut  =  0.;
+    double _Xmin  = -10.;  double _Ymin  =  -126.;  double _Zmin  =   -10.;
+    double _Xmax  = 292.;  double _Ymax  =   136.;  double _Zmax  =  1150.;
     
+    //double _Xmin  =   3.;  double _Ymin  =  -113.;  double _Zmin  =     0.;
+    //double _Xmax  = 250.;  double _Ymax  =   113.;  double _Zmax  =  1150.;
+
     // Calorimetry loose cuts
     double _MuonEnergyMaxCut    =  99999999.;
     double _GammaEnergyMaxCut   =  99999999.;

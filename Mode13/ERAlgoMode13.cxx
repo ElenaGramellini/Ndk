@@ -225,10 +225,12 @@ namespace ertool {
 	// make sure track has a length of at least 0.3 cm (wire spacing)
 	// greater longer than 3 mm
 	if (thatTrack.Length() < 0.3) {_nTrack--; continue;}
-	if (thatTrack.back()[0] <    3) {_nTrack--; continue;}
-	if (thatTrack.back()[1] < -113) {_nTrack--; continue;}
-	if (thatTrack.back()[0] >  250) {_nTrack--; continue;}
-	if (thatTrack.back()[1] >  113) {_nTrack--; continue;}
+	if (thatTrack.back()[0] < _Xmin) {_nTrack--; continue;}
+	if (thatTrack.back()[0] > _Xmax) {_nTrack--; continue;}
+	if (thatTrack.back()[1] < _Ymin) {_nTrack--; continue;}
+	if (thatTrack.back()[1] > _Ymax) {_nTrack--; continue;}
+	if (thatTrack.back()[2] < _Zmin) {_nTrack--; continue;}
+	if (thatTrack.back()[2] > _Zmax) {_nTrack--; continue;}
 
 
 	_cOnePlusTrackFlag = true;
