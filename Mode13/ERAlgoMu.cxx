@@ -5,12 +5,14 @@
 
 namespace ertool {
   
-  ERAlgoMu::ERAlgoMu(const std::string& name) : AlgoBase(name)
+  ERAlgoMu::ERAlgoMu(const std::string& name) 
+  : AlgoBase(name)
+  , _algoMu_tree(nullptr)
   {
     // histogram to hold the energy of each reconstructed michel electron
     
     // set verbosity to be off by default
-    _verbose = false;
+    _verbose = true;
   }
 
   void ERAlgoMu::Reset()
@@ -27,8 +29,10 @@ namespace ertool {
   void ERAlgoMu::ProcessBegin()
   {
 
-    InitializeHistos();
-
+    if (_algoMu_tree) { delete _algoMu_tree; }
+    _algoMu_tree = new TTree("_algoMu_tree","algoMu Tree");
+    _algoMu_tree->Branch("_mu_x"     ,&_mu_x     ,"_mu_x/D     ");
+    
     return;
   }
 
@@ -40,9 +44,11 @@ namespace ertool {
     for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
       
       // get track object
-      auto const& track = datacpy.Track(graph.GetParticle(t).RecoID());
+      auto const& particleFromDataP = graph.GetParticle(t);
+      auto const& track = datacpy.Track(particleFromDataP.RecoID());
 
       if (_verbose){
+	std::cout<<"\n";	
 	std::cout<<track._pid_score[Track::kTrackPartIDMax]<<" score kTrackPartIDMax\n";
 	std::cout<<track._pid_score[Track::kPIDA]<<" score kPIDA\n";
 	std::cout<<track._pid_score[Track::kUnknown]<<" score kUnknown\n";
@@ -50,9 +56,19 @@ namespace ertool {
 	std::cout<<track._pid_score[Track::kPion]<<" score pion\n";
 	std::cout<<track._pid_score[Track::kKaon]<<" score kaon\n";
 	std::cout<<track._pid_score[Track::kMuon]<<" score muon\n";
+	std::cout<<"\n";	
+	std::cout<<"Pid    : "<<track._pid<<" \n";
+	std::cout<<"Energy : "<<track._energy<<" \n";
+	std::cout<<"Length : "<<track.Length()<<" \n";
+	std::cout<<"\n In Particle\n";	
+	std::cout<<"Energy         : "<<particleFromDataP.Energy()<<"\n";	
+	std::cout<<"Kinetic Energy : "<<particleFromDataP.KineticEnergy()<<"\n";	
+	std::cout<<"Momentum       : "<<particleFromDataP.Momentum()<<"\n";
+
       }
       n_mu++;
 
+      /*
       if ((track._pid_score[Track::kProton]<track._pid_score[Track::kPion])&&
 	  (track._pid_score[Track::kProton]<track._pid_score[Track::kKaon])&&
 	  (track._pid_score[Track::kProton]<track._pid_score[Track::kMuon]))      Pdg = 2212;
@@ -75,8 +91,8 @@ namespace ertool {
       double Edep = track._energy;
       double lenght = track.Length();
       double rough_dEdx = Edep/lenght;
-
-      if  (rough_dEdx < 2.4) Pdg = 13;
+      
+      // if  (rough_dEdx < 2.4) Pdg = 13;
 
       // track direction
       if (track.Length() < 0.3)  continue;
@@ -93,6 +109,7 @@ namespace ertool {
 
       auto muon =graph.GetParticle(t);
       double Energy = sqrt(Mom*Mom + mass*mass);
+
       if (_verbose){
 	std::cout<<"Edep  .............. "<<Edep      <<" \n";
 	std::cout<<"lenght.............. "<<lenght    <<" \n";
@@ -103,6 +120,7 @@ namespace ertool {
 	std::cout<<"Energy ............. "<<Energy    <<" \n";
       }
       
+      */
     }//End loop over tracks
 
     
@@ -140,6 +158,12 @@ namespace ertool {
     //    std::cout<<"Number of mu's found is "<<n_mu<<std::endl;
   }
 
+  void ERAlgoMu::ClearTree(){
+
+    _mu_x         = -1 ;
+    
+    return;
+  }
 
 }
 

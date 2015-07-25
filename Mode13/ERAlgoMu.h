@@ -15,8 +15,15 @@
 #ifndef ERTOOL_ERALGOMU_H
 #define ERTOOL_ERALGOMU_H
 
-#include "ERTool/Algo/AlgoEMPart.h"
 #include "ERTool/Base/AlgoBase.h"
+#include "ERTool/Algo/AlgoEMPart.h"
+#include "ERTool/Algo/AlgoFindRelationship.h"
+#include "GeoAlgo/GeoAlgo.h"
+#include "GeoAlgo/GeoAABox.h"
+#include "GeoAlgo/GeoSphere.h"
+#include <algorithm> // for std::find
+#include <utility>
+#include <TTree.h>
 
 namespace ertool {
 
@@ -64,6 +71,10 @@ namespace ertool {
     void setMaxDistance(double d) { _maxDistance = d; }
     */
     
+  private:
+    /// clear tree
+    void ClearTree();
+
     
   protected:
     
@@ -82,7 +93,12 @@ namespace ertool {
 
     // verbosity flag
     bool _verbose;
+
+    TTree* _algoMu_tree ;
     int n_mu = 0;
+    double _mu_x         ;
+    
+
     
   };
 }

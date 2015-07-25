@@ -35,6 +35,9 @@ namespace ertool {
     _ana_tree->Branch("_mu_x"         ,&_mu_x         ,"_mu_x/D         ");
     _ana_tree->Branch("_mu_y"         ,&_mu_y         ,"_mu_y/D         ");
     _ana_tree->Branch("_mu_z"         ,&_mu_z         ,"_mu_z/D         ");
+    _ana_tree->Branch("_mu_xEnd"      ,&_mu_xEnd      ,"_mu_xEnd/D      ");
+    _ana_tree->Branch("_mu_yEnd"      ,&_mu_yEnd      ,"_mu_yEnd/D      ");
+    _ana_tree->Branch("_mu_zEnd"      ,&_mu_zEnd      ,"_mu_zEnd/D      ");
     _ana_tree->Branch("_mu_t"         ,&_mu_t         ,"_mu_t/D         ");
     _ana_tree->Branch("_mu_px"        ,&_mu_px        ,"_mu_px/D        ");
     _ana_tree->Branch("_mu_py"        ,&_mu_py        ,"_mu_py/D        ");
@@ -108,10 +111,14 @@ namespace ertool {
 
 	    } else
 	    {
+	      auto const& ttrack = data.Track(graph.GetParticle(c).RecoID());
 	      muon = children;
 	      _mu_x         = (muon.Vertex())[0]   ;
 	      _mu_y         = (muon.Vertex())[1]   ;
 	      _mu_z         = (muon.Vertex())[2]   ;
+	      _mu_xEnd      = (ttrack.back())[0]   ;
+	      _mu_yEnd      = (ttrack.back())[1]   ;
+	      _mu_zEnd      = (ttrack.back())[2]   ;
 	      //    _mu_t          ;			      
 	      _mu_px        = (muon.Momentum())[0] ;
 	      _mu_py        = (muon.Momentum())[1] ;

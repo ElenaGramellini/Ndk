@@ -32,7 +32,7 @@ my_MuAlgo         = ertool.ERAlgoMu()
 my_algo           = ertool.ERAlgoMode13()
 my_ana            = ertool.ERAnaMode13()
 my_anaMC          = ertool.ERAnaMCTruthMode13()
-my_anaContainment = ertool.ERAnaContainment()
+
 
 #my_ana = ertool.AnaNdkModeThirteen()
 
@@ -61,7 +61,6 @@ my_anaunit._mgr.AddCfgFile('mac/Mode13.cfg')
 
 my_anaunit._mgr.AddAna(my_ana)
 my_anaunit._mgr.AddAna(my_anaMC)
-my_anaunit._mgr.AddAna(my_anaContainment)
 my_proc.add_process(my_anaunit)
 
 my_proc.run()
