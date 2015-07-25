@@ -225,6 +225,12 @@ namespace ertool {
 	// make sure track has a length of at least 0.3 cm (wire spacing)
 	// greater longer than 3 mm
 	if (thatTrack.Length() < 0.3) {_nTrack--; continue;}
+	if (thatTrack.back()[0] <    3) {_nTrack--; continue;}
+	if (thatTrack.back()[1] < -113) {_nTrack--; continue;}
+	if (thatTrack.back()[0] >  250) {_nTrack--; continue;}
+	if (thatTrack.back()[1] >  113) {_nTrack--; continue;}
+
+
 	_cOnePlusTrackFlag = true;
 	if (_verbose) { std::cout << "Comparing with track (" << t << ")" << std::endl; }
 	
