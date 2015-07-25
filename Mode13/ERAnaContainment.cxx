@@ -135,7 +135,11 @@ namespace ertool {
 	  //_mu_gamma_angle;
 	  
 	}
-      _ana_cont_tree->Fill();
+
+
+      if ((_mu_xEnd > 3    )&&(_mu_xEnd < 250)&&
+	  (_mu_yEnd > -113 )&&(_mu_yEnd < 113))
+	_ana_cont_tree->Fill();
 
     }
     return true; 
