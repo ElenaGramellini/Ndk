@@ -112,6 +112,12 @@ namespace ertool {
       _TotMomYCutMin       = pset.get<double>("TotMomYCutMin")       ;
       _TotMomZCutMin       = pset.get<double>("TotMomZCutMin")       ;
 
+      if (pset.contains_value("Xmin")) _Xmin                = pset.get<double>("Xmin");  
+      if (pset.contains_value("Ymin")) _Ymin                = pset.get<double>("Ymin");      
+      if (pset.contains_value("Zmin")) _Zmin                = pset.get<double>("Zmin");    
+      if (pset.contains_value("Xmax")) _Xmax                = pset.get<double>("Xmax");    
+      if (pset.contains_value("Ymax")) _Ymax                = pset.get<double>("Ymax");      
+      if (pset.contains_value("Zmax")) _Zmax                = pset.get<double>("Zmax");   
       
     }else{
       std::cout << "oops I didn't find my config... ("
