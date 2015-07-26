@@ -22,6 +22,7 @@
 #include "GeoAlgo/GeoAABox.h"
 #include "GeoAlgo/GeoSphere.h"
 #include <algorithm> // for std::find
+#include "DataFormat/mctruth.h"
 #include <utility>
 #include <TTree.h>
 

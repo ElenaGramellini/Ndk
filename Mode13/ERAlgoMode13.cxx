@@ -175,7 +175,10 @@ namespace ertool {
       std::cout << "Tracks  in event  : " << data.Track().size() << std::endl;
     }
 
-    if (!data.Shower().size()) std::cout<<"event_id : "<<data.Event_ID()<<" run: "<<data.Run()<<" subrun: "<<data.SubRun()<<"\n";
+    //if (!data.Shower().size()) std::cout<<"event_id : "<<data.Event_ID()<<" run: "<<data.Run()<<" subrun: "<<data.SubRun()<<"\n";
+    if (!data.Shower().size()) std::cout<<"No Showers"<<"\n";
+    if (!data.Track().size()) std::cout<<"No Tracks"<<"\n";
+
 
     _cEvt++;
     // Let's take the number of showers and tracks
