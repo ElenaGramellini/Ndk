@@ -12,7 +12,7 @@ namespace ertool {
   
   //Variables for checking...  
   int elect = 0;
-  std::map<ertool::Track,int> muonMap;
+  //  std::map<ertool::Track,int> muonMap;
 
   ERAlgoMode13::ERAlgoMode13(const std::string& name) 
   : AlgoBase(name)
@@ -322,7 +322,7 @@ namespace ertool {
 	//if (thatTrack._pid !=4)  continue;
 	if (muon.PdgCode() !=13)  continue;
 	_cOnePlusMuFlag = true;
-	muonMap[thatTrack] = thatTrack.RecoID();  
+	//	muonMap[thatTrack] = thatTrack.RecoID();  
 
 	// 9) the shower is a gamma
 	if (!isGammaLike(thisShower._dedx,vtxPdK.Dist(thisShower.Start()))){
@@ -485,7 +485,7 @@ namespace ertool {
     std::cout << "Events that pass the Total Momentum cut .............................. "<< _cTotMom       << std::endl;
 
 
-    std::cout << "Muons  ........... "<< muonMap.size() << std::endl;
+    //    std::cout << "Muons  ........... "<< muonMap.size() << std::endl;
     std::cout << "Gammas ........... "<< _nGamma        << std::endl;
     std::cout << "ProtonDk ......... "<< _protonsdKs    << std::endl;
     
