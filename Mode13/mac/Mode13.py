@@ -31,7 +31,6 @@ my_proc.set_ana_output_file("Mode13RecoCorrect.root")
 my_MuAlgo = ertool.ERAlgoMu()
 my_algo = ertool.ERAlgoMode13()
 my_ana = ertool.ERAnaMode13()
-my_anaMC   = ertool.ERAnaMCTruthMode13()
 
 #my_ana = ertool.AnaNdkModeThirteen()
 
@@ -70,7 +69,6 @@ my_anaunit._mgr.AddAlgo(my_algo)
 my_anaunit._mgr.AddCfgFile('mac/Mode13.cfg')
 
 my_anaunit._mgr.AddAna(my_ana)
-my_anaunit._mgr.AddAna(my_anaMC)
 
 my_proc.add_process(my_anaunit)
 
