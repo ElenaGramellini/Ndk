@@ -68,7 +68,7 @@ namespace ertool {
       }
       n_mu++;
 
-      /*
+      
       if ((track._pid_score[Track::kProton]<track._pid_score[Track::kPion])&&
 	  (track._pid_score[Track::kProton]<track._pid_score[Track::kKaon])&&
 	  (track._pid_score[Track::kProton]<track._pid_score[Track::kMuon]))      Pdg = 2212;
@@ -120,7 +120,7 @@ namespace ertool {
 	std::cout<<"Energy ............. "<<Energy    <<" \n";
       }
       
-      */
+      
     }//End loop over tracks
 
     
