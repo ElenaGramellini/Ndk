@@ -83,7 +83,9 @@ namespace ertool {
     _MCmu_pdg       = trackParticle.PdgCode()    ;    
     _MCmu_energy    = trackParticle.Energy()     ;    
     _MCmu_mass      = trackParticle.Mass()       ;      
-    
+    _MCmu_momentum  = sqrt(trackParticle.Momentum()[0]*trackParticle.Momentum()[0] +
+			   trackParticle.Momentum()[1]*trackParticle.Momentum()[1] +
+			   trackParticle.Momentum()[2]*trackParticle.Momentum()[2] ) ;      
 
     _anaMuMC_tree->Fill();
 
