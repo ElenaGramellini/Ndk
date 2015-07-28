@@ -96,7 +96,17 @@ namespace ertool {
 
     TTree* _algoMu_tree ;
     int n_mu = 0;
-    double _mu_x         ;
+
+    double _mu_En    ;
+    double _mu_DepEn ;
+    double _mu_Mom   ;
+    double _mu_px    ;
+    double _mu_py    ;
+    double _mu_pz    ;
+    double _mu_xEnd  ;
+    double _mu_yEnd  ;
+    double _mu_zEnd  ;
+
     
 
     

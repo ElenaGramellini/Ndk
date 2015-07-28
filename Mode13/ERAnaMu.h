@@ -15,16 +15,23 @@
 #ifndef ERTOOL_ERANAMU_H
 #define ERTOOL_ERANAMU_H
 
+#include "ERTool/Base/AnaBase.h"
+
+#include "ERTool/Base/AnaBase.h"
+#include "GeoAlgo/GeoAlgo.h"
+#include "GeoAlgo/GeoAABox.h"
+#include "GeoAlgo/GeoSphere.h"
+#include <algorithm> // for std::find
+#include <utility>
+#include <TTree.h>
 #include "TTree.h"
 #include "TH1D.h"
 #include "TH2F.h"
-#include "GeoAlgo/GeoAlgo.h"
 #include "DataFormat/mctruth.h"
 #include "ERTool/Base/AnaBase.h"
 #include "ERTool/Base/Particle.h"
 #include "ERTool/Base/ParticleGraph.h"
 #include "ERTool/Base/EventData.h"
-
 
 
 namespace ertool {
@@ -58,48 +65,26 @@ namespace ertool {
     /// Called after processing the last event sample
     void ProcessEnd(TFile* fout=nullptr);
 
-    void InitializeHistos();
-
-    void Finalize();
-
+  private:
+    void ClearTree();
 
   protected:
-    
-    // histograms to be filled in Algo
-    // Muons 
-    TH1F* mu_energy;
-    TH1F* mu_px    ;
-    TH1F* mu_py    ;
-    TH1F* mu_pz    ;
-    TH1F* mu_pid   ;
-    TH1F* mu_x     ;
-    TH1F* mu_y     ;
-    TH1F* mu_z     ;
-    TH1F* mu_t     ;
-
-    TH1F* muTru_energy;
-    TH1F* muTru_px    ;
-    TH1F* muTru_py    ;
-    TH1F* muTru_pz    ;
-    TH1F* muTru_pid   ;
-    TH1F* muTru_x     ;
-    TH1F* muTru_y     ;
-    TH1F* muTru_z     ;
-    TH1F* muTru_t     ;
-
-    // verbosity flag
+    // verbose flag
     bool _verbose;
-    
-    // Counters : 
-    // True Muons
-    // ParticleGraph Muons
-    // Contained True Muons
-    // Contained ParticleGraph Muons
-    int MCMu        = 0;
-    int PartGraphMu = 0;
-    int Cont_MCMu        = 0;
-    int Cont_PartGraphMu = 0;
-    
+
+    //Tree -> one entry per simulated proton
+    TTree* _anaMuMC_tree;
+    double _MCmu_x         ;
+    double _MCmu_y         ;
+    double _MCmu_z         ;
+    double _MCmu_t         ;
+    double _MCmu_px        ;
+    double _MCmu_py        ;
+    double _MCmu_pz        ;
+    int    _MCmu_pdg       ;
+    double _MCmu_energy    ;
+    double _MCmu_mass      ;
+    double _MCmu_momentum  ;
 
   };
 }

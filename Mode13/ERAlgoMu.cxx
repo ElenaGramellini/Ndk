@@ -12,7 +12,7 @@ namespace ertool {
     // histogram to hold the energy of each reconstructed michel electron
     
     // set verbosity to be off by default
-    _verbose = false;
+    _verbose = true;
   }
 
   void ERAlgoMu::Reset()
@@ -31,7 +31,16 @@ namespace ertool {
 
     if (_algoMu_tree) { delete _algoMu_tree; }
     _algoMu_tree = new TTree("_algoMu_tree","algoMu Tree");
-    _algoMu_tree->Branch("_mu_x"     ,&_mu_x     ,"_mu_x/D     ");
+    _algoMu_tree->Branch("_mu_En"    ,&_mu_En    ,"_mu_En/D     ");
+    _algoMu_tree->Branch("_mu_DepEn" ,&_mu_DepEn ,"_mu_DepEn/D  ");
+    _algoMu_tree->Branch("_mu_Mom"   ,&_mu_Mom   ,"_mu_Mom/D    ");
+    _algoMu_tree->Branch("_mu_px"    ,&_mu_px    ,"_mu_px/D     ");
+    _algoMu_tree->Branch("_mu_py"    ,&_mu_py    ,"_mu_py/D     ");
+    _algoMu_tree->Branch("_mu_pz"    ,&_mu_pz    ,"_mu_pz/D     ");
+    _algoMu_tree->Branch("_mu_xEnd"  ,&_mu_xEnd  ,"_mu_xEnd/D   ");
+    _algoMu_tree->Branch("_mu_yEnd"  ,&_mu_yEnd  ,"_mu_yEnd/D   ");
+    _algoMu_tree->Branch("_mu_zEnd"  ,&_mu_zEnd  ,"_mu_zEnd/D   ");
+
     
     return;
   }
@@ -47,7 +56,7 @@ namespace ertool {
       auto const& particleFromDataP = graph.GetParticle(t);
       auto const& track = datacpy.Track(particleFromDataP.RecoID());
 
-      if (_verbose){
+      if (0){
 	std::cout<<"\n";	
 	std::cout<<track._pid_score[Track::kTrackPartIDMax]<<" score kTrackPartIDMax\n";
 	std::cout<<track._pid_score[Track::kPIDA]<<" score kPIDA\n";
@@ -66,7 +75,6 @@ namespace ertool {
 	std::cout<<"Momentum       : "<<particleFromDataP.Momentum()<<"\n";
 
       }
-      n_mu++;
 
       
       if ((track._pid_score[Track::kProton]<track._pid_score[Track::kPion])&&
@@ -85,9 +93,9 @@ namespace ertool {
 	  (track._pid_score[Track::kMuon]<track._pid_score[Track::kPion])&&
 	  (track._pid_score[Track::kMuon]<track._pid_score[Track::kKaon]))        Pdg = 13;      
       
+      if (Pdg == 13 ) n_mu++;
 
       // track deposited energy
-
       double Edep = track._energy;
       double lenght = track.Length();
       double rough_dEdx = Edep/lenght;
@@ -99,7 +107,16 @@ namespace ertool {
       geoalgo::Vector_t Dir = (track[1]-track[0]);
       Dir.Normalize();
       double mass = ParticleMass(Pdg);
-      geoalgo::Vector_t Mom = Dir * ( sqrt( Edep * (Edep+2*mass) ) );
+
+      double Energy  = Edep + mass;
+      double Mom_Mag = sqrt( Edep*Edep - mass*mass );
+      if (0){
+	std::cout<<"Edep  .............. "<<Edep   <<" \n";
+	std::cout<<"Energy.............. "<<Energy <<" \n";
+	std::cout<<"Momentum  .......... "<<Mom_Mag<<"\n";
+      }
+      //      geoalgo::Vector_t Mom = Dir * ( sqrt( Edep * (Edep+2*mass) ) ); // THIS MIGHT BE WRONG!!!!
+      geoalgo::Vector_t Mom = Dir *  Mom_Mag; 
 
 
       graph.GetParticle(t).SetParticleInfo(Pdg,
@@ -108,15 +125,26 @@ namespace ertool {
 					   Mom);
 
       auto muon =graph.GetParticle(t);
-      double Energy = sqrt(Mom*Mom + mass*mass);
+
+      _mu_En    = Energy  ;
+      _mu_DepEn = Edep    ;
+      _mu_Mom   = Mom_Mag ;
+      _mu_px    = Mom[0]  ;
+      _mu_py    = Mom[1]  ;
+      _mu_pz    = Mom[2]  ;
+      _mu_xEnd  = (track.back())[0]   ;
+      _mu_yEnd  = (track.back())[1]   ;
+      _mu_zEnd  = (track.back())[2]   ;
+      
+      _algoMu_tree->Fill();
 
       if (_verbose){
 	std::cout<<"Edep  .............. "<<Edep      <<" \n";
 	std::cout<<"lenght.............. "<<lenght    <<" \n";
-	std::cout<<"dedx  .............. "<<rough_dEdx<<"\n";
-	std::cout<<"mass  .............. "<<mass      <<"  \n";
-	std::cout<<"Dir   .............. "<<Dir       <<"  \n";
-	std::cout<<"Momentum ........... "<<Mom       <<"  \n";
+	std::cout<<"dedx  .............. "<<rough_dEdx<<" \n";
+	std::cout<<"mass  .............. "<<mass      <<" \n";
+	std::cout<<"Dir   .............. "<<Dir       <<" \n";
+	std::cout<<"Momentum ........... "<<Mom       <<" \n";
 	std::cout<<"Energy ............. "<<Energy    <<" \n";
       }
       
@@ -129,25 +157,15 @@ namespace ertool {
 
   void ERAlgoMu::ProcessEnd(TFile* fout)
   {
-    /*
-   if(fout){
+    if(fout){
       fout->cd();
-      if(mu_energy)
-	mu_energy->Write();
-      if(muTru_energy)
-	muTru_energy->Write();
+      if (_algoMu_tree)
+	_algoMu_tree->Write();
     }
-    */
+    
   }
 
   void ERAlgoMu::InitializeHistos(){
-    
-/*
-    if(!mu_energy)
-      mu_energy = new TH1F("mu_energy","mu_energy",100,0,2000);
-    if(!muTru_energy)
-      muTru_energy = new TH1F("muTru_energy","muTru_energy",100,0,2000);
-*/
 
   }
 
@@ -155,14 +173,22 @@ namespace ertool {
   void ERAlgoMu::Finalize()
   {
 
-    //    std::cout<<"Number of mu's found is "<<n_mu<<std::endl;
+    std::cout<<"Number of mu's found is "<<n_mu<<std::endl;
   }
 
   void ERAlgoMu::ClearTree(){
 
-    _mu_x         = -1 ;
-    
-    return;
+    _mu_En    = -1 ;
+    _mu_DepEn = -1 ;
+    _mu_Mom   = -1 ;
+    _mu_px    = -1 ;
+    _mu_py    = -1 ;
+    _mu_pz    = -1 ;
+    _mu_xEnd  = -1 ;
+    _mu_yEnd  = -1 ;
+    _mu_zEnd  = -1 ;
+
+  return;
   }
 
 }
