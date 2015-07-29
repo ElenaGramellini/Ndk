@@ -64,7 +64,7 @@ namespace ertool {
     if (_verbose) std::cout<<"Number of Tracks: "<<mc_data.Track().size()<<"\n";
     for (auto const& t : mc_graph.GetParticleNodes(RecoType_t::kTrack)){
       thatTrack = mc_data.Track(mc_graph.GetParticle(t).RecoID());
-      if ((mc_graph.GetParticle(t).PdgCode() == -13)&&(mc_graph.GetParticle(t).Primary())) trackParticle = mc_graph.GetParticle(t);
+      if (mc_graph.GetParticle(t).PdgCode() == -13) trackParticle = mc_graph.GetParticle(t);
       if (_verbose) { 
 	std::cout << "Track:              (" << t << ")" << "\tE: " << thatTrack._energy << std::endl; 
 	std::cout << "Track particle:     (" << t << ")" << "\tE: " << trackParticle.Energy() << std::endl; 
