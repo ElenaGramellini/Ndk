@@ -41,6 +41,11 @@ namespace ertool {
     _algoMu_tree->Branch("_mu_yEnd"  ,&_mu_yEnd  ,"_mu_yEnd/D   ");
     _algoMu_tree->Branch("_mu_zEnd"  ,&_mu_zEnd  ,"_mu_zEnd/D   ");
 
+    _algoMu_tree->Branch("_mu_EnMPS" ,&_mu_EnMPS ,"_mu_EnMPS/D  ");
+    _algoMu_tree->Branch("_mu_MomMPS",&_mu_MomMPS,"_mu_MomMPS/D ");
+    _algoMu_tree->Branch("_mu_pxMPS" ,&_mu_pxMPS ,"_mu_pxMPS/D  ");
+    _algoMu_tree->Branch("_mu_pyMPS" ,&_mu_pyMPS ,"_mu_pyMPS/D  ");
+    _algoMu_tree->Branch("_mu_pzMPS" ,&_mu_pzMPS ,"_mu_pzMPS/D  ");
     
     return;
   }
@@ -108,8 +113,22 @@ namespace ertool {
       Dir.Normalize();
       double mass = ParticleMass(Pdg);
 
+
+
+      _mu_MomMPS = 1000*momCalc.GetMomentumMultiScatterLLHD(track);
+      _mu_EnMPS  = sqrt(_mu_MomMPS*_mu_MomMPS + mass*mass); 
+      geoalgo::Vector_t MomMPS = Dir*_mu_MomMPS;
+      _mu_pxMPS = MomMPS[0];
+      _mu_pyMPS = MomMPS[1];
+      _mu_pzMPS = MomMPS[2];
+
+      
+
+    for (auto const& mE : graph.GetParticleNodes(RecoType_t::kShower)){
+    }
+
       double Energy  = Edep + mass;
-      double Mom_Mag = sqrt( Edep*Edep - mass*mass );
+      double Mom_Mag = sqrt( Energy*Energy - mass*mass );
       if (0){
 	std::cout<<"Edep  .............. "<<Edep   <<" \n";
 	std::cout<<"Energy.............. "<<Energy <<" \n";

@@ -34,7 +34,6 @@ namespace ertool {
     _anaMuMC_tree->Branch("_MCmu_energy"    ,&_MCmu_energy    ,"_MCmu_energy/D    ");
     _anaMuMC_tree->Branch("_MCmu_mass"      ,&_MCmu_mass      ,"_MCmu_mass/D      ");
     _anaMuMC_tree->Branch("_MCmu_momentum"  ,&_MCmu_momentum  ,"_MCmu_momentum/D  ");
-		                                                          
 
   }
 
@@ -45,7 +44,6 @@ namespace ertool {
     auto const& mc_graph = MCParticleGraph();
     auto const& mc_graph_arr = mc_graph.GetParticleArray();
     auto const& mc_data = MCEventData();
-
 
     Particle trackParticle;
     Track  thatTrack;
@@ -61,12 +59,11 @@ namespace ertool {
       std::cout<<" Size In ERAnaMCTruth "<<mc_graph_arr.size()<<"\n";
     }
     
-
     
     if (_verbose) std::cout<<"Number of Tracks: "<<mc_data.Track().size()<<"\n";
     for (auto const& t : mc_graph.GetParticleNodes(RecoType_t::kTrack)){
       thatTrack = mc_data.Track(mc_graph.GetParticle(t).RecoID());
-      if (mc_graph.GetParticle(t).PdgCode() == -13) trackParticle = mc_graph.GetParticle(t);
+      if ((mc_graph.GetParticle(t).PdgCode() == -13)&&(mc_graph.GetParticle(t).Primary())) trackParticle = mc_graph.GetParticle(t);
       if (_verbose) { 
 	std::cout << "Track:              (" << t << ")" << "\tE: " << thatTrack._energy << std::endl; 
 	std::cout << "Track particle:     (" << t << ")" << "\tE: " << trackParticle.Energy() << std::endl; 

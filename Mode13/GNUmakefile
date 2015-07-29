@@ -15,6 +15,7 @@ INCFLAGS  = -I.                       #Include itself
 INCFLAGS += $(shell seltool-config --includes)
 INCFLAGS += $(shell larlite-config --includes)
 INCFLAGS += $(shell larliteapp-config --includes)
+INCFLAGS += -I$(LARLITE_USERDEVDIR)/LArSoftImport
 
 # platform-specific options
 OSNAME          = $(shell uname -s)
@@ -27,6 +28,7 @@ include $(LARLITE_BASEDIR)/Makefile/Makefile.${OSNAME}
 # call the common GNUmakefile
 LDFLAGS += $(shell seltool-config --libs)
 LDFLAGS += $(shell larlite-config --libs)
+LDFLAGS += -L$(LARLITE_LIBDIR) -lLArSoftImport_RecoAlg
 include $(LARLITE_BASEDIR)/Makefile/GNUmakefile.CORE
 
 

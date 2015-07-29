@@ -25,6 +25,8 @@
 #include <utility>
 #include <TTree.h>
 
+#include "RecoAlg/TrackMomentumCalculator.h"
+
 namespace ertool {
 
   /**
@@ -107,7 +109,13 @@ namespace ertool {
     double _mu_yEnd  ;
     double _mu_zEnd  ;
 
-    
+    double _mu_EnMPS ;
+    double _mu_MomMPS;
+    double _mu_pxMPS ;
+    double _mu_pyMPS ;
+    double _mu_pzMPS ;
+
+    trkf::TrackMomentumCalculator momCalc;
 
     
   };
