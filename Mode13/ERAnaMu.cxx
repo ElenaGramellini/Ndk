@@ -34,7 +34,9 @@ namespace ertool {
     _anaMuMC_tree->Branch("_MCmu_energy"    ,&_MCmu_energy    ,"_MCmu_energy/D    ");
     _anaMuMC_tree->Branch("_MCmu_mass"      ,&_MCmu_mass      ,"_MCmu_mass/D      ");
     _anaMuMC_tree->Branch("_MCmu_momentum"  ,&_MCmu_momentum  ,"_MCmu_momentum/D  ");
-
+    _anaMuMC_tree->Branch("_MCmu_xEnd"      ,&_MCmu_xEnd      ,"_MCmu_xEnd/D  ");
+    _anaMuMC_tree->Branch("_MCmu_yEnd"      ,&_MCmu_yEnd      ,"_MCmu_yEnd/D  ");
+    _anaMuMC_tree->Branch("_MCmu_zEnd"      ,&_MCmu_zEnd      ,"_MCmu_zEnd/D  ");
   }
 
   bool ERAnaMu::Analyze(const EventData &data, const ParticleGraph &ps)
@@ -64,7 +66,15 @@ namespace ertool {
     if (_verbose) std::cout<<"Number of Tracks: "<<mc_data.Track().size()<<"\n";
     for (auto const& t : mc_graph.GetParticleNodes(RecoType_t::kTrack)){
       thatTrack = mc_data.Track(mc_graph.GetParticle(t).RecoID());
-      if (mc_graph.GetParticle(t).PdgCode() == -13) trackParticle = mc_graph.GetParticle(t);
+      if (mc_graph.GetParticle(t).PdgCode() == -13) 
+	{
+	  trackParticle = mc_graph.GetParticle(t);
+	  auto const& trackForEnd = mc_data.Track(trackParticle.RecoID());
+	  
+	  _MCmu_xEnd = (trackForEnd.back())[0];
+	  _MCmu_yEnd = (trackForEnd.back())[1];
+	  _MCmu_zEnd = (trackForEnd.back())[2];
+	}
       if (_verbose) { 
 	std::cout << "Track:              (" << t << ")" << "\tE: " << thatTrack._energy << std::endl; 
 	std::cout << "Track particle:     (" << t << ")" << "\tE: " << trackParticle.Energy() << std::endl; 

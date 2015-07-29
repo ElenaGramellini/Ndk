@@ -86,6 +86,10 @@ namespace ertool {
     double _MCmu_mass      ;
     double _MCmu_momentum  ;
 
+    double _MCmu_xEnd ;
+    double _MCmu_yEnd ;
+    double _MCmu_zEnd ;
+
   };
 }
 #endif
