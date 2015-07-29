@@ -70,6 +70,8 @@ namespace ertool {
       std::cout << "Showers in event  : " << data.Shower().size() << std::endl;
       std::cout << "Tracks  in event  : " << data.Track().size() << std::endl;
     }
+
+
     
 
     // Filter them to select gamma-mu showers
