@@ -51,6 +51,7 @@ namespace ertool {
     if (!mc_data.Shower().size()) std::cout<<"No MCShowers"<<"\n";
     if (!mc_data.Track().size()) std::cout<<"No MCTracks"<<"\n";
 
+    if (_verbose) std::cout<<"In ANAMU "<<"\n";
     if (_verbose){
       std::cout<<"########## In MCParticleGraph ########## \n";
       std::cout << "MC Particle Diagram: " << std::endl

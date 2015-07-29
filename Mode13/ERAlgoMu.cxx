@@ -12,7 +12,7 @@ namespace ertool {
     // histogram to hold the energy of each reconstructed michel electron
     
     // set verbosity to be off by default
-    _verbose = true;
+    _verbose = false;
   }
 
   void ERAlgoMu::Reset()
@@ -114,7 +114,7 @@ namespace ertool {
       double mass = ParticleMass(Pdg);
 
 
-
+      //Momentum and Energy Calculation with Multiple Coulomb Scattering
       _mu_MomMPS = 1000*momCalc.GetMomentumMultiScatterLLHD(track);
       _mu_EnMPS  = sqrt(_mu_MomMPS*_mu_MomMPS + mass*mass); 
       geoalgo::Vector_t MomMPS = Dir*_mu_MomMPS;
@@ -123,9 +123,6 @@ namespace ertool {
       _mu_pzMPS = MomMPS[2];
 
       
-
-    for (auto const& mE : graph.GetParticleNodes(RecoType_t::kShower)){
-    }
 
       double Energy  = Edep + mass;
       double Mom_Mag = sqrt( Energy*Energy - mass*mass );
