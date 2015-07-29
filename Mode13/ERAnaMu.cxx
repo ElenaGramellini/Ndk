@@ -9,7 +9,7 @@ namespace ertool {
   : AnaBase(name)
   , _anaMuMC_tree(nullptr)
   {
-    _verbose = false;
+    _verbose = true;
   }
 
   void ERAnaMu::Reset()
