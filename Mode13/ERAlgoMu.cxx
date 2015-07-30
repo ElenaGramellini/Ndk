@@ -61,7 +61,7 @@ namespace ertool {
       auto const& particleFromDataP = graph.GetParticle(t);
       auto const& track = datacpy.Track(particleFromDataP.RecoID());
 
-      if (0){
+      if (_verbose){
 	std::cout<<"\n";	
 	std::cout<<track._pid_score[Track::kTrackPartIDMax]<<" score kTrackPartIDMax\n";
 	std::cout<<track._pid_score[Track::kPIDA]<<" score kPIDA\n";
@@ -126,7 +126,7 @@ namespace ertool {
 
       double Energy  = Edep + mass;
       double Mom_Mag = sqrt( Energy*Energy - mass*mass );
-      if (0){
+      if (_verbose){
 	std::cout<<"Edep  .............. "<<Edep   <<" \n";
 	std::cout<<"Energy.............. "<<Energy <<" \n";
 	std::cout<<"Momentum  .......... "<<Mom_Mag<<"\n";

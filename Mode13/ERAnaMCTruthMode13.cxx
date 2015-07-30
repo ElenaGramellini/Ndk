@@ -38,6 +38,10 @@ namespace ertool {
     _anaMC_tree->Branch("_MCmu_x"         ,&_MCmu_x         ,"_MCmu_x/D         ");
     _anaMC_tree->Branch("_MCmu_y"         ,&_MCmu_y         ,"_MCmu_y/D         ");
     _anaMC_tree->Branch("_MCmu_z"         ,&_MCmu_z         ,"_MCmu_z/D         ");
+    _anaMC_tree->Branch("_MCmu_xEnd"      ,&_MCmu_xEnd      ,"_MCmu_xEnd/D      ");
+    _anaMC_tree->Branch("_MCmu_yEnd"      ,&_MCmu_yEnd      ,"_MCmu_yEnd/D      ");
+    _anaMC_tree->Branch("_MCmu_zEnd"      ,&_MCmu_zEnd      ,"_MCmu_zEnd/D      ");
+
     _anaMC_tree->Branch("_MCmu_t"         ,&_MCmu_t         ,"_MCmu_t/D         ");
     _anaMC_tree->Branch("_MCmu_px"        ,&_MCmu_px        ,"_MCmu_px/D        ");
     _anaMC_tree->Branch("_MCmu_py"        ,&_MCmu_py        ,"_MCmu_py/D        ");
@@ -101,7 +105,12 @@ namespace ertool {
     if (_verbose) std::cout<<"Number of Tracks: "<<mc_data.Track().size()<<"\n";
     for (auto const& t : mc_graph.GetParticleNodes(RecoType_t::kTrack)){
       thatTrack = mc_data.Track(mc_graph.GetParticle(t).RecoID());
-      if (mc_graph.GetParticle(t).PdgCode() == -13) trackParticle = mc_graph.GetParticle(t);
+      if (mc_graph.GetParticle(t).PdgCode() == -13){
+	trackParticle = mc_graph.GetParticle(t);
+	_MCmu_xEnd = thatTrack.back()[0];
+	_MCmu_yEnd = thatTrack.back()[1];
+	_MCmu_zEnd = thatTrack.back()[2];
+	  }
       if (_verbose) { 
 	std::cout << "Track:              (" << t << ")" << "\tE: " << thatTrack._energy << std::endl; 
 	std::cout << "Track particle:     (" << t << ")" << "\tE: " << trackParticle.Energy() << std::endl; }      
@@ -122,6 +131,7 @@ namespace ertool {
     _MCmu_x         = trackParticle.Vertex()[0]  ;
     _MCmu_y         = trackParticle.Vertex()[1]  ;
     _MCmu_z         = trackParticle.Vertex()[2]  ;
+
     //_MCmu_t         = ; DO WE HAVE THIS INFO???
     _MCmu_px        = trackParticle.Momentum()[0]*conversion;
     _MCmu_py        = trackParticle.Momentum()[1]*conversion;

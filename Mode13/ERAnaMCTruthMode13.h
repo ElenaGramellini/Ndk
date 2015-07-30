@@ -88,6 +88,9 @@ namespace ertool {
     double _MCmu_x         ;
     double _MCmu_y         ;
     double _MCmu_z         ;
+    double _MCmu_xEnd      ;
+    double _MCmu_yEnd      ;
+    double _MCmu_zEnd      ;
     double _MCmu_t         ;
     double _MCmu_px        ;
     double _MCmu_py        ;
