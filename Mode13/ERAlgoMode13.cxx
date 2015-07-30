@@ -232,8 +232,8 @@ namespace ertool {
       for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
 	auto const& thatTrack = datacpy.Track(graph.GetParticle(t).RecoID());
 	// make sure track has a length of at least 0.3 cm (wire spacing)
-	// greater longer than 3 mm
-	if (thatTrack.Length() < 0.3) {_nTrack--; continue;}
+	// greater longer than 50 mm
+	if (thatTrack.Length() < 50) {_nTrack--; continue;}
 	if (thatTrack.back()[0] < _Xmin) {_nTrack--; continue;}
 	if (thatTrack.back()[0] > _Xmax) {_nTrack--; continue;}
 	if (thatTrack.back()[1] < _Ymin) {_nTrack--; continue;}

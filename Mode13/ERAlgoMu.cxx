@@ -109,7 +109,7 @@ namespace ertool {
       // if  (rough_dEdx < 2.4) Pdg = 13;
 
       // track direction
-      if (track.Length() < 0.3)  continue;
+      if (track.Length() < 50.)  continue;
       geoalgo::Vector_t Dir = (track[1]-track[0]);
       Dir.Normalize();
       double mass = ParticleMass(Pdg);
