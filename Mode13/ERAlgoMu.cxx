@@ -12,7 +12,7 @@ namespace ertool {
     // histogram to hold the energy of each reconstructed michel electron
     
     // set verbosity to be off by default
-    _verbose = true;
+    _verbose = false;
   }
 
   void ERAlgoMu::Reset()
@@ -156,15 +156,18 @@ namespace ertool {
 
       _algoMu_tree->Fill();
 
-      if (_verbose){
-	std::cout<<"Edep  .............. "<<Edep      <<" \n";
-	std::cout<<"lenght.............. "<<lenght    <<" \n";
-	std::cout<<"dedx  .............. "<<rough_dEdx<<" \n";
-	std::cout<<"mass  .............. "<<mass      <<" \n";
-	std::cout<<"Dir   .............. "<<Dir       <<" \n";
-	std::cout<<"Momentum ........... "<<Mom       <<" \n";
-	std::cout<<"Energy ............. "<<Energy    <<" \n";
-      }
+      //if (_verbose){
+	std::cout<<"_mu_En   .............. "<<_mu_En   <<" \n";
+	std::cout<<"_mu_DepEn.............. "<<_mu_DepEn<<" \n";
+	std::cout<<"_mu_Mom  .............. "<<_mu_Mom  <<" \n";
+	std::cout<<"_mu_px   .............. "<<_mu_px   <<" \n";
+	std::cout<<"_mu_py   .............. "<<_mu_py   <<" \n";
+	std::cout<<"_mu_pz      ........... "<<_mu_pz   <<" \n";
+	std::cout<<"_mu_xEnd  ............. "<<_mu_xEnd <<" \n";
+	std::cout<<"_mu_yEnd  ............. "<<_mu_yEnd <<" \n";
+	std::cout<<"_mu_zEnd  ............. "<<_mu_zEnd <<" \n";
+	std::cout<<"_mu_leng 		    "<<_mu_leng <<" \n";
+	//}	   	
       
       
     }//End loop over tracks
