@@ -12,7 +12,7 @@ namespace ertool {
     // histogram to hold the energy of each reconstructed michel electron
     
     // set verbosity to be off by default
-    _verbose = false;
+    _verbose = true;
   }
 
   void ERAlgoMu::Reset()
@@ -46,6 +46,7 @@ namespace ertool {
     _algoMu_tree->Branch("_mu_pxMPS" ,&_mu_pxMPS ,"_mu_pxMPS/D  ");
     _algoMu_tree->Branch("_mu_pyMPS" ,&_mu_pyMPS ,"_mu_pyMPS/D  ");
     _algoMu_tree->Branch("_mu_pzMPS" ,&_mu_pzMPS ,"_mu_pzMPS/D  ");
+    _algoMu_tree->Branch("_mu_leng"  ,&_mu_leng  ,"_mu_leng/D  ");
     
     return;
   }
@@ -151,7 +152,8 @@ namespace ertool {
       _mu_xEnd  = (track.back())[0]   ;
       _mu_yEnd  = (track.back())[1]   ;
       _mu_zEnd  = (track.back())[2]   ;
-      
+      _mu_leng  = lenght;
+
       _algoMu_tree->Fill();
 
       if (_verbose){

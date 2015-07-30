@@ -108,6 +108,7 @@ namespace ertool {
     double _mu_xEnd  ;
     double _mu_yEnd  ;
     double _mu_zEnd  ;
+    double _mu_leng  ;
 
     double _mu_EnMPS ;
     double _mu_MomMPS;
