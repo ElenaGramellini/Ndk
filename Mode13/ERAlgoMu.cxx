@@ -12,7 +12,7 @@ namespace ertool {
     // histogram to hold the energy of each reconstructed michel electron
     
     // set verbosity to be off by default
-    _verbose = false;
+    _verbose = true;
   }
 
   void ERAlgoMu::Reset()
@@ -156,7 +156,7 @@ namespace ertool {
 
       _algoMu_tree->Fill();
 
-      //if (_verbose){
+      if (_verbose){
 	std::cout<<"_mu_En   .............. "<<_mu_En   <<" \n";
 	std::cout<<"_mu_DepEn.............. "<<_mu_DepEn<<" \n";
 	std::cout<<"_mu_Mom  .............. "<<_mu_Mom  <<" \n";
@@ -167,7 +167,7 @@ namespace ertool {
 	std::cout<<"_mu_yEnd  ............. "<<_mu_yEnd <<" \n";
 	std::cout<<"_mu_zEnd  ............. "<<_mu_zEnd <<" \n";
 	std::cout<<"_mu_leng 		    "<<_mu_leng <<" \n";
-	//}	   	
+    }	   	
       
       
     }//End loop over tracks

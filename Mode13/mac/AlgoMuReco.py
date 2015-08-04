@@ -25,11 +25,10 @@ for x in xrange(len(sys.argv)-1):
 my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
-my_proc.set_ana_output_file("MuStudyMC.root")
-###my_proc.set_ana_output_file("Mode13Reco.root")
+my_proc.set_ana_output_file("Mode13RecoCorrect.root")
 
 # create an instance of the ERAlgo we want to use
-my_MuAlgo         = ertool.ERAlgoMu()
+my_MuAlgo = ertool.ERAlgoMu()
 
 
 # create an instance of the Analysis Unit to be used
@@ -40,9 +39,16 @@ my_MuAlgo         = ertool.ERAlgoMu()
 # modules assigned to this Analysis Unit
 my_anaunit = fmwk.ExampleERSelection()
 # Set Producers
-# First Argument: True = MC, False = Reco
-my_anaunit.SetTrackProducer(True,"mcreco");
-#my_anaunit.SetTrackProducer(False,"trackkalmanhit");
+my_anaunit.SetTrackProducer(False,"trackkalmanhit");
+
+# cctrack            
+# pandoraCosmicKHit 
+# pandoraNuKHit     
+# stitchkalmanhit   
+# stitchkalmanhitcc 
+##### trackkalmanhit    
+# trackkalmanhitcc  
+
 
 # should we load the MCTruth information? decide here
 # this is stuff that can come useful in ERAna module
@@ -53,6 +59,17 @@ my_anaunit._mgr.AddAlgo(my_MuAlgo)
 my_proc.add_process(my_anaunit)
 
 my_proc.run()
+
+
+# start event-by-event loop
+#counter = 0
+#while (my_proc.process_event(counter)):
+#    print "Processing event {0}".format(counter) 
+#    data_reco = my_anaunit.GetData()
+#    part_reco = my_anaunit.GetParticles()
+#    data_mc   = my_anaunit.GetData(True)
+#    part_mc   = my_anaunit.GetParticles(True)
+#    counter = counter + 1
 
 # done!
 print

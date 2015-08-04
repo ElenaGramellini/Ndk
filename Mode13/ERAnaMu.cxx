@@ -64,6 +64,7 @@ namespace ertool {
     
     
     if (_verbose) std::cout<<"Number of Tracks: "<<mc_data.Track().size()<<"\n";
+
     for (auto const& t : mc_graph.GetParticleNodes(RecoType_t::kTrack)){
       thatTrack = mc_data.Track(mc_graph.GetParticle(t).RecoID());
       if (mc_graph.GetParticle(t).PdgCode() == -13) 
@@ -74,34 +75,33 @@ namespace ertool {
 	  _MCmu_xEnd = (trackForEnd.back())[0];
 	  _MCmu_yEnd = (trackForEnd.back())[1];
 	  _MCmu_zEnd = (trackForEnd.back())[2];
+
+	  _MCmu_x         = trackParticle.Vertex()[0]  ;
+	  _MCmu_y         = trackParticle.Vertex()[1]  ;
+	  _MCmu_z         = trackParticle.Vertex()[2]  ;
+	  _MCmu_px        = trackParticle.Momentum()[0];
+	  _MCmu_py        = trackParticle.Momentum()[1];
+	  _MCmu_pz        = trackParticle.Momentum()[2];
+	  _MCmu_pdg       = trackParticle.PdgCode()    ;    
+	  _MCmu_energy    = trackParticle.Energy()     ;    
+	  _MCmu_mass      = trackParticle.Mass()       ;      
+	  _MCmu_momentum  = sqrt(trackParticle.Momentum()[0]*trackParticle.Momentum()[0] +
+				 trackParticle.Momentum()[1]*trackParticle.Momentum()[1] +
+				 trackParticle.Momentum()[2]*trackParticle.Momentum()[2] ) ;      
+	  
+	  _anaMuMC_tree->Fill();
+	  
+	  if (_verbose) { 
+	    std::cout << "Track:              (" << t << ")" << "\tE: " << thatTrack._energy << std::endl; 
+	    std::cout << "Track particle:     (" << t << ")" << "\tE: " << trackParticle.Energy() << std::endl; 
+	  }      
 	}
-      if (_verbose) { 
-	std::cout << "Track:              (" << t << ")" << "\tE: " << thatTrack._energy << std::endl; 
-	std::cout << "Track particle:     (" << t << ")" << "\tE: " << trackParticle.Energy() << std::endl; 
-      }      
     }
-    
-    
-    _MCmu_x         = trackParticle.Vertex()[0]  ;
-    _MCmu_y         = trackParticle.Vertex()[1]  ;
-    _MCmu_z         = trackParticle.Vertex()[2]  ;
-    _MCmu_px        = trackParticle.Momentum()[0];
-    _MCmu_py        = trackParticle.Momentum()[1];
-    _MCmu_pz        = trackParticle.Momentum()[2];
-    _MCmu_pdg       = trackParticle.PdgCode()    ;    
-    _MCmu_energy    = trackParticle.Energy()     ;    
-    _MCmu_mass      = trackParticle.Mass()       ;      
-    _MCmu_momentum  = sqrt(trackParticle.Momentum()[0]*trackParticle.Momentum()[0] +
-			   trackParticle.Momentum()[1]*trackParticle.Momentum()[1] +
-			   trackParticle.Momentum()[2]*trackParticle.Momentum()[2] ) ;      
-
-    _anaMuMC_tree->Fill();
-
-    // End of checks on MCParticleGraph
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // End of checks on MCParticleGraph
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     return true; 
+    
   }
-
   void ERAnaMu::ProcessEnd(TFile* fout)
   {
     if(fout){
