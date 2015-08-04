@@ -37,6 +37,11 @@ namespace ertool {
     _algoMu_tree->Branch("_mu_px"    ,&_mu_px    ,"_mu_px/D     ");
     _algoMu_tree->Branch("_mu_py"    ,&_mu_py    ,"_mu_py/D     ");
     _algoMu_tree->Branch("_mu_pz"    ,&_mu_pz    ,"_mu_pz/D     ");
+
+    _algoMu_tree->Branch("_mu_x"     ,&_mu_x     ,"_mu_x/D      ");
+    _algoMu_tree->Branch("_mu_y"     ,&_mu_y     ,"_mu_y/D      ");
+    _algoMu_tree->Branch("_mu_z"     ,&_mu_z     ,"_mu_z/D      ");
+
     _algoMu_tree->Branch("_mu_xEnd"  ,&_mu_xEnd  ,"_mu_xEnd/D   ");
     _algoMu_tree->Branch("_mu_yEnd"  ,&_mu_yEnd  ,"_mu_yEnd/D   ");
     _algoMu_tree->Branch("_mu_zEnd"  ,&_mu_zEnd  ,"_mu_zEnd/D   ");
@@ -149,6 +154,11 @@ namespace ertool {
       _mu_px    = Mom[0]  ;
       _mu_py    = Mom[1]  ;
       _mu_pz    = Mom[2]  ;
+
+      _mu_x     = (track.front())[0]   ;
+      _mu_y     = (track.front())[1]   ;
+      _mu_z     = (track.front())[2]   ;
+
       _mu_xEnd  = (track.back())[0]   ;
       _mu_yEnd  = (track.back())[1]   ;
       _mu_zEnd  = (track.back())[2]   ;

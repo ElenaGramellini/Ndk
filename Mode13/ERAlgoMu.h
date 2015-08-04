@@ -105,6 +105,11 @@ namespace ertool {
     double _mu_px    ;
     double _mu_py    ;
     double _mu_pz    ;
+
+    double _mu_x     ;
+    double _mu_y     ;
+    double _mu_z     ;
+
     double _mu_xEnd  ;
     double _mu_yEnd  ;
     double _mu_zEnd  ;
