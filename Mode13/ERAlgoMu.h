@@ -99,29 +99,29 @@ namespace ertool {
     TTree* _algoMu_tree ;
     int n_mu = 0;
 
-    double _mu_En    ;
-    double _mu_DepEn ;
-    double _mu_Mom   ;
-    double _mu_px    ;
-    double _mu_py    ;
-    double _mu_pz    ;
+    double _mu_En    = -999.9;
+    double _mu_DepEn = -999.9;
+    double _mu_Mom   = -999.9;
+    double _mu_px    = -999.9;
+    double _mu_py    = -999.9;
+    double _mu_pz    = -999.9;
 
-    double _mu_x     ;
-    double _mu_y     ;
-    double _mu_z     ;
+    double _mu_x     = -999.9;
+    double _mu_y     = -999.9;
+    double _mu_z     = -999.9;
 
-    double _mu_xEnd  ;
-    double _mu_yEnd  ;
-    double _mu_zEnd  ;
-    double _mu_leng  ;
+    double _mu_xEnd  = -999.9;
+    double _mu_yEnd  = -999.9;
+    double _mu_zEnd  = -999.9;
+    double _mu_leng  = -999.9;
 
-    double _mu_EnMPS ;
-    double _mu_MomMPS;
-    double _mu_pxMPS ;
-    double _mu_pyMPS ;
-    double _mu_pzMPS ;
+    double _mu_EnMPS = -999.9;
+    double _mu_MomMPS= -999.9;
+    double _mu_pxMPS = -999.9;
+    double _mu_pyMPS = -999.9;
+    double _mu_pzMPS = -999.9;
 
-    trkf::TrackMomentumCalculator momCalc;
+    // trkf::TrackMomentumCalculator momCalc;
 
     
   };
