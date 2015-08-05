@@ -98,7 +98,8 @@ namespace ertool {
 
     TTree* _algoMu_tree ;
     int n_tracks = 0;
-
+    std::vector<double> _mu_begEndLength ;
+    std::vector<double> _mu_lengthRatio  ;
     std::vector<double> _mu_En    ;
     std::vector<double> _mu_DepEn ;
     std::vector<double> _mu_Mom   ;

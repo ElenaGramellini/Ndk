@@ -35,6 +35,8 @@ namespace ertool {
     _algoMu_tree = new TTree("_algoMu_tree","algoMu Tree");
 
     _algoMu_tree->Branch("n_tracks"  , &n_tracks, "n_tracks/I");
+    _algoMu_tree->Branch("_mu_begEndLength", "vector<double>" , &_mu_begEndLength   );
+    _algoMu_tree->Branch("_mu_lengthRatio" , "vector<double>" , &_mu_lengthRatio    );
     _algoMu_tree->Branch("_mu_En"    , "vector<double>" , &_mu_En    );
     _algoMu_tree->Branch("_mu_DepEn" , "vector<double>" , &_mu_DepEn );
     _algoMu_tree->Branch("_mu_Mom"   , "vector<double>" , &_mu_Mom   );
@@ -94,7 +96,13 @@ namespace ertool {
       double Edep = track._energy;
       if (Edep < 0    ) continue;
       if (Edep > 20000) continue;
-      double lenght = track.Length();
+      double length = track.Length();
+      auto begEnd = track.front() - track.back();
+      double begEndLength = begEnd.Length();
+      
+      double lengthRatio = begEndLength/length;
+      
+
 
       // track direction
       geoalgo::Vector_t Dir = (track[1]-track[0]);
@@ -105,6 +113,7 @@ namespace ertool {
       double Mom_Mag = sqrt( Energy*Energy - mass*mass );
 
       geoalgo::Vector_t Mom = Dir *  Mom_Mag; 
+
 
       _mu_En.push_back( Energy  );
       _mu_DepEn.push_back( Edep    );
@@ -120,7 +129,9 @@ namespace ertool {
       _mu_xEnd.push_back( (track.back())[0]   );
       _mu_yEnd.push_back( (track.back())[1]   );
       _mu_zEnd.push_back( (track.back())[2]   );
-      _mu_leng.push_back( lenght);
+      _mu_leng.push_back( length);
+      _mu_begEndLength.push_back(begEndLength);
+      _mu_lengthRatio.push_back(lengthRatio);
     }//End loop over tracks
 
     //std::cout<<"Number of crazy found is "<<crazy<<std::endl;
@@ -155,6 +166,10 @@ namespace ertool {
   void ERAlgoMu::ClearTree(){
 
     n_tracks = 0;
+
+    _mu_begEndLength.clear();
+    _mu_lengthRatio.clear();
+
     _mu_En.clear()   ;  _mu_EnMPS .clear();
     _mu_DepEn.clear();	_mu_MomMPS.clear();
     _mu_Mom.clear()  ;	_mu_leng  .clear();
@@ -166,7 +181,7 @@ namespace ertool {
     _mu_x.clear()    ;  _mu_xEnd.clear();       
     _mu_y.clear()    ;  _mu_yEnd.clear();	    
     _mu_z.clear()    ;  _mu_zEnd.clear();	    
-  
+
     return;
   }
 
