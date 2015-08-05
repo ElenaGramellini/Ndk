@@ -25,7 +25,7 @@ for x in xrange(len(sys.argv)-1):
 my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
-my_proc.set_ana_output_file("MuStudyReco_trackkalmanhit.root")
+my_proc.set_ana_output_file("MuStudyReco_stitchkalmanhit.root")
 
 # create an instance of the ERAlgo we want to use
 my_MuAlgo = ertool.ERAlgoMu()
@@ -39,7 +39,7 @@ my_MuAlgo = ertool.ERAlgoMu()
 # modules assigned to this Analysis Unit
 my_anaunit = fmwk.ExampleERSelection()
 # Set Producers
-my_anaunit.SetTrackProducer(False,"trackkalmanhit");
+my_anaunit.SetTrackProducer(False,"stitchkalmanhit");
 my_anaunit.SetShowerProducer(False,"");
 
 # cctrack            

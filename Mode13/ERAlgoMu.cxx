@@ -4,7 +4,9 @@
 #include "ERAlgoMu.h"
 
 namespace ertool {
-  
+  int crazy = 0;
+  int zero  = 0;
+
   ERAlgoMu::ERAlgoMu(const std::string& name) 
   : AlgoBase(name)
   , _algoMu_tree(nullptr)
@@ -86,6 +88,8 @@ namespace ertool {
       
       // track deposited energy
       double Edep = track._energy;
+      //      if (Edep < 0    ) continue;
+      //if (Edep > 20000) continue;
       double lenght = track.Length();
 
       // track direction
@@ -114,6 +118,42 @@ namespace ertool {
       _mu_zEnd  = (track.back())[2]   ;
       _mu_leng  = lenght;
 
+      if (_mu_En < 0)
+        {
+          zero++;
+	  std::cout<<" Energy < 0   .............. \n";
+	  std::cout<<"Pdg     .............. "<<Pdg   <<" \n";
+	  std::cout<<"mass     .............. "<<mass   <<" \n";
+	  std::cout<<"_mu_En   .............. "<<_mu_En   <<" \n";
+	  std::cout<<"_mu_DepEn.............. "<<_mu_DepEn<<" \n";
+	  std::cout<<"_mu_Mom  .............. "<<_mu_Mom  <<" \n";
+	  std::cout<<"_mu_px   .............. "<<_mu_px   <<" \n";
+	  std::cout<<"_mu_py   .............. "<<_mu_py   <<" \n";
+	  std::cout<<"_mu_pz      ........... "<<_mu_pz   <<" \n";
+	  std::cout<<"_mu_xEnd  ............. "<<_mu_xEnd <<" \n";
+	  std::cout<<"_mu_yEnd  ............. "<<_mu_yEnd <<" \n";
+	  std::cout<<"_mu_zEnd  ............. "<<_mu_zEnd <<" \n";
+	  std::cout<<"_mu_leng                "<<_mu_leng <<" \n";
+
+        }
+
+      if (_mu_En > 2000)
+        {
+          crazy++;
+	  std::cout<<" Energy > 20000   .............. \n";
+	  std::cout<<"_mu_En   .............. "<<_mu_En   <<" \n";
+	  std::cout<<"_mu_DepEn.............. "<<_mu_DepEn<<" \n";
+	  std::cout<<"_mu_Mom  .............. "<<_mu_Mom  <<" \n";
+	  std::cout<<"_mu_px   .............. "<<_mu_px   <<" \n";
+	  std::cout<<"_mu_py   .............. "<<_mu_py   <<" \n";
+	  std::cout<<"_mu_pz      ........... "<<_mu_pz   <<" \n";
+	  std::cout<<"_mu_xEnd  ............. "<<_mu_xEnd <<" \n";
+	  std::cout<<"_mu_yEnd  ............. "<<_mu_yEnd <<" \n";
+	  std::cout<<"_mu_zEnd  ............. "<<_mu_zEnd <<" \n";
+	  std::cout<<"_mu_leng                "<<_mu_leng <<" \n";
+
+        } 
+
       _algoMu_tree->Fill();
 
       if (_verbose){
@@ -130,9 +170,12 @@ namespace ertool {
     }	   	
       
      
-      
+
+  
     }//End loop over tracks
 
+    //std::cout<<"Number of crazy found is "<<crazy<<std::endl;
+    //std::cout<<"Number of < 0   found is "<<zero<<std::endl;
     
     return true;
   }
@@ -154,8 +197,9 @@ namespace ertool {
 
   void ERAlgoMu::Finalize()
   {
-
-    std::cout<<"Number of mu's found is "<<n_mu<<std::endl;
+    std::cout<<"Number of crazy found is "<<crazy<<std::endl;
+    std::cout<<"Number of < 0   found is "<<zero<<std::endl;
+   
   }
 
   void ERAlgoMu::ClearTree(){
