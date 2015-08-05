@@ -33,6 +33,8 @@ namespace ertool {
 
     if (_algoMu_tree) { delete _algoMu_tree; }
     _algoMu_tree = new TTree("_algoMu_tree","algoMu Tree");
+
+    _algoMu_tree->Branch("n_tracks"  ,&n_tracks  ,"n_tracks/I   ");
     _algoMu_tree->Branch("_mu_En"    ,&_mu_En    ,"_mu_En/D     ");
     _algoMu_tree->Branch("_mu_DepEn" ,&_mu_DepEn ,"_mu_DepEn/D  ");
     _algoMu_tree->Branch("_mu_Mom"   ,&_mu_Mom   ,"_mu_Mom/D    ");
@@ -63,6 +65,7 @@ namespace ertool {
     auto datacpy = data;
     int Pdg = -1; 
     // Loop through Particles associated with a track
+    n_tracks = graph.GetParticleNodes(RecoType_t::kTrack).size();
     for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
       
       // get track object
