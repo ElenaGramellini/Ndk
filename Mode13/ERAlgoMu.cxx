@@ -35,6 +35,7 @@ namespace ertool {
     _algoMu_tree = new TTree("_algoMu_tree","algoMu Tree");
 
     _algoMu_tree->Branch("n_tracks"  , &n_tracks, "n_tracks/I");
+
     _algoMu_tree->Branch("_mu_begEndLength", "vector<double>" , &_mu_begEndLength   );
     _algoMu_tree->Branch("_mu_lengthRatio" , "vector<double>" , &_mu_lengthRatio    );
     _algoMu_tree->Branch("_mu_En"    , "vector<double>" , &_mu_En    );
@@ -43,7 +44,8 @@ namespace ertool {
     _algoMu_tree->Branch("_mu_px"    , "vector<double>" , &_mu_px    );
     _algoMu_tree->Branch("_mu_py"    , "vector<double>" , &_mu_py    );
     _algoMu_tree->Branch("_mu_pz"    , "vector<double>" , &_mu_pz    );
-						          
+
+    _algoMu_tree->Branch("_mu_Pdg"   , "vector<int>"    , &_mu_Pdg   );						          
     _algoMu_tree->Branch("_mu_x"     , "vector<double>" , &_mu_x     );
     _algoMu_tree->Branch("_mu_y"     , "vector<double>" , &_mu_y     );
     _algoMu_tree->Branch("_mu_z"     , "vector<double>" , &_mu_z     );
@@ -114,7 +116,7 @@ namespace ertool {
 
       geoalgo::Vector_t Mom = Dir *  Mom_Mag; 
 
-
+      _mu_Pdg.push_back(Pdg);
       _mu_En.push_back( Energy  );
       _mu_DepEn.push_back( Edep    );
       _mu_Mom.push_back( Mom_Mag );
@@ -178,6 +180,7 @@ namespace ertool {
     _mu_py.clear()   ;  _mu_pyMPS.clear();
     _mu_pz.clear()   ;  _mu_pzMPS.clear();
     
+    _mu_Pdg.clear()  ;
     _mu_x.clear()    ;  _mu_xEnd.clear();       
     _mu_y.clear()    ;  _mu_yEnd.clear();	    
     _mu_z.clear()    ;  _mu_zEnd.clear();	    

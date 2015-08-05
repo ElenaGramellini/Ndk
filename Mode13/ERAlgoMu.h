@@ -107,6 +107,7 @@ namespace ertool {
     std::vector<double> _mu_py    ;
     std::vector<double> _mu_pz    ;
 
+    std::vector<int>    _mu_Pdg   ;
     std::vector<double> _mu_x     ;
     std::vector<double> _mu_y     ;
     std::vector<double> _mu_z     ;
