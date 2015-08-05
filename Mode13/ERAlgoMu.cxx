@@ -92,8 +92,8 @@ namespace ertool {
       
       // track deposited energy
       double Edep = track._energy;
-      //      if (Edep < 0    ) continue;
-      //if (Edep > 20000) continue;
+      if (Edep < 0    ) continue;
+      if (Edep > 20000) continue;
       double lenght = track.Length();
 
       // track direction
