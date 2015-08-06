@@ -47,7 +47,7 @@ my_anaunit.SetShowerProducer(False,"");
 # pandoraNuKHit     
 # stitchkalmanhit   
 # stitchkalmanhitcc 
-##### trackkalmanhit    
+# trackkalmanhit    
 # trackkalmanhitcc  
 
 
@@ -62,16 +62,6 @@ my_proc.add_process(my_anaunit)
 
 my_proc.run()
 
-
-# start event-by-event loop
-#counter = 0
-#while (my_proc.process_event(counter)):
-#    print "Processing event {0}".format(counter) 
-#    data_reco = my_anaunit.GetData()
-#    part_reco = my_anaunit.GetParticles()
-#    data_mc   = my_anaunit.GetData(True)
-#    part_mc   = my_anaunit.GetParticles(True)
-#    counter = counter + 1
 
 # done!
 print

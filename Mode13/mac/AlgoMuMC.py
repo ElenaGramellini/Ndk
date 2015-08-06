@@ -26,7 +26,7 @@ my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
 my_proc.set_ana_output_file("MuStudyMC.root")
-###my_proc.set_ana_output_file("Mode13Reco.root")
+
 
 # create an instance of the ERAlgo we want to use
 my_MuAlgo = ertool.ERAlgoMu()
