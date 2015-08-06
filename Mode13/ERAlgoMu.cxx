@@ -69,13 +69,28 @@ namespace ertool {
     ClearTree();
     auto datacpy = data;
     int Pdg = -1; 
+    double maxlength = 0;
+    int relevant_ID = 0;
     // Loop through Particles associated with a track
     n_tracks = graph.GetParticleNodes(RecoType_t::kTrack).size();
+
     for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
-      
-      // get track object
       auto const& particleFromDataP = graph.GetParticle(t);
       auto const& track = datacpy.Track(particleFromDataP.RecoID());
+      auto begEnd = track.front() - track.back();
+      double begEndLength = begEnd.Length();
+      if (maxlength < begEndLength) 
+	{
+	  maxlength = begEndLength ;
+	  relevant_ID = particleFromDataP.RecoID();
+	}
+    }
+
+    //for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
+      
+      // get track object
+    // auto const& particleFromDataP = graph.GetParticle(t);
+      auto const& track = datacpy.Track(relevant_ID);
       
       if ((track._pid_score[Track::kProton]<track._pid_score[Track::kPion])&&
 	  (track._pid_score[Track::kProton]<track._pid_score[Track::kKaon])&&
@@ -96,8 +111,8 @@ namespace ertool {
       
       // track deposited energy
       double Edep = track._energy;
-      if (Edep < 0    ) continue;
-      if (Edep > 20000) continue;
+      //if (Edep < 0    ) continue;
+      //if (Edep > 20000) continue;
       double length = track.Length();
       auto begEnd = track.front() - track.back();
       double begEndLength = begEnd.Length();
@@ -134,7 +149,7 @@ namespace ertool {
       _mu_leng.push_back( length);
       _mu_begEndLength.push_back(begEndLength);
       _mu_lengthRatio.push_back(lengthRatio);
-    }//End loop over tracks
+      // }//End loop over tracks
 
     //std::cout<<"Number of crazy found is "<<crazy<<std::endl;
     //std::cout<<"Number of < 0   found is "<<zero<<std::endl;
