@@ -90,6 +90,7 @@ namespace ertool {
       
       // get track object
     // auto const& particleFromDataP = graph.GetParticle(t);
+    if(relevant_ID){
       auto const& track = datacpy.Track(relevant_ID);
       
       if ((track._pid_score[Track::kProton]<track._pid_score[Track::kPion])&&
@@ -149,12 +150,13 @@ namespace ertool {
       _mu_leng.push_back( length);
       _mu_begEndLength.push_back(begEndLength);
       _mu_lengthRatio.push_back(lengthRatio);
-      // }//End loop over tracks
+    
 
     //std::cout<<"Number of crazy found is "<<crazy<<std::endl;
     //std::cout<<"Number of < 0   found is "<<zero<<std::endl;
 
     _algoMu_tree->Fill();
+    }//End loop over tracks
     return true;
   }
 
