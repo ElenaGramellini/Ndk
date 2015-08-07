@@ -34,7 +34,8 @@ namespace ertool {
     if (_algoMu_tree) { delete _algoMu_tree; }
     _algoMu_tree = new TTree("_algoMu_tree","algoMu Tree");
 
-    _algoMu_tree->Branch("n_tracks"  ,&n_tracks  ,"n_tracks/I   ");
+    _algoMu_tree->Branch("n_tracks"   ,&n_tracks     ,"n_tracks/I   ");
+    _algoMu_tree->Branch("tracks_size",&tracks_size  ,"tracks_size/I   ");
     _algoMu_tree->Branch("_mu_En"    ,&_mu_En    ,"_mu_En/D     ");
     _algoMu_tree->Branch("_mu_DepEn" ,&_mu_DepEn ,"_mu_DepEn/D  ");
     _algoMu_tree->Branch("_mu_Mom"   ,&_mu_Mom   ,"_mu_Mom/D    ");
@@ -97,7 +98,8 @@ namespace ertool {
 
       // track direction
       geoalgo::Vector_t Dir = (track[1]-track[0]);
-      std::cout<<n_tracks<<" TrackSize .............."<<track.size()<<"  \n";
+      //      std::cout<<n_tracks<<" TrackSize .............."<<track.size()<<"  \n";
+      tracks_size = track.size();
       Dir.Normalize();
       
       double mass = ParticleMass(Pdg);

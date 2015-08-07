@@ -98,6 +98,7 @@ namespace ertool {
 
     TTree* _algoMu_tree ;
     int n_tracks = 0;
+    int tracks_size = 0;
 
     double _mu_En    = -9999.9;
     double _mu_DepEn = -9999.9;
