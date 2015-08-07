@@ -36,7 +36,7 @@ namespace ertool {
 
     _algoMu_tree->Branch("n_tracks"  , &n_tracks, "n_tracks/I");
 
-    _algoMu_tree->Branch("_tracks_size"    , "vector<int>" , &_tracks_size    );
+    _algoMu_tree->Branch("_tracks_size"    , "vector<int>"    , &_tracks_size    );
     _algoMu_tree->Branch("_mu_begEndLength", "vector<double>" , &_mu_begEndLength);
     _algoMu_tree->Branch("_mu_lengthRatio" , "vector<double>" , &_mu_lengthRatio );
 
@@ -175,7 +175,7 @@ namespace ertool {
   void ERAlgoMu::ClearTree(){
 
     n_tracks = 0;
-
+    _tracks_size.clear();
     _mu_begEndLength.clear();
     _mu_lengthRatio.clear();
 
