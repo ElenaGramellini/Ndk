@@ -120,7 +120,8 @@ namespace ertool {
 
       geoalgo::Vector_t Mom = Dir *  Mom_Mag; 
 
-      _tracks_size.push_back(track.size());
+      std::cout<<n_tracks<<" Track Size ............... " << track.size()<<"\n";
+      //      _tracks_size.push_back(track.size());
       _mu_Pdg.push_back(Pdg);
       _mu_En.push_back( Energy  );
       _mu_DepEn.push_back( Edep    );
