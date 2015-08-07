@@ -119,9 +119,9 @@ namespace ertool {
       double Mom_Mag = sqrt( Energy*Energy - mass*mass );
 
       geoalgo::Vector_t Mom = Dir *  Mom_Mag; 
-
+      int s = track.size();
       std::cout<<n_tracks<<" Track Size ............... " << track.size()<<"\n";
-      //      _tracks_size.push_back(track.size());
+      _tracks_size.push_back(s);
       _mu_Pdg.push_back(Pdg);
       _mu_En.push_back( Energy  );
       _mu_DepEn.push_back( Edep    );
