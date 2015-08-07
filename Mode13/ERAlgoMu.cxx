@@ -144,9 +144,9 @@ namespace ertool {
 
     //std::cout<<"Number of crazy found is "<<crazy<<std::endl;
     //std::cout<<"Number of < 0   found is "<<zero<<std::endl;
-
-    _algoMu_tree->Fill();
-    }//End loop over tracks
+    }
+    
+    _algoMu_tree->Fill();         
     return true;
   }
 
