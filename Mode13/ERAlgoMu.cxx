@@ -55,7 +55,7 @@ namespace ertool {
     _algoMu_tree->Branch("_mu_pxMPS" ,&_mu_pxMPS ,"_mu_pxMPS/D  ");
     _algoMu_tree->Branch("_mu_pyMPS" ,&_mu_pyMPS ,"_mu_pyMPS/D  ");
     _algoMu_tree->Branch("_mu_pzMPS" ,&_mu_pzMPS ,"_mu_pzMPS/D  ");
-    _algoMu_tree->Branch("_mu_leng"  ,&_mu_leng  ,"_mu_leng/D  ");
+    _algoMu_tree->Branch("_mu_leng"  ,&_mu_leng  ,"_mu_leng/D   ");
     
     return;
   }
@@ -97,6 +97,7 @@ namespace ertool {
 
       // track direction
       geoalgo::Vector_t Dir = (track[1]-track[0]);
+      std::cout<<n_tracks<<" TrackSize .............."<<track.size()<<"  \n";
       Dir.Normalize();
       
       double mass = ParticleMass(Pdg);
@@ -120,7 +121,7 @@ namespace ertool {
       _mu_yEnd  = (track.back())[1]   ;
       _mu_zEnd  = (track.back())[2]   ;
       _mu_leng  = lenght;
-
+      /*
       if (_mu_En < 0)
         {
           zero++;
@@ -156,6 +157,7 @@ namespace ertool {
 	  std::cout<<"_mu_leng                "<<_mu_leng <<" \n";
 
         } 
+      */
 
       _algoMu_tree->Fill();
 
