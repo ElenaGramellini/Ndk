@@ -34,44 +34,52 @@ namespace ertool {
     if (_algoMu_tree) { delete _algoMu_tree; }
     _algoMu_tree = new TTree("_algoMu_tree","algoMu Tree");
 
-    _algoMu_tree->Branch("n_tracks"   ,&n_tracks     ,"n_tracks/I   ");
-    _algoMu_tree->Branch("tracks_size",&tracks_size  ,"tracks_size/I   ");
-    _algoMu_tree->Branch("_mu_En"    ,&_mu_En    ,"_mu_En/D     ");
-    _algoMu_tree->Branch("_mu_DepEn" ,&_mu_DepEn ,"_mu_DepEn/D  ");
-    _algoMu_tree->Branch("_mu_Mom"   ,&_mu_Mom   ,"_mu_Mom/D    ");
-    _algoMu_tree->Branch("_mu_px"    ,&_mu_px    ,"_mu_px/D     ");
-    _algoMu_tree->Branch("_mu_py"    ,&_mu_py    ,"_mu_py/D     ");
-    _algoMu_tree->Branch("_mu_pz"    ,&_mu_pz    ,"_mu_pz/D     ");
+    _algoMu_tree->Branch("n_tracks"  , &n_tracks, "n_tracks/I");
 
-    _algoMu_tree->Branch("_mu_x"     ,&_mu_x     ,"_mu_x/D      ");
-    _algoMu_tree->Branch("_mu_y"     ,&_mu_y     ,"_mu_y/D      ");
-    _algoMu_tree->Branch("_mu_z"     ,&_mu_z     ,"_mu_z/D      ");
+    _algoMu_tree->Branch("_tracks_size"    , "vector<double>" , &_tracks_size    );
+    _algoMu_tree->Branch("_mu_begEndLength", "vector<double>" , &_mu_begEndLength);
+    _algoMu_tree->Branch("_mu_lengthRatio" , "vector<double>" , &_mu_lengthRatio );
 
-    _algoMu_tree->Branch("_mu_xEnd"  ,&_mu_xEnd  ,"_mu_xEnd/D   ");
-    _algoMu_tree->Branch("_mu_yEnd"  ,&_mu_yEnd  ,"_mu_yEnd/D   ");
-    _algoMu_tree->Branch("_mu_zEnd"  ,&_mu_zEnd  ,"_mu_zEnd/D   ");
+    _algoMu_tree->Branch("_mu_En"    , "vector<double>" , &_mu_En    );
+    _algoMu_tree->Branch("_mu_DepEn" , "vector<double>" , &_mu_DepEn );
+    _algoMu_tree->Branch("_mu_Mom"   , "vector<double>" , &_mu_Mom   );
+    _algoMu_tree->Branch("_mu_px"    , "vector<double>" , &_mu_px    );
+    _algoMu_tree->Branch("_mu_py"    , "vector<double>" , &_mu_py    );
+    _algoMu_tree->Branch("_mu_pz"    , "vector<double>" , &_mu_pz    );
 
-    _algoMu_tree->Branch("_mu_EnMPS" ,&_mu_EnMPS ,"_mu_EnMPS/D  ");
-    _algoMu_tree->Branch("_mu_MomMPS",&_mu_MomMPS,"_mu_MomMPS/D ");
-    _algoMu_tree->Branch("_mu_pxMPS" ,&_mu_pxMPS ,"_mu_pxMPS/D  ");
-    _algoMu_tree->Branch("_mu_pyMPS" ,&_mu_pyMPS ,"_mu_pyMPS/D  ");
-    _algoMu_tree->Branch("_mu_pzMPS" ,&_mu_pzMPS ,"_mu_pzMPS/D  ");
-    _algoMu_tree->Branch("_mu_leng"  ,&_mu_leng  ,"_mu_leng/D   ");
+    _algoMu_tree->Branch("_mu_Pdg"   , "vector<int>"    , &_mu_Pdg   );						          
+    _algoMu_tree->Branch("_mu_x"     , "vector<double>" , &_mu_x     );
+    _algoMu_tree->Branch("_mu_y"     , "vector<double>" , &_mu_y     );
+    _algoMu_tree->Branch("_mu_z"     , "vector<double>" , &_mu_z     );
+						          
+    _algoMu_tree->Branch("_mu_xEnd"  , "vector<double>" , &_mu_xEnd  );
+    _algoMu_tree->Branch("_mu_yEnd"  , "vector<double>" , &_mu_yEnd  );
+    _algoMu_tree->Branch("_mu_zEnd"  , "vector<double>" , &_mu_zEnd  );
+						          
+    _algoMu_tree->Branch("_mu_EnMPS" , "vector<double>" , &_mu_EnMPS );
+    _algoMu_tree->Branch("_mu_MomMPS", "vector<double>" , &_mu_MomMPS);
+    _algoMu_tree->Branch("_mu_pxMPS" , "vector<double>" , &_mu_pxMPS );
+    _algoMu_tree->Branch("_mu_pyMPS" , "vector<double>" , &_mu_pyMPS );
+    _algoMu_tree->Branch("_mu_pzMPS" , "vector<double>" , &_mu_pzMPS );
+    _algoMu_tree->Branch("_mu_leng"  , "vector<double>" , &_mu_leng  );
     
     return;
   }
 
   bool ERAlgoMu::Reconstruct(const EventData &data, ParticleGraph& graph)
   {
+    ClearTree();
     auto datacpy = data;
     int Pdg = -1; 
+    double maxlength = 0;
+    int relevant_ID = 0;
     // Loop through Particles associated with a track
     n_tracks = graph.GetParticleNodes(RecoType_t::kTrack).size();
+
     for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
-      
-      // get track object
       auto const& particleFromDataP = graph.GetParticle(t);
       auto const& track = datacpy.Track(particleFromDataP.RecoID());
+     
       
       if ((track._pid_score[Track::kProton]<track._pid_score[Track::kPion])&&
 	  (track._pid_score[Track::kProton]<track._pid_score[Track::kKaon])&&
@@ -92,14 +100,18 @@ namespace ertool {
       
       // track deposited energy
       double Edep = track._energy;
-      //      if (Edep < 0    ) continue;
+      //if (Edep < 0    ) continue;
       //if (Edep > 20000) continue;
-      double lenght = track.Length();
+      double length = track.Length();
+      auto begEnd = track.front() - track.back();
+      double begEndLength = begEnd.Length();
+      
+      double lengthRatio = begEndLength/length;
+      
+
 
       // track direction
       geoalgo::Vector_t Dir = (track[1]-track[0]);
-      //      std::cout<<n_tracks<<" TrackSize .............."<<track.size()<<"  \n";
-      tracks_size = track.size();
       Dir.Normalize();
       
       double mass = ParticleMass(Pdg);
@@ -108,82 +120,32 @@ namespace ertool {
 
       geoalgo::Vector_t Mom = Dir *  Mom_Mag; 
 
-      _mu_En    = Energy  ;
-      _mu_DepEn = Edep    ;
-      _mu_Mom   = Mom_Mag ;
-      _mu_px    = Mom[0]  ;
-      _mu_py    = Mom[1]  ;
-      _mu_pz    = Mom[2]  ;
+      _tracks_size.push_back(track.size());
+      _mu_Pdg.push_back(Pdg);
+      _mu_En.push_back( Energy  );
+      _mu_DepEn.push_back( Edep    );
+      _mu_Mom.push_back( Mom_Mag );
+      _mu_px.push_back( Mom[0]  );
+      _mu_py.push_back( Mom[1]  );
+      _mu_pz.push_back( Mom[2]  );
 
-      _mu_x     = (track.front())[0]   ;
-      _mu_y     = (track.front())[1]   ;
-      _mu_z     = (track.front())[2]   ;
+      _mu_x.push_back( (track.front())[0]   );
+      _mu_y.push_back( (track.front())[1]   );
+      _mu_z.push_back( (track.front())[2]   );
 
-      _mu_xEnd  = (track.back())[0]   ;
-      _mu_yEnd  = (track.back())[1]   ;
-      _mu_zEnd  = (track.back())[2]   ;
-      _mu_leng  = lenght;
-      /*
-      if (_mu_En < 0)
-        {
-          zero++;
-	  std::cout<<" Energy < 0   .............. \n";
-	  std::cout<<"Pdg     .............. "<<Pdg   <<" \n";
-	  std::cout<<"mass     .............. "<<mass   <<" \n";
-	  std::cout<<"_mu_En   .............. "<<_mu_En   <<" \n";
-	  std::cout<<"_mu_DepEn.............. "<<_mu_DepEn<<" \n";
-	  std::cout<<"_mu_Mom  .............. "<<_mu_Mom  <<" \n";
-	  std::cout<<"_mu_px   .............. "<<_mu_px   <<" \n";
-	  std::cout<<"_mu_py   .............. "<<_mu_py   <<" \n";
-	  std::cout<<"_mu_pz      ........... "<<_mu_pz   <<" \n";
-	  std::cout<<"_mu_xEnd  ............. "<<_mu_xEnd <<" \n";
-	  std::cout<<"_mu_yEnd  ............. "<<_mu_yEnd <<" \n";
-	  std::cout<<"_mu_zEnd  ............. "<<_mu_zEnd <<" \n";
-	  std::cout<<"_mu_leng                "<<_mu_leng <<" \n";
-
-        }
-
-      if (_mu_En > 2000)
-        {
-          crazy++;
-	  std::cout<<" Energy > 20000   .............. \n";
-	  std::cout<<"_mu_En   .............. "<<_mu_En   <<" \n";
-	  std::cout<<"_mu_DepEn.............. "<<_mu_DepEn<<" \n";
-	  std::cout<<"_mu_Mom  .............. "<<_mu_Mom  <<" \n";
-	  std::cout<<"_mu_px   .............. "<<_mu_px   <<" \n";
-	  std::cout<<"_mu_py   .............. "<<_mu_py   <<" \n";
-	  std::cout<<"_mu_pz      ........... "<<_mu_pz   <<" \n";
-	  std::cout<<"_mu_xEnd  ............. "<<_mu_xEnd <<" \n";
-	  std::cout<<"_mu_yEnd  ............. "<<_mu_yEnd <<" \n";
-	  std::cout<<"_mu_zEnd  ............. "<<_mu_zEnd <<" \n";
-	  std::cout<<"_mu_leng                "<<_mu_leng <<" \n";
-
-        } 
-      */
-
-      _algoMu_tree->Fill();
-
-      if (_verbose){
-	std::cout<<"_mu_En   .............. "<<_mu_En   <<" \n";
-	std::cout<<"_mu_DepEn.............. "<<_mu_DepEn<<" \n";
-	std::cout<<"_mu_Mom  .............. "<<_mu_Mom  <<" \n";
-	std::cout<<"_mu_px   .............. "<<_mu_px   <<" \n";
-	std::cout<<"_mu_py   .............. "<<_mu_py   <<" \n";
-	std::cout<<"_mu_pz      ........... "<<_mu_pz   <<" \n";
-	std::cout<<"_mu_xEnd  ............. "<<_mu_xEnd <<" \n";
-	std::cout<<"_mu_yEnd  ............. "<<_mu_yEnd <<" \n";
-	std::cout<<"_mu_zEnd  ............. "<<_mu_zEnd <<" \n";
-	std::cout<<"_mu_leng 		    "<<_mu_leng <<" \n";
-    }	   	
-      
-     
-
-  
-    }//End loop over tracks
+      _mu_xEnd.push_back( (track.back())[0]   );
+      _mu_yEnd.push_back( (track.back())[1]   );
+      _mu_zEnd.push_back( (track.back())[2]   );
+      _mu_leng.push_back( length);
+      _mu_begEndLength.push_back(begEndLength);
+      _mu_lengthRatio.push_back(lengthRatio);
+    
 
     //std::cout<<"Number of crazy found is "<<crazy<<std::endl;
     //std::cout<<"Number of < 0   found is "<<zero<<std::endl;
-    
+
+    _algoMu_tree->Fill();
+    }//End loop over tracks
     return true;
   }
 
@@ -211,17 +173,25 @@ namespace ertool {
 
   void ERAlgoMu::ClearTree(){
 
-    _mu_En    = -1 ;
-    _mu_DepEn = -1 ;
-    _mu_Mom   = -1 ;
-    _mu_px    = -1 ;
-    _mu_py    = -1 ;
-    _mu_pz    = -1 ;
-    _mu_xEnd  = -1 ;
-    _mu_yEnd  = -1 ;
-    _mu_zEnd  = -1 ;
+    n_tracks = 0;
 
-  return;
+    _mu_begEndLength.clear();
+    _mu_lengthRatio.clear();
+
+    _mu_En.clear()   ;  _mu_EnMPS .clear();
+    _mu_DepEn.clear();	_mu_MomMPS.clear();
+    _mu_Mom.clear()  ;	_mu_leng  .clear();
+
+    _mu_px.clear()   ;  _mu_pxMPS.clear();
+    _mu_py.clear()   ;  _mu_pyMPS.clear();
+    _mu_pz.clear()   ;  _mu_pzMPS.clear();
+    
+    _mu_Pdg.clear()  ;
+    _mu_x.clear()    ;  _mu_xEnd.clear();       
+    _mu_y.clear()    ;  _mu_yEnd.clear();	    
+    _mu_z.clear()    ;  _mu_zEnd.clear();	    
+
+    return;
   }
 
 }
