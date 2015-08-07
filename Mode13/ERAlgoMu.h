@@ -98,30 +98,28 @@ namespace ertool {
 
     TTree* _algoMu_tree ;
     int n_tracks = 0;
-    std::vector<double> _mu_begEndLength ;
-    std::vector<double> _mu_lengthRatio  ;
-    std::vector<double> _mu_En    ;
-    std::vector<double> _mu_DepEn ;
-    std::vector<double> _mu_Mom   ;
-    std::vector<double> _mu_px    ;
-    std::vector<double> _mu_py    ;
-    std::vector<double> _mu_pz    ;
 
-    std::vector<int>    _mu_Pdg   ;
-    std::vector<double> _mu_x     ;
-    std::vector<double> _mu_y     ;
-    std::vector<double> _mu_z     ;
+    double _mu_En    = -9999.9;
+    double _mu_DepEn = -9999.9;
+    double _mu_Mom   = -9999.9;
+    double _mu_px    = -9999.9;
+    double _mu_py    = -9999.9;
+    double _mu_pz    = -9999.9;
 
-    std::vector<double> _mu_xEnd  ;
-    std::vector<double> _mu_yEnd  ;
-    std::vector<double> _mu_zEnd  ;
-    std::vector<double> _mu_leng  ;
+    double _mu_x     = -9999.9;
+    double _mu_y     = -9999.9;
+    double _mu_z     = -9999.9;
 
-    std::vector<double> _mu_EnMPS ;
-    std::vector<double> _mu_MomMPS;
-    std::vector<double> _mu_pxMPS ;
-    std::vector<double> _mu_pyMPS ;
-    std::vector<double> _mu_pzMPS ;
+    double _mu_xEnd  = -9999.9;
+    double _mu_yEnd  = -9999.9;
+    double _mu_zEnd  = -9999.9;
+    double _mu_leng  = -9999.9;
+
+    double _mu_EnMPS = -9999.9;
+    double _mu_MomMPS= -9999.9;
+    double _mu_pxMPS = -9999.9;
+    double _mu_pyMPS = -9999.9;
+    double _mu_pzMPS = -9999.9;
 
     // trkf::TrackMomentumCalculator momCalc;
 
