@@ -36,7 +36,7 @@ namespace ertool {
 
     _algoMu_tree->Branch("n_tracks"  , &n_tracks, "n_tracks/I");
 
-    _algoMu_tree->Branch("_tracks_size"    , "vector<double>" , &_tracks_size    );
+    _algoMu_tree->Branch("_tracks_size"    , "vector<int>" , &_tracks_size    );
     _algoMu_tree->Branch("_mu_begEndLength", "vector<double>" , &_mu_begEndLength);
     _algoMu_tree->Branch("_mu_lengthRatio" , "vector<double>" , &_mu_lengthRatio );
 
