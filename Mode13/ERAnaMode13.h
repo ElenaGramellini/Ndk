@@ -16,6 +16,8 @@
 #define ERTOOL_ERANAMODE13_H
 
 #include "ERTool/Base/AnaBase.h"
+#include "ERTool/Algo/AlgoEMPart.h"
+#include "ERTool/Algo/AlgoFindRelationship.h"
 #include "GeoAlgo/GeoAlgo.h"
 #include "GeoAlgo/GeoAABox.h"
 #include "GeoAlgo/GeoSphere.h"
@@ -23,15 +25,8 @@
 #include <utility>
 #include <TTree.h>
 
-#include "TTree.h"
-#include "TH1D.h"
-#include "TH2F.h"
-#include "DataFormat/mctruth.h"
-#include "ERTool/Base/AnaBase.h"
-#include "ERTool/Base/Particle.h"
-#include "ERTool/Base/ParticleGraph.h"
-#include "ERTool/Base/EventData.h"
-#include "ERTool/Algo/AlgoEMPart.h"
+#include "RecoAlg/TrackMomentumCalculator.h"
+
 
 namespace ertool {
 
@@ -63,60 +58,88 @@ namespace ertool {
 
     /// Called after processing the last event sample
     void ProcessEnd(TFile* fout=nullptr);
-    /// Set verbosity
-    void setVerbose(bool on){_verbose = on;}
-    
+
   private:
     /// clear tree
     void ClearTree();
-    
+
   protected:
-    // verbose flag
-    bool _verbose;
     
-    //Tree -> one entry per primary proton
-    TTree* _ana_tree;
+    bool _verbose;
+    bool _useRadLength;
+    bool isGammaLike(const double dedx, double radlen,bool forceRadLen=false);
+    AlgoEMPart _alg_emp;
 
-    double _proton_x     ;
-    double _proton_y     ;
-    double _proton_z     ;
-    double _proton_t     ;
-    double _proton_px    ;
-    double _proton_py    ;
-    double _proton_pz    ;
-    int    _proton_pdg   ;
-    double _proton_energy;
-    double _proton_mass  ;
-    double _proton_momentum;
+    TTree* _TrackSel_tree ;
+    int n_tracks = 0;
+    int n_mu = 0;
+    //Track Length
+    std::vector<int>    _tracks_size         ;
+    std::vector<double> _track_begEndLength  ;
+    std::vector<double> _track_leng          ;
+    std::vector<double> _track_lengthRatio   ;
+    std::vector<double> _track_ReducedLength ; 
+    std::vector<double> _track_FakeLength    ;
+    std::vector<double> _tracks_stepsLength  ;
+    std::vector<double> _tracks_stepsDensity ;
+    //Track Calorimetry & PID
+    std::vector<int>    _track_Pdg       ;
+    std::vector<double> _track_DepEnCal  ;
+    std::vector<double> _track_DepEnRange;
+    std::vector<double> _track_EnCal     ;
+    std::vector<double> _track_EnRange   ;
+    std::vector<double> _track_Mom       ;
+    std::vector<double> _track_px        ;
+    std::vector<double> _track_py        ;
+    std::vector<double> _track_pz        ;
+    std::vector<double> _track_EnMPS     ;
+    std::vector<double> _track_MomMPS    ;
+    std::vector<double> _track_pxMPS     ;
+    std::vector<double> _track_pyMPS     ;
+    std::vector<double> _track_pzMPS     ;
+    //Track Position
+    std::vector<double> _track_x     ;
+    std::vector<double> _track_y     ;
+    std::vector<double> _track_z     ;
+    std::vector<double> _track_xEnd  ;
+    std::vector<double> _track_yEnd  ;
+    std::vector<double> _track_zEnd  ;
 
-    double _mu_x         ;
-    double _mu_y         ;
-    double _mu_z         ;
-    double _mu_xEnd      ;
-    double _mu_yEnd      ;
-    double _mu_zEnd      ;
-    double _mu_t         ;
-    double _mu_px        ;
-    double _mu_py        ;
-    double _mu_pz        ;
-    int    _mu_pdg       ;
-    double _mu_energy    ;
-    double _mu_mass      ;
-    double _mu_momentum  ;
+    TTree* _ShowerSel_tree ;
+    int n_showers = 0;
+    int n_gamma = 0;
+    //Shower Calorimetry & PID
+    std::vector<int>    _shower_Pdg       ;
+    std::vector<double> _shower_DepEn     ;
+    std::vector<double> _shower_DeDx      ;
+    std::vector<double> _shower_Mom       ;
+    std::vector<double> _shower_px        ;
+    std::vector<double> _shower_py        ;
+    std::vector<double> _shower_pz        ;
+    //Shower Position
+    std::vector<double> _shower_x     ;
+    std::vector<double> _shower_y     ;
+    std::vector<double> _shower_z     ;
 
-    double _gamma_x      ;
-    double _gamma_y      ;
-    double _gamma_z      ;
-    double _gamma_t      ;
-    double _gamma_px     ;
-    double _gamma_py     ;
-    double _gamma_pz     ;
-    double _gamma_energy ;
-    int    _gamma_pgd    ;
-    double _gamma_mass   ;
-    double _gamma_momentum;
 
-    double _mu_gamma_angle;
+    TTree* _ProtonSel_tree ;
+    int n_Protons = 0;
+    //Proton Calorimetry & PID
+    std::vector<int>    _proton_Pdg   ;
+    std::vector<double> _proton_En    ;
+    std::vector<double> _proton_Mom   ;
+    std::vector<double> _proton_px    ;
+    std::vector<double> _proton_py    ;
+    std::vector<double> _proton_pz    ;
+    //Proton Position
+    std::vector<double> _proton_x     ;
+    std::vector<double> _proton_y     ;
+    std::vector<double> _proton_z     ;
+    //Properties of the couple
+    std::vector<double> _proton_openingAngle ;
+    std::vector<double> _proton_IP           ;
+    std::vector<double> _protonEnDepDistance ;    
+
 
   };
 }
