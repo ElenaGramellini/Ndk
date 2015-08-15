@@ -136,7 +136,7 @@ namespace ertool {
 
       if (_verbose) std::cout<<"Track Size "<<thatTrack.size()<<"\n";      
       // Before doing anything else, let's fix the lenght of the track
-      if (thatTrack.size() < 10) continue;   // I keep only "long" tracks
+      if (thatTrack.size() < 100) continue;   // I keep only "long" tracks
 
       double ReducedLength = 0;
       double fakeLength    = 0; 
@@ -158,9 +158,9 @@ namespace ertool {
 	auto trajBit = thatTrack[i] - thatTrack[i+1];
 	auto stepLength = trajBit.Length();	
 	if (i < chunck) {
-	  if (stepLength > 100 ) {holeIni = i+1; fakeLength  += stepLength ;}
+	  if (stepLength > 5 ) {holeIni = i+1; fakeLength  += stepLength ;}
 	}else if (i > chunck*4){ 
-	  if (stepLength > 100 ) {fakeLength  += stepLength ; if (!holeFin ) holeFin = i; }
+	  if (stepLength > 5 ) {fakeLength  += stepLength ; if (!holeFin ) holeFin = i; }
 	}
       }// end of points loop
       if (!holeFin) holeFin = thatTrack.size()-1;
@@ -175,12 +175,14 @@ namespace ertool {
       edge2 = thatTrack[holeFin];
       ///End of the block where refine my track
       ///////////////////////////////////////////////////////////
-      
+
       length        = thatTrack.Length();      // track trajectory length from reco obj
       begEndLength  = (edge1-edge2).Length();  // track trajectory length new start to new end
 
       double EdepCal     = thatTrack._energy;  // track deposited energy from calorimetry obj
       double EdepRange   = ReducedLength*2.3;  // track deposited energy from length obj
+
+      if (EdepRange>2000) continue;
       double mass        = ParticleMass(Pdg);
       double EnergyCal   = EdepCal + mass;
       double EnergyRange = ReducedLength*2.3 + mass;
@@ -206,6 +208,17 @@ namespace ertool {
 	  trBeg2 = thatTrack[holeFin-1];
 	  STShortest = (edge2-thisShower.Start()).Length();
 	}
+	
+	if ((trBeg[0]<3.   ) && (trEnd[0]> 250.)) continue;
+	if ((trBeg[1]<-113.) && (trEnd[1]> 113.)) continue;
+	if ((trBeg[2]<3.   ) && (trEnd[2]>1050.)) continue; 
+
+	if ((trEnd[0]<3.   ) && (trBeg[0]> 250.)) continue;
+	if ((trEnd[1]<-113.) && (trBeg[1]> 113.)) continue;
+	if ((trEnd[2]<3.   ) && (trBeg[2]>1050.)) continue; 
+
+
+	if (thisShower._energy>2000) continue;
 	geoalgo::Vector_t Dir = (trBeg2-trBeg); 
 	Dir.Normalize();
 	geoalgo::Vector_t Mom = Dir *  Mom_Mag; 
@@ -291,7 +304,7 @@ namespace ertool {
 
 	
 	_proton_Pdg   .push_back(2212);
-	_proton_En    .push_back(EnergyRange+shower_DepEn);
+	_proton_En    .push_back(EdepRange+shower_DepEn);
 	_proton_px    .push_back(proton4Mom.X());
 	_proton_py    .push_back(proton4Mom.Y());
 	_proton_pz    .push_back(proton4Mom.Z());
