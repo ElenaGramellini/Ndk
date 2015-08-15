@@ -69,8 +69,13 @@ namespace ertool {
     bool _useRadLength;
     bool isGammaLike(const double dedx, double radlen,bool forceRadLen=false);
     AlgoEMPart _alg_emp;
+    AlgoFindRelationship _findRel;
 
-    TTree* _TrackSel_tree ;
+    TTree* _ProtonSel_tree ;
+    int _run_n       = 0 ;
+    int _subrun_n    = 0 ;
+    int _evt_n       = 0 ;
+
     int n_tracks = 0;
     int n_mu = 0;
     //Track Length
@@ -105,7 +110,7 @@ namespace ertool {
     std::vector<double> _track_yEnd  ;
     std::vector<double> _track_zEnd  ;
 
-    TTree* _ShowerSel_tree ;
+
     int n_showers = 0;
     int n_gamma = 0;
     //Shower Calorimetry & PID
@@ -120,9 +125,9 @@ namespace ertool {
     std::vector<double> _shower_x     ;
     std::vector<double> _shower_y     ;
     std::vector<double> _shower_z     ;
+    std::vector<double> _shower_radius;
+    std::vector<double> _shower_lenght;
 
-
-    TTree* _ProtonSel_tree ;
     int n_Protons = 0;
     //Proton Calorimetry & PID
     std::vector<int>    _proton_Pdg   ;
