@@ -25,7 +25,7 @@ for x in xrange(len(sys.argv)-1):
 my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
-my_proc.set_ana_output_file("Whole13.root")
+my_proc.set_ana_output_file("Whole13Cosm7.root")
 
 # create an instance of the ERAlgo we want to use
 my_MyAna = ertool.ERAnaMode13()
@@ -58,7 +58,7 @@ my_anaunit._mgr.AddAna(my_MyAna)
 
 my_proc.add_process(my_anaunit)
 
-my_proc.run()
+my_proc.run(6001,1000)
 
 
 # done!
