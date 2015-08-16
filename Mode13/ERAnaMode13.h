@@ -62,6 +62,8 @@ namespace ertool {
   private:
     /// clear tree
     void ClearTree();
+    /// Reserve the local vector size prior to push-back
+    void ReserveVector(const size_t ntracks, const size_t nshowers);
 
   protected:
     
