@@ -6,7 +6,7 @@
 namespace ertool {
 
   ERAnaMode13::ERAnaMode13(const std::string& name) : AnaBase(name)
-    , _ProtonSel_tree(nullptr)
+						    , _ProtonSel_tree(nullptr)
   {
     _verbose          = false;
     _useRadLength     = false;
@@ -98,22 +98,23 @@ namespace ertool {
   bool ERAnaMode13::Analyze(const EventData &data, const ParticleGraph &graph)
   { 
     ClearTree();
+    auto const track_nodes = graph.GetParticleNodes(RecoType_t::kTrack);
+    auto const shower_nodes = graph.GetParticleNodes(RecoType_t::kShower);
+    ReserveVector(track_nodes.size(),shower_nodes.size());
     _run_n    = data.Run(); 
     _subrun_n = data.SubRun();
     _evt_n    = data.Event_ID();
 
-    auto datacpy = data;
-    if (!datacpy.Shower().size()) std::cout<<"No Showers"<<"\n";
-    if (!datacpy.Track().size())  std::cout<<"No Tracks"<<"\n";
+    if (!data.Shower().size()) std::cout<<"No Showers"<<"\n";
+    if (!data.Track().size())  std::cout<<"No Tracks"<<"\n";
     n_showers = data.Shower().size();
     n_tracks  = data.Track().size();
     if (_verbose) std::cout<<"N Showers "<<n_showers<<" \n";
     if (_verbose) std::cout<<"N Tracks  "<<n_tracks<<" \n";
 
-    
     //LOOP ON TRACKS
-    for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)){
-      auto const& thatTrack = datacpy.Track(graph.GetParticle(t).RecoID());
+    for (auto const& t : track_nodes){
+      auto const& thatTrack = data.Track(graph.GetParticle(t).RecoID());
       int Pdg = -1; 
       //Assign particle identification
       if ((thatTrack._pid_score[Track::kProton]<thatTrack._pid_score[Track::kPion])&&
@@ -131,8 +132,6 @@ namespace ertool {
       if ((thatTrack._pid_score[Track::kMuon]<thatTrack._pid_score[Track::kProton])&&
 	  (thatTrack._pid_score[Track::kMuon]<thatTrack._pid_score[Track::kPion])&&
 	  (thatTrack._pid_score[Track::kMuon]<thatTrack._pid_score[Track::kKaon]))        Pdg = 13;      
-
-
 
       if (_verbose) std::cout<<"Track Size "<<thatTrack.size()<<"\n";      
       // Before doing anything else, let's fix the lenght of the track
@@ -164,6 +163,7 @@ namespace ertool {
 	}
       }// end of points loop
       if (!holeFin) holeFin = thatTrack.size()-1;
+      _tracks_stepsLength.reserve(_tracks_stepsLength.size() + thatTrack.size());
       for (int i = holeIni; i < thatTrack.size()-1; i++){
 	if ((i >= holeFin )&&(holeFin)) break; 
 	auto trajBit = thatTrack[i] - thatTrack[i+1];
@@ -189,9 +189,10 @@ namespace ertool {
       double Mom_Mag = sqrt( EnergyRange*EnergyRange - mass*mass );      
       double STShortest ;
       n_mu++;
+
       //LOOP ON SHOWERS
-      for (auto const& p : graph.GetParticleNodes(RecoType_t::kShower)){
-	auto const& thisShower = datacpy.Shower(graph.GetParticle(p).RecoID());
+      for (auto const& p : shower_nodes) {
+	auto const& thisShower = data.Shower(graph.GetParticle(p).RecoID());
 
 	/////////////////////////////////////////////////////////////////
 	// In this block I determine the direction of the track
@@ -301,7 +302,6 @@ namespace ertool {
 	_proton_openingAngle.push_back(openingAngle);
 	_proton_IP          .push_back(IP);
 	_protonEnDepDistance.push_back(STShortest);    
-
 	
 	_proton_Pdg   .push_back(2212);
 	_proton_En    .push_back(EdepRange+shower_DepEn);
@@ -312,7 +312,6 @@ namespace ertool {
 	_proton_x     .push_back(trBeg[0]);
 	_proton_y     .push_back(trBeg[1]);
 	_proton_z     .push_back(trBeg[2]);
-	
 	
       }
     }
@@ -329,8 +328,58 @@ namespace ertool {
 	_ProtonSel_tree->Write();
     }
   }
+  
+  void ERAnaMode13::ReserveVector(const size_t ntracks, const size_t nshowers){
 
-
+    _tracks_stepsLength .reserve(ntracks);
+    _tracks_size        .reserve(ntracks);
+    _track_begEndLength .reserve(ntracks*nshowers);
+    _track_leng         .reserve(ntracks*nshowers);
+    _track_lengthRatio  .reserve(ntracks*nshowers);
+    _track_ReducedLength.reserve(ntracks*nshowers);
+    _track_FakeLength   .reserve(ntracks*nshowers);
+    _track_Pdg          .reserve(ntracks*nshowers);
+    _track_DepEnCal     .reserve(ntracks*nshowers);
+    _track_DepEnRange   .reserve(ntracks*nshowers);
+    _track_EnCal        .reserve(ntracks*nshowers);
+    _track_EnRange      .reserve(ntracks*nshowers);
+    _track_Mom          .reserve(ntracks*nshowers);
+    _track_px           .reserve(ntracks*nshowers);
+    _track_py           .reserve(ntracks*nshowers);
+    _track_pz           .reserve(ntracks*nshowers);
+    _track_x            .reserve(ntracks*nshowers);
+    _track_y            .reserve(ntracks*nshowers);
+    _track_z            .reserve(ntracks*nshowers);
+    _track_xEnd         .reserve(ntracks*nshowers);
+    _track_yEnd         .reserve(ntracks*nshowers);
+    _track_zEnd         .reserve(ntracks*nshowers);
+    _shower_Pdg         .reserve(ntracks*nshowers);
+    _shower_DepEn       .reserve(ntracks*nshowers);
+    _shower_DeDx        .reserve(ntracks*nshowers);
+    _shower_Mom         .reserve(ntracks*nshowers);
+    _shower_px          .reserve(ntracks*nshowers);
+    _shower_py          .reserve(ntracks*nshowers);
+    _shower_pz          .reserve(ntracks*nshowers);
+    _shower_x           .reserve(ntracks*nshowers);
+    _shower_y           .reserve(ntracks*nshowers);
+    _shower_z           .reserve(ntracks*nshowers);
+    _shower_radius      .reserve(ntracks*nshowers);
+    _shower_lenght      .reserve(ntracks*nshowers);
+    _proton_openingAngle.reserve(ntracks*nshowers);
+    _proton_IP          .reserve(ntracks*nshowers);
+    _protonEnDepDistance.reserve(ntracks*nshowers);
+    
+    _proton_Pdg   .reserve(ntracks*nshowers);
+    _proton_En    .reserve(ntracks*nshowers);
+    _proton_px    .reserve(ntracks*nshowers);
+    _proton_py    .reserve(ntracks*nshowers);
+    _proton_pz    .reserve(ntracks*nshowers);
+    _proton_Mom   .reserve(ntracks*nshowers);
+    _proton_x     .reserve(ntracks*nshowers);
+    _proton_y     .reserve(ntracks*nshowers);
+    _proton_z     .reserve(ntracks*nshowers);
+    
+  }
 
   void ERAnaMode13::ClearTree(){
 
