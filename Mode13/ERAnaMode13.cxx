@@ -136,7 +136,7 @@ namespace ertool {
 
       if (_verbose) std::cout<<"Track Size "<<thatTrack.size()<<"\n";      
       // Before doing anything else, let's fix the lenght of the track
-      if (thatTrack.size() < 10) continue;   // I keep only "long" tracks
+      if (thatTrack.size() < 100) continue;   // I keep only "long" tracks
 
       double ReducedLength = 0;
       double fakeLength    = 0; 
@@ -158,9 +158,9 @@ namespace ertool {
 	auto trajBit = thatTrack[i] - thatTrack[i+1];
 	auto stepLength = trajBit.Length();	
 	if (i < chunck) {
-	  if (stepLength > 100 ) {holeIni = i+1; fakeLength  += stepLength ;}
+	  if (stepLength > 5 ) {holeIni = i+1; fakeLength  += stepLength ;}
 	}else if (i > chunck*4){ 
-	  if (stepLength > 100 ) {fakeLength  += stepLength ; if (!holeFin ) holeFin = i; }
+	  if (stepLength > 5 ) {fakeLength  += stepLength ; if (!holeFin ) holeFin = i; }
 	}
       }// end of points loop
       if (!holeFin) holeFin = thatTrack.size()-1;
