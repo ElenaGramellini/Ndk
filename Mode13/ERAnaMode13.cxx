@@ -5,6 +5,8 @@
 
 namespace ertool {
 
+  int TotProt   = 0;
+  int MultiProt = 0;
   ERAnaMode13::ERAnaMode13(const std::string& name) : AnaBase(name)
 						    , _ProtonSel_tree(nullptr)
   {
@@ -135,7 +137,7 @@ namespace ertool {
 
       if (_verbose) std::cout<<"Track Size "<<thatTrack.size()<<"\n";      
       // Before doing anything else, let's fix the lenght of the track
-      if (thatTrack.size() < 100) continue;   // I keep only "long" tracks
+      if (thatTrack.size() < 100) continue;   // I keep only "long" tracks //10 for MC, 100 for Reco
 
       double ReducedLength = 0;
       double fakeLength    = 0; 
@@ -157,7 +159,7 @@ namespace ertool {
 	auto trajBit = thatTrack[i] - thatTrack[i+1];
 	auto stepLength = trajBit.Length();	
 	if (i < chunck) {
-	  if (stepLength > 5 ) {holeIni = i+1; fakeLength  += stepLength ;}
+	  if (stepLength > 5 ) {holeIni = i+1; fakeLength  += stepLength ;} //100 for MC, 5 for Reco
 	}else if (i > chunck*4){ 
 	  if (stepLength > 5 ) {fakeLength  += stepLength ; if (!holeFin ) holeFin = i; }
 	}
@@ -312,10 +314,43 @@ namespace ertool {
 	_proton_x     .push_back(trBeg[0]);
 	_proton_y     .push_back(trBeg[1]);
 	_proton_z     .push_back(trBeg[2]);
-	
+	if(_verbose)
+	  {
+	    if (EdepRange<2000) 
+	      {
+		if (shower_DepEn<2000)
+		  {
+		    if (thisShower.Length() > 20)
+		      {
+			if (thisShower.Length() < 80)
+			  {
+			    if (Pdg==13||Pdg==211)
+			      {
+				if (shower_DepEn > 65)
+				  {
+				    if ((shower_DepEn<700)&&(openingAngle>1.2||openingAngle<0.5)&&
+					(shower_Pdg==22)&&(IP<15)&&(STShortest<70))
+				      {
+					std::cout<<" Interesting evt. Run: "<<data.Run()<<" SubRun: "<<data.SubRun()<<" Evt: "<<data.Event_ID()<<"\n";
+					std::cout<<"                    x: "<<trBeg[0]<<" y: "<<trBeg[1]<<" z: "<<trBeg[2]<<"\n";
+					n_Protons++;
+				      }
+				  }
+			      }
+			  }
+		      }
+		  }
+	      }
+	  }
       }
     }
     
+    if (n_Protons) 
+      {
+	//std::cout<<"Protons in this evt : "<<n_Protons<<"\n";
+	TotProt+=n_Protons;
+	if (n_Protons > 1) MultiProt++;
+      }
     _ProtonSel_tree->Fill();
   
     return true; 
@@ -323,6 +358,8 @@ namespace ertool {
 
   void ERAnaMode13::ProcessEnd(TFile* fout)
   {
+    cout<<"Tot number of Protons     : "<<TotProt<<"\n";
+    cout<<"Evt with multiple Protons : "<<MultiProt<<"\n";
     if(fout){
       if (_ProtonSel_tree)
 	_ProtonSel_tree->Write();

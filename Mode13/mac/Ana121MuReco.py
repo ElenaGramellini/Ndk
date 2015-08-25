@@ -25,12 +25,11 @@ for x in xrange(len(sys.argv)-1):
 my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
-my_proc.set_ana_output_file("MuStudyMC.root")
+my_proc.set_ana_output_file("ERAnaOneToOneMuReco.root")
 
 
 # create an instance of the ERAlgo we want to use
-my_MuAlgo = ertool.ERAlgoMu()
-my_MuAna  = ertool.ERAnaMu()
+my_Ana  = ertool.ERAnaOneToOneMu()
 
 # create an instance of the Analysis Unit to be used
 # this should work like a black box
@@ -41,15 +40,16 @@ my_MuAna  = ertool.ERAnaMu()
 my_anaunit = fmwk.ExampleERSelection()
 # Set Producers
 # First Argument: True = MC, False = Reco
-my_anaunit.SetTrackProducer(True,"mcreco");
-#my_anaunit.SetTrackProducer(False,"trackkalmanhit");
+#my_anaunit.SetTrackProducer(True,"mcreco");
+#my_anaunit.SetShowerProducer(True,"mcreco");
+my_anaunit.SetTrackProducer(False,"trackkalmanhit");
+my_anaunit.SetShowerProducer(False,"");
 
 # should we load the MCTruth information? decide here
 # this is stuff that can come useful in ERAna module
 my_anaunit._mgr._mc_for_ana = True
 
-my_anaunit._mgr.AddAlgo(my_MuAlgo)
-my_anaunit._mgr.AddAlgo(my_MuAna)
+my_anaunit._mgr.AddAna(my_Ana)
 
 my_proc.add_process(my_anaunit)
 

@@ -99,8 +99,32 @@ namespace ertool {
     TTree* _algoMu_tree ;
     int n_tracks = 0;
     std::vector<int>    _tracks_size ;
+    std::vector<double> _tracks_steps    ;
+    std::vector<double> _tracks_stepsDensity    ;
+    std::vector<double> _tracks_den1;
+    std::vector<double> _tracks_den2;
+    std::vector<double> _tracks_den3;
     std::vector<double> _mu_begEndLength ;
     std::vector<double> _mu_lengthRatio  ;
+
+    std::vector<double>_mu_ReducedLength20; std::vector<double> _mu_FakeLength20;
+    std::vector<double>_mu_ReducedLength10; std::vector<double> _mu_FakeLength10;
+    std::vector<double>_mu_ReducedLength5 ; std::vector<double> _mu_FakeLength5 ;
+    std::vector<double>_mu_ReducedLength2 ; std::vector<double> _mu_FakeLength2 ;
+    std::vector<double>_mu_ReducedLength1 ; std::vector<double> _mu_FakeLength1 ;
+
+    std::vector<double>_mu_ReducedLengthThirds20; std::vector<double> _mu_FakeLengthThirds20;
+    std::vector<double>_mu_ReducedLengthThirds10; std::vector<double> _mu_FakeLengthThirds10;
+    std::vector<double>_mu_ReducedLengthThirds5 ; std::vector<double> _mu_FakeLengthThirds5 ;
+    std::vector<double>_mu_ReducedLengthThirds2 ; std::vector<double> _mu_FakeLengthThirds2 ;
+    std::vector<double>_mu_ReducedLengthThirds1 ; std::vector<double> _mu_FakeLengthThirds1 ;
+
+    std::vector<double>_mu_ReducedLengthHoles20; std::vector<double> _mu_FakeLengthHoles20;
+    std::vector<double>_mu_ReducedLengthHoles10; std::vector<double> _mu_FakeLengthHoles10;
+    std::vector<double>_mu_ReducedLengthHoles5 ; std::vector<double> _mu_FakeLengthHoles5 ;
+    std::vector<double>_mu_ReducedLengthHoles2 ; std::vector<double> _mu_FakeLengthHoles2 ;
+    std::vector<double>_mu_ReducedLengthHoles1 ; std::vector<double> _mu_FakeLengthHoles1 ;
+
     std::vector<double> _mu_En    ;
     std::vector<double> _mu_DepEn ;
     std::vector<double> _mu_Mom   ;
@@ -112,10 +136,17 @@ namespace ertool {
     std::vector<double> _mu_x     ;
     std::vector<double> _mu_y     ;
     std::vector<double> _mu_z     ;
-
     std::vector<double> _mu_xEnd  ;
     std::vector<double> _mu_yEnd  ;
     std::vector<double> _mu_zEnd  ;
+
+    std::vector<double> _mu_Refx   ;
+    std::vector<double> _mu_Refy   ;
+    std::vector<double> _mu_Refz   ;
+    std::vector<double> _mu_RefxEnd;
+    std::vector<double> _mu_RefyEnd;
+    std::vector<double> _mu_RefzEnd;
+			       
     std::vector<double> _mu_leng  ;
 
     std::vector<double> _mu_EnMPS ;

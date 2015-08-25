@@ -1,0 +1,4 @@
+python Ana121MuMC.py /Volumes/Seagate\ Backup\ Plus\ Drive/NucleonDecay/dataMode13/sim/2598033_*/larlite_mcinfo_*.root 
+python Ana121GammaMC.py /Volumes/Seagate\ Backup\ Plus\ Drive/NucleonDecay/dataMode13/sim/2598033_0/larlite_mcinfo_*.root
+
+python mac/Ana121.py `cat larlite_files.txt ` 
