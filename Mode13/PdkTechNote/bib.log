@@ -1,0 +1,14 @@
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdftex 2011.7.3)  24 AUG 2015 16:51
+entering extended mode
+ \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**bib.bib
+(./bib.bib)
+*
+! Emergency stop.
+<*> bib.bib
+           
+End of file on the terminal!
+
+!  ==> Fatal error occurred, no output PDF file produced!

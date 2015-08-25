@@ -36,7 +36,7 @@
 
 
 \begin{document}
-\title{Selection efficiencies in signal only sample for $p \rightarrow \mu^{+} \gamma$ and $p \rightarrow e^{+} \pi^{0}$ nucleon decay modes in MicroBooNE}
+\title{Selection efficiencies in signal only samples for $p \rightarrow \mu^{+} \gamma$ and $p \rightarrow e^{+} \pi^{0}$ nucleon decay modes in MicroBooNE}
 \author{William De Rocco, Elena Gramellini}
 
 \maketitle
@@ -56,7 +56,7 @@ In the Standard Model, baryon number is conserved, causing for the proton and bo
 
 Previous experiments have placed limits on the proton lifetime ~\cite{Akiri:2011dv}. The dominant experimental setup for these searches has historically been a water Cherenkov detectors. This technology suffers from an inability to reconstruct  events  thru decay products that are below the Cherenkov threshold and relays on the gammas from nuclear deexcitation for those modes.
 
-For this reason, an attractive alternate approach to identifying nucleon decay is the use of a liquid argon time projection chamber (LArTPC). LArTPCs have the ability to identify nucleon decay modes that a water Cherenkov detector has less sensitivity to, most notably the $p\rightarrow K^{+} \bar{\nu}$.  Previous MC studies ~\cite{Bueno:2007um} have claimed a very high selection efficiency of many nucleon decay topologies, making this an important area of study.
+For this reason, an attractive alternate approach to identifying nucleon decay is the use of a liquid argon time projection chamber (LArTPC). LArTPCs have the ability to identify nucleon decay modes that a water Cherenkov detector has less sensitivity to, most notably the $p\rightarrow K^{+} \bar{\nu}$ (see Figure \ref{K} for MC event display using Larsoft, raw digits only).  Previous MC studies ~\cite{Bueno:2007um} have claimed a very high selection efficiency of many nucleon decay topologies, making this an important area of study.
 
 Future LArTPC experiments such as DUNE will have active volumes large enough and will run for lengths of time that would allow for the identification of nucleon decay in liquid argon or, alternatively in the case of a null result, the ability to bound the proton lifetime in many channels. Though the active volume of MicroBooNE is too small to be able to place any limits on nucleon decay lifetimes, it provides an excellent source of data on backgrounds, primarily from cosmogenic sources, that will affect future proton decay searches in LArTPCs.
 Previous work has been done to assess the potential identification efficiencies for different decay modes in a LArTPC ~\cite{Bueno:2007um} but as of yet, no study of selection efficiencies and dominant backgrounds to nucleon decay in LArTPCs has been performed with data, nor taking into account reconstruction efficiencies. This note discusses the first step of an analysis that will make the first investigation into proton decay backgrounds in MicroBooNE for the $p \rightarrow \mu^{+} \gamma$ and $e^{+} \pi^{0}$  decay modes.
@@ -85,9 +85,33 @@ We used two different MC samples for this analysis, which are defined as follows
 \item  $p \rightarrow e^{+} \pi^{0}$ signal only
 \end{enumerate}
 
+
+
+
+\begin{figure}[p!]
+\centering
+\includegraphics[width=6in]{evd/mu1}
+\caption{Event display for the $p \rightarrow \mu^{+} \gamma$ mode. Raw digit only. \\}
+\label{mu}
+\end{figure}
+
+\begin{figure}[hpbt]
+\centering
+\includegraphics[width=6in]{evd/pi1}
+\caption{Event display for the $p \rightarrow e^{+} \pi^{0}$ mode. Raw digit only.}
+\label{pi}
+\end{figure}
+
+\begin{figure}[hpbt]
+\centering
+\includegraphics[width=6in]{evd/K1}
+\caption{Event display for the $p \rightarrow K^{+} \bar\nu$ mode. Raw digit only.}
+\label{K}
+\end{figure}
+
 For both the samples, we used the reco data products "showerrecopandora" for shower reconstruction and "kalmanhit" for track reconstruction. Additional studies with different data products are viable, but not  yet performed.\\
  
-{\bf 1. $p \rightarrow \mu^{+} \gamma$   signal only} Each event of this sample contains a single proton decay in the $p \rightarrow \mu^{+} \gamma$  mode, generated at the center of the TPC.
+{\bf 1. $p \rightarrow \mu^{+} \gamma$   signal only} Each event of this sample contains a single proton decay in the $p \rightarrow \mu^{+} \gamma$  mode, generated at the center of the TPC. A visual representation of one event can be found in figure \ref{mu}, generated with Larsoft event display, raw digits only, 5 ACD threshold. 
 10000 $p \rightarrow \mu^{+} \gamma$  decays were generated using a slightly modified version of the GENIE 2.8.6 package gevgen\_ndcy. We added the  $p \rightarrow \mu^{+} \gamma$ decay mode to the standard gevgen\_ndcy generator by implementing a muon and a gamma in the two body decay list  of modes. The modified code can be found in 
 /uboone/app/users/elena/NewGENIE/altups/genie/my286alt/Linux64bit+2-debug-e7/\\GENIE\_my286alt/src/NucleonDecay/ .
 
@@ -101,7 +125,7 @@ and  \\
 sim/prod\_NdK/prodndkGoldenSim13.fcl. \\
 Standard reconstruction and standard conversion to larlite format were finally applied. 10000 events were passed to the analysis stage. We modified the REco track attributes  to correct for reconstruction pathologies  during the analysis stage  only (see \ref{trackRef} ).\\
 
-{\bf 2. $p \rightarrow e^{+} \pi^{0}$  signal only} Each event of this sample contains a single proton decay in the $p \rightarrow e^{+} \pi^{0}$ mode, generated at the center of the TPC.
+{\bf 2. $p \rightarrow e^{+} \pi^{0}$  signal only} Each event of this sample contains a single proton decay in the $p \rightarrow e^{+} \pi^{0}$ mode, generated at the center of the TPC. A visual representation of one event can be found in figure \ref{pi}, generated with Larsoft event display, raw digits only, 5 ACD threshold. 
 About 2500 $p \rightarrow e^{+} \pi^{0}$ decays were generated with the GENIE 2.8.6 package gevgen\_ndcy. However, in the $e^{+} \pi^{0}$ mode, GENIE simulates hadronic re-interaction in the nucleus. So, the $\pi^{0}$ can cause for the ejection of a secondary nucleon as it escapes. Alternatively, the pion can fail to escape the nucleus and its energy goes instead into the ejection of several additional nucleons. This analysis has no sensitivity to these events, so these events are removed at generator level. Only $48\%$ of signal is kept at this stage. Therefore, in the context of this analysis, we define a signal event as a single proton decay with no additional ejected nucleons. We decided to parse with larsoft a skimmed sample of 10000 GENIE events that can be found in \\
 /uboone/data/uboonerd/nucleonDecay/decayModes/Mode0/Mode0.out .
 
@@ -212,7 +236,7 @@ The calorimetry cut consists of a simple cut on the reconstructed deposited ener
 \subsection{Results}
 
 The preliminary results presented below show the efficiency of this selection methodology at the MCReco and Reco level. 
-Table \ref{T3} shows that the cutflow keeps a good percentage of events when applied to both MCReco and Reco level.  The overall efficiency for this channel is $\sim$ 56 \%.
+Table \ref{T3} shows that the cutflow keeps a good percentage of events when applied to both MCReco and Reco level.  Calculating the ratio of the number of events that pass the cut flow for Reco over the number of events that pass the cut flow for MCReco (last line in Table \ref{T3}), we find a overall reconstruction efficiency for this channel of $\sim$ 56 \%.
 
 \begin{table}[!htbp]
 \centering
@@ -237,21 +261,23 @@ $|\Sigma p_x|$, $|\Sigma p_y|$, $|\Sigma p_z|$ & $< 400$ MeV       & 9648       
 \label{T3}
 \end{table}
 
-We can now evaluate the goodness of the selected candidates by comparing the energy deposition distributions for the muon, the gamma and the total energy (which is simple the sum of the two) at the MCReco and Reco level. Figures \ref{F1}, \ref{F3} and \ref{F3} show the energy deposition of the muon, the gamma and the total for MCReco products only. A comparison of the MCReco vs Reco distributions for the muon and the gamma can be found in figures \ref{F4}, \ref{F5}. The muon deposited energy is defined as in \ref{trackRef}. From MC energy deposition to reco, the deposited energy distributions broaden slightly due to imperfections in clustering and, in the gamma case, to shower reconstruction. Despite this, the peaks appear to be in roughly the same position and the distributions are comparably shaped, indicating that the events selected were well-reconstructed.  While the reconstruction of the $\mu$ is very good, especially after the track refinement, the reconstruction of the  $\gamma$ can be tricky. The primary error made during the reconstruction of these events is to reconstruct the $\gamma$ as a multiple showers. The shower energy is thus lowered, explaining the tail in figure \ref{F5}.
-We can compare the total energy deposited distributions, figures \ref{F6}, \ref{F7} and \ref{F8} between MCReco and Reco level and evaluate the power of our cut flow. Figure \ref{F6} shows the total deposited energy for all the combinatoric paris in the case of Reco. In Figure \ref{F7}, the geometrical cuts are applied. In Figure \ref{F8}, geometrical, PID and calorimetry cuts are applied. It is interesting to notice that the Reco distribution builds up to peak roughly the same position as MCReco when all the cuts are applied.
+We can now evaluate the goodness of the selected candidates by comparing the energy deposition distributions for the muon, the gamma and the total energy (which is simply the sum of the two) at the MCReco and Reco level. Figures \ref{F1}, \ref{F2} and \ref{F3} show the energy deposition of the muon, the gamma and the total for MCReco products only. A comparison of the MCReco vs Reco distributions for the muon and the gamma can be found in figures \ref{F4}, \ref{F5}. The muon deposited energy is defined as in \ref{trackRef}. From MCReco to Reco, the deposited energy distributions broaden slightly due to imperfections in clustering and, in the gamma case, to imperfection in shower reconstruction. Despite this, the peaks appear to be in roughly the same position and the distributions are comparably shaped, indicating that the events selected were well-reconstructed.  While the reconstruction of the $\mu$ is very good, especially after the track refinement, the reconstruction of the  $\gamma$ can be tricky. The primary error made during the reconstruction of these events is to reconstruct the $\gamma$ as multiple showers. The shower energy is thus lowered, explaining the low energy tail in figure \ref{F5}.\\
 
-\begin{figure}[p!]
+We can compare the total energy deposited distributions between MCReco and Reco level (figures \ref{F6}, \ref{F7} and \ref{F8}) and evaluate the power of our cut flow. Figure \ref{F6} shows the total deposited energy for all the combinatoric paris in the case of Reco. In the Reco distrubution, two peaks are visible. The lower energy peak is given by the muon-michel electron pair and the mis-reconstructed pieces of the gamma shower.
+In Figure \ref{F7}, the geometrical cuts are applied and the low energy peak almost disappears. In Figure \ref{F8}, geometrical, PID and calorimetry cuts are applied. The Reco distribution builds up to peak roughly the same position as MCReco when all the cuts are applied.
+
+\begin{figure}[h!]
 \centering
 \begin{minipage}{0.45\textwidth}
 \centering
 \includegraphics[width=3in]{pMuGamma/MuonMCEn.png}
-\caption{Deposited energy distribution of the muon at MCReco level. All cuts in Table \label{T3} have been applied. The plot is area normalized. }
+\caption{Deposited energy distribution of the muon at MCReco level. All cuts in Table \ref{T3} have been applied. The plot is area normalized. }
 \label{F1}
 \end{minipage}\hfill
 \begin{minipage}{0.45\textwidth}
 \centering
 \includegraphics[width=3in]{pMuGamma/GammaMCEn.png}
-\caption{Deposited energy distribution of the gamma at MCReco level. All cuts in Table \label{T3} have been applied. The plot is area normalized.}
+\caption{Deposited energy distribution of the gamma at MCReco level. All cuts in Table \ref{T3} have been applied. The plot is area normalized.}
 \label{F2}
 \end{minipage}
 \end{figure}
@@ -261,7 +287,7 @@ We can compare the total energy deposited distributions, figures \ref{F6}, \ref{
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=4in]{pMuGamma/ProtonMCEn.png}
-\caption{Candidate deposited energy at MCReco level. All cuts in Table \label{T3} have been applied. The plot is area normalized.}
+\caption{Candidate deposited energy at MCReco level. All cuts in Table \ref{T3} have been applied. The plot is area normalized.}
 \label{F3}
 \end{center}
 \end{figure}
@@ -311,9 +337,6 @@ We can compare the total energy deposited distributions, figures \ref{F6}, \ref{
 \section{$p \rightarrow e^{+} \pi^{0}$}
 The following paragraphs address the analysis of the  $e^{+} \pi^{0}$ proton decay mode.\\
 The neutral pion decays immediately into two photons, both of which produce EM showers in the detector. The positron showers as well, leading to a signal topology of three electromagnetic showers emerging from a common origin.
-
-The aim of what follows is to describe a set of cuts designed to isolate this signal from background, and to further discuss the types of cosmogenic background events that can fake this signal.
-
 \subsection{Signal only analysis}
 
 In an attempt to isolate this signal, the following procedure was implemented (for a detailed explanation about running the code, see Appendix A ):
@@ -330,11 +353,11 @@ In an attempt to isolate this signal, the following procedure was implemented (f
 
 \subsubsection{Shower filter}
 
-The first stage of event selection is the shower filter. A three shower filter is imposed that discards all events without three reconstructed showers. Though in future analyses, this will be changed to reject all events with fewer than three reconstructed showers, it was beneficial for a preliminary step of this analysis to impose a strict three shower cut on signal sample because it allows for the identification efficiency of this event topology to be partially separated from shower reconstruction efficiencies. This analysis depends crucially on accurate shower reconstruction, which is still under development. By limiting the analysis to signal events that have exactly three reconstructed showers, there is a greater likelihood that the showers have been reconstructed reasonably well. Even so, shower reconstruction effects still dominate the factors contributing to the loss of signal events.
+The first stage of event selection is the shower filter. A three shower filter is imposed that discards all events without three reconstructed showers. Though in future analyses, this will be changed to reject all events with fewer than three reconstructed showers, it was beneficial as first step  to impose a strict three shower cut on signal sample. This filter allows for the identification efficiency of this event topology to be partially separated from shower reconstruction efficiencies. This analysis depends crucially on accurate shower reconstruction, which is still under development. By limiting the analysis to signal events that have exactly three reconstructed showers, there is a greater likelihood that the showers have been reconstructed reasonably well. Even so, shower reconstruction effects still dominate the factors contributing to the loss of signal events.
 
 \subsubsection{Particle identification}
 
-After the shower filter, a first attempt at particle identification is performed. The strategy for particle identification is to loop through reconstructed showers and to try to associate the shower with either a positron or photon from neutral pion decay. It is superior at this stage to over-identify pions and positrons in the event because further cuts are applied later to eliminate misreconstructed particles. If the identification is too tight, there is a risk of losing good events at this stage. Since the identification is performed sequentially, however, only one loose pass cannot be performed because the first identification algorithm applied will misidentify certain showers as its own. For concreteness, take the example of searching for a neutral pion  first, using a loose definition. This algorithm may reconstruct pions using the shower actually coming from the positron, eliminating it from the viable pool of showers when the positron identification algorithm is applied next.
+After the shower filter, a first attempt at particle identification is performed. The strategy for particle identification is to loop through reconstructed showers and to try to associate the shower with either a positron or photon from neutral pion decay. It is superior at this stage to over-identify pions and positrons pairs in the event: further cuts are applied later to eliminate misreconstructed pairs. If the identification is too tight, there is a risk of losing good events at this stage. Since the identification is performed sequentially, however, only one loose pass cannot be performed because the first identification algorithm applied will misidentify certain showers as its own. For concreteness, take the example of searching for a neutral pion  first, using a loose definition. This algorithm may reconstruct pions using the shower actually coming from the positron, eliminating it from the viable pool of showers when the positron identification algorithm is applied next.
 
 To circumvent this, particle identification is performed iteratively. First, positrons and neutral pions are identified according to a tight definition so that only showers that are very likely to be correctly associated with that particular particle are associated with it. Then, a looser iteration is performed on the remaining showers. This methodology helps to avoid the problem of ``overzealous identification" for a particular particle.
 
@@ -342,7 +365,7 @@ Both the tight and loose definitions employed for particle identification are di
 
 The definition of ``likelihood" for the neutral pion is similar but takes into consideration five different aspects of the reconstruction. The likelihood is the sum of the log-likelihoods of the radiation length for both $\gamma$ showers, the $dE/dx$ for both showers, and the impact parameter for the two showers. The log-likelihoods are defined identically to the definitions supplied above but different PDFs are used for radiation length and impact parameter.
 
-It should be noted that a particularly strong discriminating variable in $\pi^{0}$ identification is the angle between the two $\gamma$ showers. For a given $\pi^{0}$ energy, there is a fixed minimum angle between the showers $\alpha_{\text{min}} = 2\arcsin(\frac{m_{\pi}}{E_{\pi}}) = 2\arcsin(1/\gamma)$. This can be calculated by boosting a back-to-back decay from the rest frame of the pion into a frame moving perpendicularly to the photons. As can be seen in Figure 4, the distribution of $\theta_{\gamma\gamma}$ drops sharply to zero below the minimum angle for this energy range, roughly 0.45 radians. This provides a good handle on identifying pions in the appropriate energy range.
+It should be noted that a particularly strong discriminating variable in $\pi^{0}$ identification is the angle between the two $\gamma$ showers. For a given $\pi^{0}$ energy, there is a fixed minimum angle between the showers $\alpha_{\text{min}} = 2\arcsin(\frac{m_{\pi}}{E_{\pi}}) = 2\arcsin(1/\gamma)$. This can be calculated by boosting a back-to-back decay from the rest frame of the pion into a frame moving perpendicularly to the photons. The distribution of $\theta_{\gamma\gamma}$ drops sharply to zero below the minimum angle for this energy range, roughly 0.45 radians. This provides a good handle on identifying pions in the appropriate energy range.
 
 \begin{table}[!hbtp]
 \centering
@@ -374,10 +397,10 @@ Pion energy                           & $> 100$ MeV             & $> 100$ MeV   
 
 \subsubsection{Geometrical cuts}
 
-After particle identification has been performed, two geometrical cuts are applied to try to identify the topology of proton decay. The first is a cut on the radius of the smallest sphere that encloses the start points of the three showers. This serves as a proximity cut. This radius is a more robust variable to cut on than the distance between the reconstructed $\pi^{0}$ location and the start point of the positron shower. This is because during pion reconstruction, the position of the neutral pion is determined by finding the point of closest approach between the two half-lines extending from the photon showers in the opposite direction from the reconstructed shower direction. If the shower direction is even slightly misreconstructed, the change in angle can change the point of closest approach significantly. For this reason, using the reconstructed pion position as a parameter to cut on is inadvisable. In contrast, the positions of the initial energy deposits for the showers is a quantity measured directly by the detector and is therefore subject to less uncertainty due to reconstruction effects.
+After particle identification has been performed, two geometrical cuts are applied. The first is a cut on the radius of the smallest sphere that encloses the start points of the three showers. This serves as a proximity cut. This radius is a more robust variable to cut on than the distance between the reconstructed $\pi^{0}$ location and the start point of the positron shower. This is because during pion reconstruction, the position of the neutral pion is determined by finding the point of closest approach between the two half-lines extending from the photon showers in the opposite direction from the reconstructed shower direction. If the shower direction is even slightly misreconstructed, the change in angle can change the point of closest approach significantly. For this reason, using the reconstructed pion position as a parameter to cut on is inadvisable. In contrast, the positions of the initial energy deposits for the showers is a quantity measured directly by the detector and is therefore subject to less uncertainty due to reconstruction effects.
 %The radiation length of the photon is on the order of 30 cm (MAYBE?? need citation) but SOME PHOTONS TAKE FOREVER SO BIG CUT BIG CUT INCLUSIVE YEAH
 
-The second geometrical cut performed is a cut on the angle between the 3-momenta of the reconstructed $\pi^{0}$ and $e^{+}$. Naively, this would be expected to be steeply peaked near $\pi$ because the proton decays at rest and momentum is conserved. This is not the case. Two factors contribute to this. The first is that the proton does not decay at rest, but instead decays with some momentum less than the Fermi momentum of the nucleus, which is on the order of 215 MeV/$c$.  In addition to this effect, the angle between the decay products is changed because the pion undergoes intranuclear interactions before escaping the nucleus that can alter its momentum. For these reasons, the cut on angle is very loose.
+The second geometrical cut performed is a cut on the angle between the 3-momenta of the reconstructed $\pi^{0}$ and $e^{+}$. Naively, this would be expected to be steeply peaked near $\pi$ because the proton decays at rest and momentum is conserved. This is not the case. Two factors contribute to this. The first is that the proton does not decay at rest, but instead decays with some momentum less than the Fermi momentum of the nucleus, which is on the order of 200 MeV/$c$.  In addition to this effect, the angle between the decay products is changed because the pion undergoes intranuclear interactions before escaping the nucleus that can alter its momentum. For these reasons, the cut on angle is very loose.
 
 
 \subsubsection{Calorimetric cuts}
@@ -428,28 +451,29 @@ $|\Sigma p_x|$, $|\Sigma p_y|$, $|\Sigma p_z|$ & $< 300$ MeV                & 90
 Despite the low efficiency, the events that are selected as proton decay candidates at reco level do seem to be well-reconstructed events, indicating that the selection behaves well. Figures \ref{figure1} and \ref{f2} demonstrate this. Figure \ref{figure1}  shows the positron energy at both the levels of analysis after all cuts have been applied. From MC energy deposition to reco, the distribution broadens slightly due to imperfections in clustering and shower reconstruction. Despite this, the peak appears to be in roughly the same position and the distributions are comparably shaped, indicating that the events selected, though few, were well-reconstructed. Therefore, for well-reconstructed events, our selection appears to work well to identify the three shower topologies associated with this channel of proton decay.
 
 
-Figure  \ref{f2} shows the same plot for the $\pi^{0}$ energy. Here, the distribution has been shifted significantly downward. This is due mainly to reconstruction inefficiencies. It is interesting to notice that the reconstruction of the boosted $\pi^{0}$ is particularly difficult due to the high collimation of the decay products leading to overlapping showers. The primary error made during the reconstruction of these events is to reconstruct the $\pi^{0}$ as a single, highly-energetic shower.  In fact, 4360 signal events out of 9960 total have two reconstructed showers or fewer. By hand-scanning a small portion of them, we noticed that the overlapping showers tend to be reconstructed as some set of showers and tracks. In three shower events specifically, the energy of the $\pi^{0}$ is lower because some of the particle's energy has been reconstructed as tracks. A strategy to improve these reconstruction efficiencies may be to extend the $\pi^{0}$ algorithm by searching for reconstructed showers with $dE/dx \approx 8.5$ MeV/$c^2$ that correspond to the combination of two $\gamma$-showers. This methodology would also allow for the identification of Dalitz decay, a decay mode of $\pi^{0}$ to which this analysis is currently not sensitive.
+Figure  \ref{f2} shows the same plot for the $\pi^{0}$ energy. Here, the distribution has been shifted significantly downward. This is due mainly to reconstruction inefficiencies. On a side note, it is interesting to notice that the reconstruction of the boosted $\pi^{0}$ is particularly difficult due to the high collimation of the decay products leading to overlapping showers. The primary error made during the reconstruction of these events is to reconstruct the $\pi^{0}$ as a single, highly-energetic shower.  In fact, 4360 signal events out of 9960 total have two reconstructed showers or fewer. By hand-scanning a small portion of them, we noticed that the overlapping showers tend to be reconstructed as some set of showers and tracks. In three shower events specifically, the energy of the $\pi^{0}$ is lower because some of the particle's energy has been reconstructed as tracks. A strategy to improve these reconstruction efficiencies may be to extend the $\pi^{0}$ algorithm by searching for reconstructed showers with $dE/dx \approx 8.5$ MeV/$c^2$ that correspond to the combination of two $\gamma$-showers. This methodology would also allow for the identification of Dalitz decay, a decay mode of $\pi^{0}$ to which this analysis is currently not sensitive.
 
 
 Figure \ref{f3} shows the energy of the reconstructed proton (sum of decay product 4-momenta) at each level. Though there is significant variation in the distribution, it appears to peak slightly below the truth energy, an effect that is the result of the misreconstruction of the pion energy discussed previously.
 
-\begin{figure}[p]
-\begin{center}
-\includegraphics[width=4in]{pPi0E/e_eplus_postcutcomp.pdf}
+\begin{figure}[h!]
+\centering
+\begin{minipage}{0.45\textwidth}
+\centering
+\includegraphics[width=3in]{pPi0E/e_eplus_postcutcomp.pdf}
 \caption{Energy distributions of the  positron at MCReco and Reco level. All cuts in Table \label{t3} have been applied. The two plots are area normalized.}
 \label{figure1}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=4in]{pPi0E/e_pion_postcutcomp.pdf}
+\end{minipage}\hfill
+\begin{minipage}{0.45\textwidth}
+\centering
+\includegraphics[width=3in]{pPi0E/e_pion_postcutcomp.pdf}
 \caption{Energy distributions of the pion at MCReco and Reco level. All cuts in Table \label{t3} have been applied. The two plots are area normalized.}
 \label{f2}
-\end{center}
+\end{minipage}
 \end{figure}
 
-\begin{figure}[htbp]
+
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[width=4in]{pPi0E/e_proton_postcutcomp.pdf}
 \caption{Energy distributions of the reconstructed proton at MCReco and Reco level. All cuts in Table \label{t3} have been applied. The two plots are area normalized.}
@@ -464,8 +488,7 @@ Figure \ref{f3} shows the energy of the reconstructed proton (sum of decay produ
 %Though the distribution is shifted, it is still roughly comparable to the truth distribution. Compare this with Figure 4, which shows these distributions for all selected pions before any cuts beyond those imposed in Table 2 are applied. The distribution.
 
 \section{Conclusions}
-
-%The results of this preliminary investigation indicate that there is the potential to have a high selection efficiency for $p \rightarrow \mu^{+} \gamma$  and $p \rightarrow e^{+} \pi^{0}$ in MicroBooNE and other LArTPCs. These results can only improve as reconstruction in MicroBooNE improves.
+In this note, we calculated the reconstruction efficiencies for the $p \rightarrow \mu^{+} \gamma$ ($\epsilon \sim$ 56\%)  and $p \rightarrow e^{+} \pi^{0}$ ($\epsilon \sim$ 2\%)  mode in signal only samples. Despite the non stellar efficiency, we demonstrated that  the events selected were well-reconstructed for both the modes. These results can only improve as reconstruction in MicroBooNE improves. The next step is applying our cut flow for both these modes to cosmics only events.
 
 \nocite{*}
 \bibliographystyle{unsrt}
@@ -475,6 +498,7 @@ Figure \ref{f3} shows the energy of the reconstructed proton (sum of decay produ
 \appendix
 \section{Electron and gamma PDFs}
 \label{PDFgamma}
+Kazu will write it.
 
 \section{Manual}
 
@@ -483,6 +507,50 @@ This section will explain the machinery used to perform this analysis. The modul
 All of the modules used for this are stored in the ``Ndk" git repository. To clone this, run\\
 
 \texttt{git clone git@github.com:ElenaGramellini/Ndk.git} \\
+
+
+
+
+\noindent
+For $p \rightarrow \mu{+} \gamma$ , 
+
+\texttt{cd Mode13}
+
+\noindent
+and
+
+\texttt{make}.
+
+Within the directory, multiple modules where used to tune the analysis. To obtain the plots shown, you'll need to run\\
+ \texttt{ERAnaOneToOneMu.cxx} and \texttt{ERAnaMode13.cxx}. \\
+Unless you need to fix a bug, there should be no need to interact directly with these modules once they are compiled. Everything is done instead through the launcher macros,  located under \texttt{mac/}.
+
+To run the macro that outputs the muon ntuples for MCReco, use\\
+\texttt{python mac/Ana121MuMC.py [\textit{filename1}] }.\\
+To run the macro that outputs the muon ntuples for Reco, use\\
+\texttt{python mac/Ana121MuReco.py [\textit{filename1}] [\textit{filename2}]  }.\\
+
+To run the macro that outputs the gamma and proton ntuples for MCReco, use\\
+\texttt{python mac/WholeMode13.py [\textit{filename1}] }.\\
+To run the macro that outputs the gamma and proton ntuples for Reco, use\\
+\texttt{python mac/RecoWholeMode13.py [\textit{filename2}] [\textit{filename3}]  }.\\
+
+
+\noindent
+This will run the analysis over \textit{filename} (a LArLite file). Running this will output a ROOT files that contain TTree containing the information about all the identified gammas, muons and candidates in the sample provided.
+
+Once this step has been completed, the actual cutflow can be applied to the reconstructed  gammas and muons stored in \texttt{outfile}. To do this, we use another macro, \texttt{mac/SignalPlotsForTechNote.C}. In order to get table \ref{T3} run \texttt{mac/Table.C}
+
+
+The files used for this study (at the time of writing) are as follows:
+\begin{enumerate}[topsep=10pt,itemsep=-1ex,partopsep=10pt,parsep=1ex]
+\item []\texttt{[\textit{filename1}]} : \url{/pnfs/uboone/scratch/users/elenag/v04_12_00/Mode13/sim/prod_NdK/2598033_*/larlite_mcinfo_*.root}
+\item []\texttt{[\textit{filename2}]} : \url{/uboone/data/uboonerd/nucleonDecay/LarLiteProduction/Mode13/Mode13/liteMaker2/prod_NdK/3289417_*/larlite_reco3d_kalmanhit.root}
+\item []\texttt{[\textit{filename3}]} : \url{/uboone/data/uboonerd/nucleonDecay/LarLiteProduction/Mode13/Mode13/liteMaker2/prod_NdK/3289417_*/larlite_reco3d_pandora.root}
+\end{enumerate}
+
+
+\newpage
 
 \noindent
 For $p \rightarrow e^{+} \pi^{0}$ , 
