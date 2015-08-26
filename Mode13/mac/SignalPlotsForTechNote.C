@@ -46,7 +46,7 @@ void SignalPlotsForTechNote( )
 
   TCanvas *C1     = new TCanvas("C1","C1",600,600);
   C1->cd();  
-  auto cut1 = new TH1D("Proton","Total deposited Energy;  E_{#mu} [MeV];Count",30,0,1200);
+  auto cut1 = new TH1D("Proton","Total deposited Energy;  E_{#mu} [MeV];Normalized Count",30,0,1200);
   _algoMCP_tree->Draw("_proton_En>>Proton",CPdg,"norm");
   cut1->SetLineWidth(3);
   cut1->SetLineColor(kBlue-1);
@@ -67,7 +67,7 @@ void SignalPlotsForTechNote( )
 
   C1R->cd();  
   gStyle->SetOptStat(1111);  
-  auto cut1R = new TH1D("ProtonReco","Total deposited Energy;  E_{#mu} [MeV];Count",30,0,1200);
+  auto cut1R = new TH1D("ProtonReco","Total deposited Energy;  E_{#mu} [MeV]; Normalized Count",30,0,1200);
   gStyle->SetOptStat(1111); 
   _algoPReco_tree->Draw("_proton_En>>ProtonReco",CPdgPReco,"norm");
   cut1R->SetLineWidth(3);
@@ -171,7 +171,7 @@ void SignalPlotsForTechNote( )
 
   TCanvas *C2     = new TCanvas("C2","C2",600,600);
   C2->cd();
-  auto cut2 = new TH1D("Gamma","Gamma deposited Energy;  E_{#mu} [MeV];Count",20,0,800);
+  auto cut2 = new TH1D("Gamma","Gamma deposited Energy;  E_{#mu} [MeV];Normalized Count",20,0,800);
   _algoMCG_tree->Draw("_shower_DepEn>>Gamma",CPdg3S,"norm");
   cut2->SetLineWidth(3);
   cut2->SetLineColor(kBlue-1);
@@ -192,7 +192,7 @@ void SignalPlotsForTechNote( )
   gStyle->SetOptStat(1111); 
   TCanvas *C2R     = new TCanvas("C2R","C2R",600,600);
   C2R->cd();  
-  auto cut2R = new TH1D("GammaReco","Gamma deposited Energy;  E_{#mu} [MeV];Count",20,0,800); 
+  auto cut2R = new TH1D("GammaReco","Gamma deposited Energy;  E_{#mu} [MeV];Normalized Count",20,0,800); 
   C2R->cd(); 
   _algoGammaReco_tree->Draw("_shower_DepEn>>GammaReco",cCosm1&&crazyEnTrack&&crazyEnShower&&cOA&&cIPMin&&cdisEnMin&&cProtonP&&cPdgSSS&&cPdgSh&&cShowerEn,"norm");
   cut2R->SetLineWidth(3);
@@ -242,7 +242,7 @@ void SignalPlotsForTechNote( )
 
   TCanvas *C3     = new TCanvas("C3","C3",600,600);
   C3->cd();
-  auto cut3 = new TH1D("MuMC","Muon deposited Energy;  E_{#mu} [MeV];Count",20,0,800);
+  auto cut3 = new TH1D("MuMC","Muon deposited Energy;  E_{#mu} [MeV];Normalized Count",20,0,800);
   _algoMCM_tree->Draw("_tracks_DepEnFromLength>>MuMC",CPdgT,"norm");
   cut3->SetLineWidth(3);
   cut3->SetLineColor(kBlue-1);
@@ -252,7 +252,7 @@ void SignalPlotsForTechNote( )
   gStyle->SetOptStat(0);  
   TCanvas *C33     = new TCanvas("C33","C33",600,600);
   C33->cd();  
-  auto cut33 = new TH1D("cut33","Muon deposited Energy;  E_{#mu} [MeV];Count",20,0,800);
+  auto cut33 = new TH1D("cut33","Muon deposited Energy;  E_{#mu} [MeV];Normalized Count",20,0,800);
   _algoMCM_tree->Draw("_tracks_DepEnFromLength>>cut33",CPdgT,"norm");
   cut33->SetLineWidth(3);
   cut33->SetLineColor(kBlue-1);
@@ -269,7 +269,7 @@ void SignalPlotsForTechNote( )
 
   TCanvas *C3R     = new TCanvas("C3R","C3R",600,600);
   C3R->cd();  
-  auto cut3R = new TH1D("MuReco","Muon deposited Energy;  E_{#mu} [MeV];Count",20,0,800);
+  auto cut3R = new TH1D("MuReco","Muon deposited Energy;  E_{#mu} [MeV];Normalized Count",20,0,800);
   _algoMuReco_tree->Draw("_tracks_DepEnFromLength>>MuReco",CPdgTReco,"norm");
   cut3R->SetLineWidth(3);
   cut3R->SetLineColor(kRed+2);
@@ -279,7 +279,7 @@ void SignalPlotsForTechNote( )
   gStyle->SetOptStat(0);  
   TCanvas *C33R     = new TCanvas("C33R","C33R",600,600);
   C33R->cd();  
-  auto cut33R = new TH1D("cut33R","Muon deposited Energy;  E_{#mu} [MeV];Count",20,0,800);
+  auto cut33R = new TH1D("cut33R","Muon deposited Energy;  E_{#mu} [MeV];Normalized Count",20,0,800);
   _algoMuReco_tree->Draw("_tracks_DepEnFromLength>>cut33R",CPdgTReco,"norm");
   cut33R->SetLineWidth(3);
   cut33R->SetLineColor(kRed+2);
